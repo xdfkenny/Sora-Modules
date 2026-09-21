@@ -1,16 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>xdfkenny modules — Sora Module Library</title>
-  <meta name="description" content="xdfkenny's Sora module library — streaming modules for anime, movies, manga and novels for Sora, Luna, and Shirox." />
+  <meta name="description" content="xdfkenny's Sora module library — streaming modules for anime, movies, manga and novels for Sora, Luna, and Shirox. One-tap install." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23E1F5FE'/%3E%3Cpath d='M16 5l9.5 5.5v11L16 27l-9.5-5.5v-11z' fill='%237EC8E3'/%3E%3Cpath d='M16 9.5L22 13v6l-6 3.5-6-3.5v-6z' fill='%23FFFFFF' opacity='.9'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link rel="preconnect" href="https://raw.githubusercontent.com" />
+  <link rel="preconnect" href="https://img.passportindex.org" />
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -19,54 +21,127 @@
   <!-- ===== Navigation ===== -->
   <nav class="nav" aria-label="Primary">
     <div class="nav-inner">
-      <a class="brand" href="#top">
+      <a class="brand" href="#/">
         <span class="brand-dot" aria-hidden="true"></span>
         <span class="brand-name">xdfkenny</span>
       </a>
-      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation">
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-        <span class="nav-toggle-bar"></span>
-      </button>
-      <div class="nav-links" id="navLinks">
-        <a class="nav-link" href="modules/">Library</a>
-        <a class="nav-link nav-link-ext" href="https://github.com/xdfkenny/xdfkenny-sora-modules" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <div class="nav-right">
+        <div class="nav-links" id="navLinks">
+          <a class="nav-link" href="#/" data-nav="home" data-i18n="nav.home">Home</a>
+          <a class="nav-link" href="#/library" data-nav="library" data-i18n="nav.library">Library</a>
+          <a class="nav-link nav-link-ext" href="https://github.com/xdfkenny/xdfkenny-sora-modules" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+        <div class="lang-switch" id="langSwitch" role="group" aria-label="Language"></div>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle theme">
+          <span class="material-symbols-outlined icon-sm" id="themeIcon">dark_mode</span>
+        </button>
+        <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation">
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+          <span class="nav-toggle-bar"></span>
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- ===== Hero ===== -->
   <main id="main">
-    <header class="hero" id="top">
-      <div class="hero-snow" aria-hidden="true"></div>
-      <div class="hero-hex hex-1" aria-hidden="true"></div>
-      <div class="hero-hex hex-2" aria-hidden="true"></div>
-      <div class="hero-hex hex-3" aria-hidden="true"></div>
-      <div class="hero-inner">
-        <p class="eyebrow">Soft Cryo Modules</p>
-        <h1 class="hero-title">xdfkenny <span>modules</span></h1>
-        <p class="hero-sub">Streaming modules for anime, movies, manga and novels.</p>
-        <p class="hero-desc">A collection of JavaScript modules for Sora, Luna and Shirox — clean, reusable and focused on reliability.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" id="btnHeroAddSora" href="sora://default_page?url=https%3A%2F%2Fxdfkenny.dpdns.org%2Fxdfkenny-sora-modules%2Fmodules%2F%3Fembed%3Dtrue">
-            <span class="material-symbols-outlined icon-sm">add_link</span> Add All to Sora
-          </a>
-          <a class="btn btn-secondary" href="modules/">Browse Library <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="https://github.com/xdfkenny/xdfkenny-sora-modules" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+    <!-- ===== Landing view ===== -->
+    <div id="viewLanding">
+      <header class="hero" id="top">
+        <div class="hero-snow" aria-hidden="true"></div>
+        <div class="hero-hex hex-1" aria-hidden="true"></div>
+        <div class="hero-hex hex-2" aria-hidden="true"></div>
+        <div class="hero-hex hex-3" aria-hidden="true"></div>
+        <div class="hero-inner">
+          <p class="eyebrow" data-i18n="hero.eyebrow">Soft Cryo Modules</p>
+          <h1 class="hero-title">xdfkenny <span>modules</span></h1>
+          <p class="hero-sub" data-i18n="hero.sub">Streaming modules for anime, movies, manga and novels.</p>
+          <p class="hero-desc" data-i18n="hero.desc">A collection of JavaScript modules for Sora, Luna and Shirox — clean, reusable and focused on reliability.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" id="btnHeroAddSora" href="sora://default_page?url=https%3A%2F%2Fxdfkenny.dpdns.org%2Fxdfkenny-sora-modules%2Fmodules%2F%3Fembed%3Dtrue">
+              <span class="material-symbols-outlined icon-sm">add_link</span> <span data-i18n="hero.addAll">Add All to Sora</span>
+            </a>
+            <a class="btn btn-secondary" href="#/library"><span data-i18n="hero.browse">Browse Library</span> <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="btn btn-ghost" href="https://github.com/xdfkenny/xdfkenny-sora-modules" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+          <div class="stats" role="list" aria-label="Library stats">
+            <div class="stat" role="listitem"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl" data-i18n="stat.modules">Modules</div></div>
+            <div class="stat" role="listitem"><div class="stat-num" id="statAnime">0</div><div class="stat-lbl" data-i18n="cat.anime">Anime</div></div>
+            <div class="stat" role="listitem"><div class="stat-num" id="statManga">0</div><div class="stat-lbl" data-i18n="cat.manga">Manga</div></div>
+            <div class="stat" role="listitem"><div class="stat-num" id="statAuthors">0</div><div class="stat-lbl" data-i18n="stat.authors">Authors</div></div>
+          </div>
         </div>
-        <div class="status-pill" aria-live="polite">
-          <span class="dot pulse" aria-hidden="true"></span>
-          <span class="status-text"><b id="heroCount">0</b> modules ready</span>
+      </header>
+
+      <section class="section" aria-label="Features">
+        <div class="features">
+          <div class="feature">
+            <span class="material-symbols-outlined">touch_app</span>
+            <h3 data-i18n="f1.t">One-tap install</h3>
+            <p data-i18n="f1.d">Deep links straight into Sora. No copy-pasting manifest URLs.</p>
+          </div>
+          <div class="feature">
+            <span class="material-symbols-outlined">manage_search</span>
+            <h3 data-i18n="f2.t">Search &amp; filters</h3>
+            <p data-i18n="f2.d">Filter by category, supported app, language or author in real time.</p>
+          </div>
+          <div class="feature">
+            <span class="material-symbols-outlined">update</span>
+            <h3 data-i18n="f3.t">Always up to date</h3>
+            <p data-i18n="f3.d">Cards hydrate live from each manifest, so versions and languages reflect reality.</p>
+          </div>
         </div>
-      </div>
-    </header>
+      </section>
+    </div>
+
+    <!-- ===== Library view ===== -->
+    <div id="viewLibrary" hidden>
+      <section class="section" id="modules">
+        <div class="section-head">
+          <h2 data-i18n="lib.title">Module Library</h2>
+          <p class="section-intro" data-i18n="lib.sub">Explore and install modular anime, manga, and stream resolution providers for Sora, Luna, and Shirox.</p>
+        </div>
+
+        <div class="library-controls">
+          <div class="search-box">
+            <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
+            <input type="search" id="libSearch" class="search-input" data-i18n-ph="search.ph" placeholder="Search modules by name, language, or tags..." aria-label="Search modules" autocomplete="off" />
+            <button type="button" id="libSearchClear" class="search-clear" aria-label="Clear search" hidden><span class="material-symbols-outlined icon-sm">close</span></button>
+          </div>
+
+          <div class="filter-pills-row">
+            <div class="filter-group chips" id="categoryFilters" role="tablist" aria-label="Category">
+              <button type="button" class="filter-pill active" data-category="all"><iconify-icon icon="material-symbols:apps-rounded" aria-hidden="true"></iconify-icon> <span data-i18n="cat.all">All</span></button>
+              <button type="button" class="filter-pill" data-category="anime"><iconify-icon icon="mdi:television-play" aria-hidden="true"></iconify-icon> <span data-i18n="cat.anime">Anime</span></button>
+              <button type="button" class="filter-pill" data-category="movie"><iconify-icon icon="mdi:movie-open-outline" aria-hidden="true"></iconify-icon> <span data-i18n="cat.movie">Movies</span></button>
+              <button type="button" class="filter-pill" data-category="manga"><iconify-icon icon="mdi:book-open-page-variant-outline" aria-hidden="true"></iconify-icon> <span data-i18n="cat.manga">Manga</span></button>
+              <button type="button" class="filter-pill" data-category="novel"><iconify-icon icon="mdi:script-text-outline" aria-hidden="true"></iconify-icon> <span data-i18n="cat.novel">Novels</span></button>
+              <button type="button" class="filter-pill" data-category="torrent"><iconify-icon icon="mdi:magnet" aria-hidden="true"></iconify-icon> <span data-i18n="cat.torrent">Torrents</span></button>
+            </div>
+
+            <div class="filter-group filter-group-apps chips" id="appFilters" aria-label="App">
+              <span class="filter-label">App:</span>
+              <button type="button" class="filter-pill filter-pill-app" data-app="sora"><iconify-icon icon="mdi:cloud-outline" aria-hidden="true"></iconify-icon> Sora</button>
+              <button type="button" class="filter-pill filter-pill-app" data-app="luna"><iconify-icon icon="mdi:moon-waning-crescent" aria-hidden="true"></iconify-icon> Luna</button>
+              <button type="button" class="filter-pill filter-pill-app" data-app="shirox"><iconify-icon icon="mdi:star-four-points-outline" aria-hidden="true"></iconify-icon> Shirox</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="library-summary" aria-live="polite">
+          <span class="pill"><span id="resultCount">0 modules</span></span>
+        </div>
+
+        <div class="grid" id="grid"></div>
+      </section>
+    </div>
   </main>
 
   <!-- ===== Footer ===== -->
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">xdfkenny modules</div>
-      <p class="footer-tagline">Built with frost and curiosity.</p>
+      <p class="footer-tagline" data-i18n="footer.tag">Built with frost and curiosity.</p>
       <div class="footer-social">
         <a class="icon-btn" href="https://github.com/xdfkenny/xdfkenny-sora-modules" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
           <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.93.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9v2.81c0 .27.18.6.69.49A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"></path></svg>
@@ -77,6 +152,8 @@
     <div class="footer-bottom">© 2026 xdfkenny · GitHub · MixGeekers</div>
   </footer>
 
-  <script src="script.js"></script>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span class="material-symbols-outlined icon-sm">check_circle</span><span id="toastText"></span></div>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
