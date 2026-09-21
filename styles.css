@@ -1906,7 +1906,6 @@ html[data-theme="light"] { color-scheme: light; }
 .split .copy:hover { background: var(--border); color: var(--accent-dark); }
 .split .copy.copied { background: #16a34a; color: #fff; }
 
-.card-desc { color: var(--fg-muted); font-size: 13px; line-height: 1.5; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
 .author { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; min-width: 0; }
 .author img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; background: var(--frost); }

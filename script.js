@@ -521,8 +521,7 @@ function renderShells() {
       '<div class="card-title">' + esc(e.name) + '</div><span class="ver" data-role="ver">…</span>' +
       '</div><div class="card-branch">' + esc(e.id) + '</div></div>' +
       (e.discontinued ? '<span class="discontinued-badge"><span class="material-symbols-outlined icon-sm">block</span> Discontinued</span>' : '') +
-      '</div><div class="card-body"><div class="meta" data-role="meta"><span class="chip">loading…</span></div>' +
-      '<p class="desc" data-role="desc" hidden></p><div class="links" data-role="links"></div></div></article>';
+      '</div><div class="card-body"><div class="meta" data-role="meta"><span class="chip">loading…</span></div><div class="links" data-role="links"></div></div></article>';
   }).join('');
   entries.forEach(function (e) {
     var card = grid.querySelector('[data-id="' + cssEsc(e.id) + '"]');
@@ -530,8 +529,7 @@ function renderShells() {
       card: card,
       meta: card.querySelector('[data-role="meta"]'),
       links: card.querySelector('[data-role="links"]'),
-      ver: card.querySelector('[data-role="ver"]'),
-      desc: card.querySelector('[data-role="desc"]')
+      ver: card.querySelector('[data-role="ver"]')
     };
   });
 }
@@ -553,7 +551,6 @@ function hydrate(entry, m) {
 
   ref.links.textContent = '';
   if (entry.discontinued) {
-    if (m.description) { ref.desc.textContent = m.description; ref.desc.hidden = false; }
     var bar = el('div', 'discontinued-bar');
     bar.innerHTML = '<span class="material-symbols-outlined icon-sm">block</span> Discontinued';
     ref.links.appendChild(bar);
@@ -583,10 +580,7 @@ function hydrate(entry, m) {
     '<div class="split"><a class="add" href="' + esc(deepLink(app, target)) + '">' +
     '<span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">add</span><span data-role="addlabel">' + esc(t('card.add')) + '</span></a>' +
     '<button class="copy" type="button" data-copy="' + esc(target) + '" title="' + esc(t('card.copy')) + '">' +
-    '<span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">link</span></button></div>' +
-    (m.description ? '<p class="card-desc">' + esc(m.description) + '</p>' : '');
-  // description first (reference order), then author/apps, then split
-  if (m.description) ref.links.appendChild(wrap.querySelector('.card-desc'));
+    '<span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">link</span></button></div>';
   var bottom = wrap.querySelector('.card-bottom');
   if (bottom) ref.links.appendChild(bottom);
   var split = wrap.querySelector('.split');
