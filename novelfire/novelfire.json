@@ -1,0 +1,20 @@
+{
+  "sourceName": "NovelFire",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelfire/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.0.6",
+  "language": "English",
+  "streamType": "novels",
+  "quality": "N/A",
+  "baseUrl": "https://novelfire.net/",
+  "searchBaseUrl": "https://novelfire.net/ajax/searchLive?inputContent=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelfire/novelfire.js",
+  "type": "novels",
+  "asyncJS": true,
+  "novel": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelfire/novelfire.js"
+}

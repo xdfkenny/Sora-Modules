@@ -1,0 +1,32 @@
+{
+  "sourceName": "Otakutsu",
+  "iconUrl": "https://otakutsu.cc/favicon.ico",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.1",
+  "language": "English",
+  "languageType": [
+    "Dubbed",
+    "Subbed"
+  ],
+  "baseUrl": "https://otakutsu.cc/",
+  "searchBaseUrl": "https://otakutsu.cc/browse?query=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.js",
+  "type": "anime",
+  "quality": "1080p",
+  "streamType": "HLS",
+  "asyncJS": true,
+  "downloadSupport": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsMojuru": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.js"
+}

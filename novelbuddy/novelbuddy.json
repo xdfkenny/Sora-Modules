@@ -1,0 +1,20 @@
+{
+  "sourceName": "NovelBuddy",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelbuddy/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.1.2",
+  "language": "English",
+  "streamType": "novels",
+  "quality": "N/A",
+  "baseUrl": "https://novelbuddy.com/",
+  "searchBaseUrl": "https://novelbuddy.com/search?sort=views&q=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelbuddy/novelbuddy.js",
+  "type": "novels",
+  "asyncJS": true,
+  "novel": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelbuddy/novelbuddy.js"
+}

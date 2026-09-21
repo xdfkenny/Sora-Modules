@@ -1,0 +1,32 @@
+{
+  "sourceName": "LuciferDonghua",
+  "iconUrl": "https://i.ibb.co/MwKW01H/cropped-lucifer-donghua-DP-192x192-webp.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.0",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "HLS",
+  "quality": "4K",
+  "baseUrl": "https://luciferdonghua.in/",
+  "searchBaseUrl": "https://luciferdonghua.in/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/luciferdonghua/luciferdonghua.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/luciferdonghua/luciferdonghua.js"
+}

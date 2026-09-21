@@ -81,12 +81,12 @@ async function extractStreamUrl(url) {
 
         const match = html.match(/url:"(https:\/\/player\.zilla-networks\.com\/play\/[^"]+)"/i);
         if (match) {
-            return match[1].replace("/play/", "/m3u8/");
+            return JSON.stringify({ streams: [{ title: "AnimeAV", streamUrl: match[1].replace("/play/", "/m3u8/"), headers: {} }] });
         }
 
-        return "https://files.catbox.moe/avolvc.mp4";
+        return JSON.stringify({ streams: [{ title: "AnimeAV", streamUrl: "https://files.catbox.moe/avolvc.mp4", headers: {} }] });
     } catch (err) {
-        return "https://files.catbox.moe/avolvc.mp4";
+        return JSON.stringify({ streams: [{ title: "AnimeAV", streamUrl: "https://files.catbox.moe/avolvc.mp4", headers: {} }] });
     }
 }
 

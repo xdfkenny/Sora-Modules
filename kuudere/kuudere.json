@@ -1,0 +1,21 @@
+{
+  "sourceName": "Kuudere",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/kuudere/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.0.2",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://kuudere.to/",
+  "searchBaseUrl": "https://kuudere.to/search?keyword=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.js",
+  "type": "anime",
+  "downloadSupport": false,
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.js"
+}

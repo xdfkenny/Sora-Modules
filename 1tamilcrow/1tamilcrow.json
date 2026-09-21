@@ -1,0 +1,32 @@
+{
+  "sourceName": "1TamilCrow",
+  "iconUrl": "https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img/https://www.1tamilcrow.net/wp-content/uploads/2020/09/Tamil-Crow-e1600735514979.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.3",
+  "language": "Tamil",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://www.1tamilcrow.net/",
+  "searchBaseUrl": "https://www.1tamilcrow.net/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/1tamilcrow/1tamilcrow.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/1tamilcrow/1tamilcrow.js"
+}

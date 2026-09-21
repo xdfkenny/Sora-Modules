@@ -85,6 +85,30 @@ const STREAM_HEADERS = {
 
 /* MAIN FUNCTIONS */
 
+// The Sora app's JavaScriptCore exposes NO setTimeout/setInterval, so any
+// use of it crashes in-app ("Can't find variable: setTimeout"). timerSafe()
+// returns a promise that resolves after ms when timers exist, else resolves
+// immediately — keeping the module functional in BOTH environments.
+function timerSafe(ms) {
+    if (typeof setTimeout === 'function') {
+        return new Promise(function(resolve) { setTimeout(resolve, ms || 0); });
+    }
+    return Promise.resolve();
+}
+
+// Race the given promise against a fallback after timeoutMs. In-app there
+// are no timers, so the timeout branch NEVER settles — only the fetch can
+// win, and the app's own overall timeout bounds the wait.
+async function timedFallback(promise, timeoutMs, fallback) {
+    if (typeof setTimeout !== 'function') {
+        try { return await promise; } catch (e) { return fallback; }
+    }
+    return Promise.race([
+        Promise.resolve(promise).catch(function() { return fallback; }),
+        timerSafe(timeoutMs).then(function() { return fallback; })
+    ]);
+}
+
 async function searchResults(keyword) {
     try {
         const query = String(keyword || '').trim();
@@ -182,7 +206,7 @@ async function extractStreamUrl(url) {
         // requests hitting the API rate limiter simultaneously. Add a small
         // delay between them to reduce NEED_CAPTCHA / Too many requests.
         const subResult = await aaResolveTranslation(keys, showId, apiEpisode, 'sub');
-        await new Promise(r => setTimeout(r, 1200));
+        await timerSafe(1200);
         const dubResult = await aaResolveTranslation(keys, showId, apiEpisode, 'dub');
         const jobs = [subResult, dubResult];
 
@@ -425,7 +449,7 @@ async function aaEpisodeQuery(keys, showId, tt, episode) {
             const m = errMsg.match(/(\d+)\s*seconds/);
             const waitSec = m ? parseInt(m[1], 10) : 2;
             console.log('Episode rate limited on ' + host + '; waiting ' + waitSec + 's then retrying');
-            await new Promise(r => setTimeout(r, waitSec * 1000 + 500));
+            await timerSafe(waitSec * 1000 + 500);
             // Retry same host once
             let retryJson = await aaSendEpisodeRequest(host, 'GET', null, variables, extensions, keys);
             let retryErr = (retryJson && retryJson.errors && retryJson.errors[0] && retryJson.errors[0].message) || '';
@@ -442,7 +466,7 @@ async function aaEpisodeQuery(keys, showId, tt, episode) {
         if (errMsg.indexOf('NEED_CAPTCHA') === 0) {
             rateLimited = true;
             console.log('Episode NEED_CAPTCHA on ' + host + '; waiting 3s then retrying same host');
-            await new Promise(r => setTimeout(r, 3000));
+            await timerSafe(3000);
             let retryJson = await aaSendEpisodeRequest(host, 'GET', null, variables, extensions, keys);
             let retryErr = (retryJson && retryJson.errors && retryJson.errors[0] && retryJson.errors[0].message) || '';
             if (retryJson && retryJson.data && retryJson.data.tobeparsed) return retryJson;
@@ -593,10 +617,7 @@ async function aaResolveSources(parsed, tt) {
 
     // Clock endpoints can hang; collect all with timeout and prefer a result that has subtitles.
     const clockResults = await Promise.all(orderedCdn.map(src =>
-        Promise.race([
-            aaFetchClockSource(src, tt),
-            new Promise(res => setTimeout(() => res({ streams: [], subtitle: '' }), 8000))
-        ]).catch(() => ({ streams: [], subtitle: '' }))
+        timedFallback(aaFetchClockSource(src, tt), 8000, { streams: [], subtitle: '' })
     ));
     // Prefer a clock result with both streams and subtitles, else any with streams
     let bestClock = clockResults.find(r => r.streams.length && r.subtitle) || clockResults.find(r => r.streams.length);
@@ -606,15 +627,15 @@ async function aaResolveSources(parsed, tt) {
         // Otherwise keep it as candidate but also race iframes
     }
     const iframeResults = await Promise.all(orderedIframes.map(src =>
-        Promise.race([
+        timedFallback(
             resolveIframeSource(src.sourceUrl, src.sourceName, tt)
                 .then(r => ({ streams: (r && r.streamUrl) ? [r] : [], subtitle: (r && r.subtitle) || '' }))
                 .catch(error => {
                     console.log('Iframe source ' + (src.sourceName || '?') + ' error: ' + error);
                     return { streams: [], subtitle: '' };
                 }),
-            new Promise(res => setTimeout(() => res({ streams: [], subtitle: '' }), 8000))
-        ])
+            8000, { streams: [], subtitle: '' }
+        )
     ));
     let bestIframe = iframeResults.find(r => r.streams.length && r.subtitle) || iframeResults.find(r => r.streams.length);
     // Return the best with subs, else the first with streams, else empty

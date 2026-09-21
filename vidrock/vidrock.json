@@ -1,0 +1,21 @@
+{
+  "sourceName": "Vidrock",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/vidrock/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.0.4",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://vidrock.net/",
+  "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=%s&include_adult=false",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidrock/vidrock.js",
+  "type": "shows/movies",
+  "downloadSupport": false,
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidrock/vidrock.js"
+}

@@ -1,0 +1,21 @@
+{
+  "sourceName": "Anizone",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.0.7",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://anizone.to/",
+  "searchBaseUrl": "https://anizone.to/anime?search=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anizone/anizone.js",
+  "type": "anime",
+  "note": "Use default (Apple Player) or external player to watch the streams (e.g. VLC).",
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anizone/anizone.js"
+}

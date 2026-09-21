@@ -143,10 +143,17 @@ async function extractStreamUrl(url) {
         const response = await soraFetch(apiUrl);
         const json = JSON.parse(await response.text());
         
-        return json.grabber;
+        const grabber = json.grabber;
+        if (typeof grabber === 'string' && /^https?:\/\//.test(grabber)) {
+            return JSON.stringify({ streams: [{ title: "AnimeWorld", streamUrl: grabber, headers: {} }] });
+        }
+        if (grabber && typeof grabber === 'object') {
+            return JSON.stringify({ streams: [{ title: "AnimeWorld", streamUrl: grabber.url || grabber.streamUrl || grabber.file || '', headers: grabber.headers || {} }] });
+        }
+        return JSON.stringify({ streams: [] });
     } catch (error) {
         console.log("Stream URL error:", error);
-        return "https://files.catbox.moe/avolvc.mp4";
+        return JSON.stringify({ streams: [{ title: "AnimeWorld", streamUrl: "https://files.catbox.moe/avolvc.mp4", headers: {} }] });
     }
 }
 

@@ -1,0 +1,32 @@
+{
+  "sourceName": "AnimeXin",
+  "iconUrl": "https://animexin.dev/wp-content/uploads/2020/06/cropped-index-192x192.jpg",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.1",
+  "language": "Indonesian",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://animexin.dev/",
+  "searchBaseUrl": "https://animexin.dev/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animexin/animexin.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animexin/animexin.js"
+}

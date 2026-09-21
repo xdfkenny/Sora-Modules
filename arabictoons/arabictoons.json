@@ -1,0 +1,19 @@
+{
+  "sourceName": "ArabicToons",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/arabictoons/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "2.0.10",
+  "language": "Arabic (DUB)",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://www.arabic-toons.com/",
+  "searchBaseUrl": "https://www.arabic-toons.com/livesearch.php?q=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/arabictoons/arabictoons.js",
+  "type": "anime/shows/movies",
+  "asyncJS": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/arabictoons/arabictoons.js"
+}

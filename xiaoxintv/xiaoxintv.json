@@ -1,0 +1,28 @@
+{
+  "sourceName": "XiaoXintv",
+  "iconUrl": "https://files.catbox.moe/ngvoho.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.0",
+  "language": "Chinese",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://xiaoxintv.cc/",
+  "searchBaseUrl": "https://xiaoxintv.cc/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xiaoxintv/xiaoxintv.js",
+  "type": "anime/movies/shows",
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xiaoxintv/xiaoxintv.js"
+}

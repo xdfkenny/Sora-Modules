@@ -1,0 +1,21 @@
+{
+  "sourceName": "Rebuild of Naruto",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/rebuildOfNaruto/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.0.2",
+  "language": "English",
+  "streamType": "MKV",
+  "quality": "1080p - 720p - 480p",
+  "baseUrl": "https://pixeldrain.net/",
+  "searchBaseUrl": "https://pixeldrain.net/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rebuildOfNaruto/rebuildOfNaruto.js",
+  "type": "anime",
+  "note": "Use external player to watch the streams (e.g. VLC).",
+  "downloadSupport": true,
+  "asyncJS": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rebuildOfNaruto/rebuildOfNaruto.js"
+}

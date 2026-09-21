@@ -1,0 +1,26 @@
+{
+  "sourceName": "LightNovelWorld",
+  "iconUrl": "https://lightnovelworld.org/static/favicon.ico",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.0",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "novels",
+  "quality": "N/A",
+  "baseUrl": "https://lightnovelworld.org/",
+  "searchBaseUrl": "https://lightnovelworld.org/api/search/?q=%s&search_type=title",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lightnovelworld/lightnovelworld.js",
+  "type": "novels",
+  "asyncJS": true,
+  "novel": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lightnovelworld/lightnovelworld.js"
+}

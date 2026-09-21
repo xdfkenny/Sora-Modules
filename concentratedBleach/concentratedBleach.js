@@ -1,8 +1,8 @@
 async function searchResults(keyword) {
-    const responseA = await soraFetch(`https://pixeldrain.com/api/filesystem/rwPVCu7Z`);
+    const responseA = await soraFetch(`https://pixeldrain.net/api/filesystem/rwPVCu7Z`);
     const jsonA = await responseA.json();
 
-    const responseB = await soraFetch(`https://pixeldrain.com/api/filesystem/goCGsiJG`);
+    const responseB = await soraFetch(`https://pixeldrain.net/api/filesystem/goCGsiJG`);
     const jsonB = await responseB.json();
 
     const dirsA = jsonA.children
@@ -10,7 +10,7 @@ async function searchResults(keyword) {
         .map(item => ({
             title: item.name,
             image: "https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/image.jpg",
-            href: `https://pixeldrain.com/api/filesystem/${encodeURIComponent(item.path)}`
+            href: `https://pixeldrain.net/api/filesystem/${encodeURIComponent(item.path)}`
         }));
 
     const dirsB = jsonB.children
@@ -18,7 +18,7 @@ async function searchResults(keyword) {
         .map(item => ({
             title: item.name,
             image: "https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/image.jpg",
-            href: `https://pixeldrain.com/api/filesystem/${encodeURIComponent(item.path)}`
+            href: `https://pixeldrain.net/api/filesystem/${encodeURIComponent(item.path)}`
         }));
 
     const results = [...dirsA, ...dirsB];
@@ -55,7 +55,9 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.com/api/filesystem/${encodeURIComponent(url)}`;
+    return JSON.stringify({
+        streams: [{ title: "Pixeldrain", streamUrl: `https://pixeldrain.net/api/filesystem/${encodeURIComponent(url)}`, headers: {} }]
+    });
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

@@ -1,0 +1,24 @@
+{
+  "sourceName": "Movix",
+  "iconUrl": "https://movix.online/movix.png",
+  "author": {
+    "name": "MXFia19",
+    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+    "url": "https://github.com/MXFia19"
+  },
+  "version": "2.0.18",
+  "language": "French",
+  "streamType": "HLS/MP4",
+  "quality": "1080p",
+  "baseUrl": "https://movix.cloud/",
+  "searchBaseUrl": "https://api.themoviedb.org/3/search/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/movix/movix.js",
+  "type": "anime/shows/movies",
+  "downloadSupport": true,
+  "asyncJS": true,
+  "softsub": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "changelog": "anime now queries the anime probe AND all standard sources in parallel (more links); filemoon fully local + PoW worker offload with fallback; skip hanging hosts -> faster",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/movix/movix.js"
+}

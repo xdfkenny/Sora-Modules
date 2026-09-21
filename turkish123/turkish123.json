@@ -1,0 +1,27 @@
+{
+  "sourceName": "Turkish123",
+  "iconUrl": "https://hds.turkish123.com/wp-content/uploads/favicon.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.7",
+  "language": "Turkish",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "8K UHD",
+  "baseUrl": "https://hds.turkish123.com/",
+  "searchBaseUrl": "https://hds.turkish123.com/?s=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/turkish123/turkish123.js",
+  "asyncJS": true,
+  "type": "movies/shows",
+  "supportsSora": true,
+  "supportsLuna": true,
+  "downloadSupport": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/turkish123/turkish123.js"
+}

@@ -1,0 +1,20 @@
+{
+  "sourceName": "Filmpalast",
+  "iconUrl": "https://files.catbox.moe/tv81m8.png",
+  "author": {
+    "name": "Cufiy",
+    "icon": "https://files.catbox.moe/ttj4fc.gif",
+    "url": "https://github.com/JMcrafter26"
+  },
+  "version": "1.3.5",
+  "type": "Movies/Shows",
+  "language": "German (DUB)",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://filmpalast.to/",
+  "searchBaseUrl": "https://filmpalast.to/search/title/%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmpalast/filmpalast.js",
+  "asyncJS": true,
+  "streamAsyncJS": false,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmpalast/filmpalast.js"
+}

@@ -81,9 +81,11 @@ async function extractStreamUrl(url) {
         const html = await response.text();
 
         const streamMatch = html.match(/<source src="(.*?)" type=".*?"\/>/i);
-        return streamMatch ? streamMatch[1] : "https://error.org/";
+        return streamMatch 
+            ? JSON.stringify({ streams: [{ title: "Otaku-Streamers", streamUrl: streamMatch[1], headers: {} }] })
+            : JSON.stringify({ streams: [{ title: "Otaku-Streamers", streamUrl: "https://error.org/", headers: {} }] });
     } catch (err) {
-        return "https://error.org/";
+        return JSON.stringify({ streams: [{ title: "Otaku-Streamers", streamUrl: "https://error.org/", headers: {} }] });
     }
 }
 

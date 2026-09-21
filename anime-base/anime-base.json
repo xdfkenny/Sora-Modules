@@ -1,0 +1,20 @@
+{
+  "sourceName": "Anime Base (DUB)",
+  "iconUrl": "https://anime-base.net/images/ablogo.png",
+  "author": {
+    "name": "Cufiy",
+    "icon": "https://files.catbox.moe/ttj4fc.gif",
+    "url": "https://github.com/JMcrafter26"
+  },
+  "version": "1.0.3",
+  "language": "German (DUB)",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://anime-base.net/",
+  "searchBaseUrl": "https://anime-base.net/search=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-base/anime-base.js",
+  "type": "anime",
+  "downloadSupport": true,
+  "asyncJS": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-base/anime-base.js"
+}

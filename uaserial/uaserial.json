@@ -1,0 +1,20 @@
+{
+  "sourceName": "UASERIAL",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/uaserial/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "2.0.4",
+  "language": "Ukrainian",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://uaserial.me/",
+  "searchBaseUrl": "https://uaserial.me/search?query=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/uaserial/uaserial.js",
+  "type": "anime/shows/movies",
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/uaserial/uaserial.js"
+}

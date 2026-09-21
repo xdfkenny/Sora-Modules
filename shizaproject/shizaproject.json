@@ -1,0 +1,21 @@
+{
+  "sourceName": "ShizaProject",
+  "iconUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/shizaproject/logo.png",
+  "author": {
+    "name": "anonymous",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.2",
+  "language": "Russian",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://shizaproject.com/",
+  "searchBaseUrl": "https://shizaproject.com/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/shizaproject/shizaproject.js",
+  "asyncJS": true,
+  "streamAsyncJS": true,
+  "softsub": false,
+  "type": "anime",
+  "downloadSupport": false,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/shizaproject/shizaproject.js"
+}

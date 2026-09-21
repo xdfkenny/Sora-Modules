@@ -1,0 +1,20 @@
+{
+  "sourceName": "TopCinema",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/topcinema/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.1.0",
+  "language": "Arabic",
+  "streamType": "HLS & MP4",
+  "quality": "1080p",
+  "baseUrl": "https://web6.topcinema.cam/",
+  "searchBaseUrl": "https://web6.topcinema.cam/search/?query=%s&type=all",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/topcinema/topcinema.js",
+  "type": "anime/shows/movies",
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/topcinema/topcinema.js"
+}

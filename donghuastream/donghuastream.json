@@ -1,0 +1,32 @@
+{
+  "sourceName": "DonghuaStream",
+  "iconUrl": "https://donghuastream.org/wp-content/uploads/2023/05/cropped-Donghua-Stream-scaled-1-192x192.jpeg",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.0",
+  "language": "Chinese",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://donghuastream.org/",
+  "searchBaseUrl": "https://donghuastream.org/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/donghuastream/donghuastream.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/donghuastream/donghuastream.js"
+}

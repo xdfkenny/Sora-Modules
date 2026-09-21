@@ -1,0 +1,21 @@
+{
+  "sourceName": "HDRezka",
+  "iconUrl": "https://rezka.ag/i/share.jpg",
+  "author": {
+    "name": "anonymous",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.2",
+  "language": "Russian",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://rezka.ag/",
+  "searchBaseUrl": "https://rezka.ag/search/?do=search&subaction=search&q=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hdrezka/hdrezka.js",
+  "asyncJS": true,
+  "streamAsyncJS": true,
+  "softsub": true,
+  "type": "shows/movies/anime",
+  "downloadSupport": false,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hdrezka/hdrezka.js"
+}

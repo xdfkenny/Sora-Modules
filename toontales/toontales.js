@@ -71,9 +71,9 @@ async function extractStreamUrl(url) {
     const extractedUrl = urlMatch ? urlMatch[1] : null;
     
     return (extractedUrl && extractedUrl.endsWith('.mp4')) 
-      ? extractedUrl 
-      : "i wanna kms";
+      ? JSON.stringify({ streams: [{ title: "Toontales", streamUrl: extractedUrl, headers: {} }] })
+      : JSON.stringify({ streams: [{ title: "Toontales", streamUrl: "https://files.catbox.moe/avolvc.mp4", headers: {} }] });
   } catch (err) {
-    return "https://files.catbox.moe/avolvc.mp4";
+    return JSON.stringify({ streams: [{ title: "Toontales", streamUrl: "https://files.catbox.moe/avolvc.mp4", headers: {} }] });
   }
 }

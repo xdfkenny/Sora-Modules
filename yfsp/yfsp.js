@@ -4,9 +4,20 @@ const YFSP_API_EPISODES = 'https://m10.yfsp.tv/v3/video/languagesplaylist';
 const YFSP_API_PLAY = 'https://m10.yfsp.tv/v3/video/play';
 const YFSP_API_SEARCH = 'https://rankv21.yfsp.tv/v3/list/briefsearch';
 const YFSP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36';
-const YFSP_BUILD = '1.0.4';
+const YFSP_BUILD = '1.0.5';
 
 console.log('[YFSP] script build: v' + YFSP_BUILD + ' (sign=' + (typeof signStreamUrl === 'function' ? 'yes' : 'no') + ')');
+
+// The Sora app's JavaScriptCore exposes NO setTimeout/setInterval, so a bare
+// call throws "Can't find variable: setTimeout" in-app. timerSafe keeps the
+// rate-limit backoff working in the test harness (which has real timers) and
+// no-ops instantly in-app instead of crashing.
+function timerSafe(ms) {
+    if (typeof setTimeout === 'function') {
+        return new Promise(function(resolve) { setTimeout(resolve, ms || 0); });
+    }
+    return Promise.resolve();
+}
 
 /* MAIN FUNCTIONS */
 

@@ -1,0 +1,32 @@
+{
+  "sourceName": "AnimesDigital",
+  "iconUrl": "https://animesdigital.org/wp-content/uploads/2025/03/cropped-logo-e1740827992823-192x192.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.2",
+  "language": "Portuguese",
+  "languageType": [
+    "Subbed"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://animesdigital.org/home/",
+  "searchBaseUrl": "https://animesdigital.org/home",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesdigital/animesdigital.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesdigital/animesdigital.js"
+}

@@ -100,7 +100,7 @@ async function extractStreamUrl(url) {
         const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
 
         const result = {
-            streams: ["english", bestHls],
+            streams: [{ title: "English", streamUrl: bestHls }],
             subtitles: subtitles
         };
 

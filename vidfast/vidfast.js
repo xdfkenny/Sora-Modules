@@ -457,12 +457,16 @@ async function ilovefeet(imdbId, isSeries = false, season = null, episode = null
 
     const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
 
+    // In-app there are no timers, so race the server directly (the app's own
+    // overall timeout bounds it); in Node/browser keep the per-server cutoff.
+    const raceServer = (serverObj, index) => {
+        if (typeof setTimeout !== 'function') return testServer(serverObj, index);
+        return Promise.race([testServer(serverObj, index), timeout(4000)]);
+    };
+
     const serverPromises = serverList.map(async (serverObj, index) => {
         try {
-            return await Promise.race([
-                testServer(serverObj, index),
-                timeout(4000)
-            ]);
+            return await raceServer(serverObj, index);
         } catch (e) {
             console.log(`Server ${index} timed out or failed`);
             return null;

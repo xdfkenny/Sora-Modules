@@ -1,0 +1,20 @@
+{
+  "sourceName": "VidAPI",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/vidapi/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "2.0.7",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "4K",
+  "baseUrl": "https://vidapi.xyz/",
+  "searchBaseUrl": "https://api.themoviedb.org/3/search/multi?api_key=71fdb081b0133511ac14ac0cc10fd307&query=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidapi/vidapi.js",
+  "type": "shows/movies",
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidapi/vidapi.js"
+}

@@ -1,0 +1,28 @@
+{
+  "sourceName": "Asia2TV",
+  "iconUrl": "https://ww1.asia2tv.pw/wp-content/uploads/2021/01/logo-1.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.2",
+  "language": "Arabic",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://ww1.asia2tv.pw/",
+  "searchBaseUrl": "https://ww1.asia2tv.pw/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/asia2tv/asia2tv.js",
+  "type": "shows/movies",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/asia2tv/asia2tv.js"
+}

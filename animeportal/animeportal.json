@@ -1,0 +1,20 @@
+{
+  "sourceName": "Anime-Portal",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animeportal/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.0.4",
+  "language": "Russian",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://anime-portal.su/",
+  "searchBaseUrl": "https://anime-portal.su/?do=search&subaction=search&search_start=0&full_search=0&story=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeportal/animeportal.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeportal/animeportal.js"
+}

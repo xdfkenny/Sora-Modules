@@ -1,0 +1,19 @@
+{
+  "sourceName": "One Pace",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://files.catbox.moe/741wp7.png",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "2.0.9",
+  "language": "English",
+  "streamType": "MP4",
+  "quality": "1080p - 720p - 480p",
+  "baseUrl": "https://pixeldrain.net/",
+  "searchBaseUrl": "https://onepace.net/en/watch",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepace/onepace.js",
+  "type": "anime",
+  "asyncJS": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepace/onepace.js"
+}

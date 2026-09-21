@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-10",
+  "lastUpdated": "2026-09-21",
   "repo": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules",
   "modules": [
     {
@@ -380,7 +380,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anitube/anitube.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "discontinued": true
     },
     {
       "id": "aniwave",
@@ -587,7 +588,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/videasy/videasy.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "discontinued": true
     },
     {
       "id": "vidfast",
@@ -623,6 +625,403 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xpass/xpass.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "1tamilcrow",
+      "name": "1TamilCrow",
+      "iconUrl": "https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img/https://www.1tamilcrow.net/wp-content/uploads/2020/09/Tamil-Crow-e1600735514979.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/1tamilcrow/1tamilcrow.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "Nakastream",
+      "name": "Nakastream",
+      "iconUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/Nakastream/w5bf88w.png",
+      "category": "movies/shows",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/Nakastream/Nakastream.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "anihq",
+      "name": "AniHQ",
+      "iconUrl": "https://anihq.to/wp-content/uploads/cropped-Icon-1-1-192x192.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anihq/anihq.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "anikoto",
+      "name": "Anikoto",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anikoto/anikoto.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animeheaven",
+      "name": "AnimeHeaven",
+      "iconUrl": "https://animeheaven.me/ah_logo.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeheaven/animeheaven.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animesdigital",
+      "name": "AnimesDigital",
+      "iconUrl": "https://animesdigital.org/wp-content/uploads/2025/03/cropped-logo-e1740827992823-192x192.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesdigital/animesdigital.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animesrbija",
+      "name": "AnimeSRBIJA",
+      "iconUrl": "https://emojigraph.org/media/joypixels/flag-serbia_1f1f7-1f1f8.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesrbija/animesrbija.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animeweek",
+      "name": "AnimeWeek",
+      "iconUrl": "https://aniweek.com/apple-touch-icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeweek/animeweek.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animexin",
+      "name": "AnimeXin",
+      "iconUrl": "https://animexin.dev/wp-content/uploads/2020/06/cropped-index-192x192.jpg",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animexin/animexin.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "arabictoons",
+      "name": "ArabicToons",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/arabictoons/icon.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/arabictoons/arabictoons.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "asia2tv",
+      "name": "Asia2TV",
+      "iconUrl": "https://ww1.asia2tv.pw/wp-content/uploads/2021/01/logo-1.png",
+      "category": "movies/shows",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/asia2tv/asia2tv.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "catflix",
+      "name": "Catflix (Website Down)",
+      "iconUrl": "https://github.com/JMcrafter26/sora-modules/blob/main/modules/catflix/icon.png?raw=true",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/catflix/catflix.json",
+      "sampleQuery": "one piece",
+      "discontinued": true
+    },
+    {
+      "id": "doramaland",
+      "name": "Doramaland",
+      "iconUrl": "https://dorama.land/favicon.ico",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/doramaland/doramaland.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "filmo",
+      "name": "Filmo (EN)",
+      "iconUrl": "https://filmo.to/favicon.ico",
+      "category": "movies/shows",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmo/filmo.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "filmpalast",
+      "name": "Filmpalast",
+      "iconUrl": "https://files.catbox.moe/tv81m8.png",
+      "category": "movies/shows",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmpalast/filmpalast.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "kaliscan",
+      "name": "KaliScan",
+      "iconUrl": "https://kaliscan.io/static/sites/icons/apple-touch-icon.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kaliscan/kaliscan.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "latanime",
+      "name": "Latanime",
+      "iconUrl": "https://latanime.org/public/img/logito.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/latanime/latanime.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "lightnovelworld",
+      "name": "LightNovelWorld",
+      "iconUrl": "https://lightnovelworld.org/static/favicon.ico",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lightnovelworld/lightnovelworld.json",
+      "sampleQuery": "solo leveling"
+    },
+    {
+      "id": "luciferdonghua",
+      "name": "LuciferDonghua",
+      "iconUrl": "https://i.ibb.co/MwKW01H/cropped-lucifer-donghua-DP-192x192-webp.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/luciferdonghua/luciferdonghua.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "mangafire",
+      "name": "MangaFire",
+      "iconUrl": "https://s.mfcdn.cc/assets/sites/mangafire/favicon.png?v3",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangafire/mangafire.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "mangakatana",
+      "name": "MangaKatana",
+      "iconUrl": "https://mangakatana.com/static/img/fav.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangakatana/mangakatana.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "mangataro",
+      "name": "MangaTaro",
+      "iconUrl": "https://mangataro.org/content/media/cropped-favicon-192x192.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangataro/mangataro.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "miruro",
+      "name": "Miruro",
+      "iconUrl": "https://www.miruro.to/assets/logo-Dnw3w3dS.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/miruro/miruro.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "moflix",
+      "name": "Moflix",
+      "iconUrl": "https://moflix-stream.xyz/favicon/icon-512x512.png",
+      "category": "movies/shows",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/moflix/moflix.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "movix",
+      "name": "Movix",
+      "iconUrl": "https://movix.online/movix.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/movix/movix.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "narucannon",
+      "name": "Narucannon",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/narucannon/narucannon.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "novelbuddy",
+      "name": "NovelBuddy",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelbuddy/icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelbuddy/novelbuddy.json",
+      "sampleQuery": "solo leveling"
+    },
+    {
+      "id": "noveldot",
+      "name": "NovelDot",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/noveldot/icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/noveldot/noveldot.json",
+      "sampleQuery": "solo leveling"
+    },
+    {
+      "id": "novelfire",
+      "name": "NovelFire",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelfire/icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelfire/novelfire.json",
+      "sampleQuery": "solo leveling"
+    },
+    {
+      "id": "onepace",
+      "name": "One Pace",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepace/onepace.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "otakutsu",
+      "name": "Otakutsu",
+      "iconUrl": "https://otakutsu.cc/favicon.ico",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "purstream",
+      "name": "Purstream",
+      "iconUrl": "https://purstream.wiki/assets/icones/favicon.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/purstream/purstream.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "readnovelfull",
+      "name": "ReadNovelFull",
+      "iconUrl": "https://readnovelfull.com/img/logo.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/readnovelfull/readnovelfull.json",
+      "sampleQuery": "solo leveling"
+    },
+    {
+      "id": "rebuildOfNaruto",
+      "name": "Rebuild of Naruto",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/rebuildOfNaruto/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rebuildOfNaruto/rebuildOfNaruto.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "ristoanime",
+      "name": "RistoAnime",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/ristoanime/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/ristoanime/ristoanime.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "rumanhua1",
+      "name": "RumanHua1",
+      "iconUrl": "https://i.ibb.co/TDfbbwDB/Untitled-design.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rumanhua1/rumanhua1.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "sameband",
+      "name": "SameBand",
+      "iconUrl": "https://sameband.studio/templates/sameband/dleimages/favicon/touch-icon-ipad.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/sameband/sameband.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "shizaproject",
+      "name": "ShizaProject",
+      "iconUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/shizaproject/logo.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/shizaproject/shizaproject.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "spacepowerfans",
+      "name": "SpacePowerFans",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/spacepowerfans/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/spacepowerfans/spacepowerfans.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "topcinema",
+      "name": "TopCinema",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/topcinema/icon.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/topcinema/topcinema.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "turkish123",
+      "name": "Turkish123",
+      "iconUrl": "https://hds.turkish123.com/wp-content/uploads/favicon.png",
+      "category": "movies/shows",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/turkish123/turkish123.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "uaserial",
+      "name": "UASERIAL",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/uaserial/icon.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/uaserial/uaserial.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "xiaoxintv",
+      "name": "XiaoXintv",
+      "iconUrl": "https://files.catbox.moe/ngvoho.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xiaoxintv/xiaoxintv.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "yuYuHakushoPace",
+      "name": "Yu Yu Hakusho Pace",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yuYuHakushoPace/yuYuHakushoPace.json",
       "sampleQuery": "one piece"
     }
   ]

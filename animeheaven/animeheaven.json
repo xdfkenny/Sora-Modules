@@ -1,0 +1,31 @@
+{
+  "sourceName": "AnimeHeaven",
+  "iconUrl": "https://animeheaven.me/ah_logo.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.1.0",
+  "language": "English",
+  "languageType": [
+    "Subbed"
+  ],
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://animeheaven.me/",
+  "searchBaseUrl": "https://animeheaven.me/search.php?s=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeheaven/animeheaven.js",
+  "type": "anime",
+  "asyncJS": true,
+  "downloadSupport": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeheaven/animeheaven.js"
+}

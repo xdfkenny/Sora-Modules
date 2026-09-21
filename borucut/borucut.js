@@ -101,7 +101,9 @@ async function extractEpisodes(url) {
 // extractStreamUrl(`EDg7Q9Uu`);
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}?download`;
+    return JSON.stringify({
+        streams: [{ title: "Pixeldrain", streamUrl: `https://pixeldrain.net/api/file/${url}?download`, headers: {} }]
+    });
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

@@ -1,0 +1,27 @@
+{
+  "sourceName": "MangaKatana",
+  "iconURL": "https://mangakatana.com/static/img/fav.png",
+  "version": "1.0",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangakatana/mangakatana.js",
+  "author": {
+    "name": "50/50",
+    "iconURL": "https://files.catbox.moe/741wp7.png",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "type": "mangas",
+  "supportsDartotsu": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsEclipse": true,
+  "supportsShirox": true,
+  "baseUrl": "https://mangakatana.com/",
+  "searchBaseUrl": "https://mangakatana.com/",
+  "streamType": "mangas",
+  "quality": "N/A",
+  "asyncJS": true,
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangakatana/mangakatana.js"
+}

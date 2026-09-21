@@ -1,0 +1,24 @@
+{
+  "sourceName": "Miruro",
+  "iconUrl": "https://www.miruro.to/assets/logo-Dnw3w3dS.png",
+  "author": {
+    "name": "MXFia19",
+    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+    "url": "https://github.com/MXFia19"
+  },
+  "version": "1.0.4",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://www.miruro.to/",
+  "searchBaseUrl": "https://www.miruro.to/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/miruro/miruro.js",
+  "type": "anime",
+  "downloadSupport": true,
+  "asyncJS": true,
+  "softsub": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "changelog": "use the more stable owo HLS variant (/hls/owo.m3u8) instead of uwu (/stream/uwu.m3u8)",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/miruro/miruro.js"
+}

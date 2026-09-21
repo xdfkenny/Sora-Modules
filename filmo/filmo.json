@@ -1,0 +1,20 @@
+{
+  "sourceName": "Filmo (EN)",
+  "iconUrl": "https://filmo.to/favicon.ico",
+  "author": {
+    "name": "Ye",
+    "icon": "https://files.catbox.moe/x9vnf7.gif",
+    "url": "https://github.com/"
+  },
+  "version": "1.0.0",
+  "type": "Movies/Shows",
+  "language": "English (DUB)",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://filmo.to/",
+  "searchBaseUrl": "https://filmo.to/search/title/%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmo/filmo.js",
+  "asyncJS": true,
+  "downloadSupport": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmo/filmo.js"
+}
