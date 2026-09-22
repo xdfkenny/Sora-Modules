@@ -771,10 +771,6 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* ensure clickable elements work even when hidden via display:none */
-}
-.donate-modal[hidden] {
-  display: none;
 }
 .donate-modal-backdrop {
   position: absolute;
