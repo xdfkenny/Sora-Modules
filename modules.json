@@ -948,7 +948,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rumanhua1/rumanhua1.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "review_reason": "fetch failed"
     },
     {
       "id": "sameband",
@@ -1513,7 +1515,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/BatCave/batcave.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "review_reason": "Failed to parse URL from undefined"
     },
     {
       "id": "mlbwebcast",
@@ -1531,7 +1535,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/mangaball.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "review_reason": "Failed to parse URL from undefined"
     },
     {
       "id": "mangadot",
@@ -1540,7 +1546,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaDot/mangadot.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "review_reason": "Failed to parse URL from undefined"
     },
     {
       "id": "nflwebcast",
@@ -1567,7 +1575,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/ReadFreeComicsOnline/readfreecomicsonline.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "review_reason": "Failed to parse URL from undefined"
     },
     {
       "id": "usatv",
@@ -1585,7 +1595,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/WeebCentral/Weebcentral-Kanzen.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "review_reason": "Failed to parse URL from undefined"
     },
     {
       "id": "anibd",
