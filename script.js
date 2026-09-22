@@ -820,7 +820,6 @@ function initHeroBtn() {
 }
 
 /* Donation modal — only on mobile, shows every time */
-var DONATE_MODAL_KEY = 'xdf.donateModalDismissed';
 function initDonateModal() {
   var modal = $('donateModal');
   if (!modal) return;
