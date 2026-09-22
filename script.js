@@ -878,23 +878,34 @@ function initDonateModal() {
   var backdrop = $('donateBackdrop');
   function isMobile() { return window.matchMedia('(max-width: 768px)').matches; }
   function dismiss() {
-    modal.hidden = true;
+    modal.style.display = 'none';
     document.body.style.overflow = '';
     try { localStorage.setItem(DONATE_MODAL_KEY, '1'); } catch (e) { /* ignore */ }
   }
   function show() {
     if (localStorage.getItem(DONATE_MODAL_KEY)) return;
     if (!isMobile()) return;
-    modal.hidden = false;
+    modal.style.display = '';
     document.body.style.overflow = 'hidden';
   }
+  function onDismiss(e) {
+    // only dismiss when clicking the backdrop, not the modal box
+    if (e.target === modal || e.target === backdrop) dismiss();
+  }
   if (closeBtn) closeBtn.addEventListener('click', dismiss);
-  if (backdrop) backdrop.addEventListener('click', dismiss);
+  if (backdrop) backdrop.addEventListener('click', onDismiss);
+  // touch support for mobile
+  if (backdrop) backdrop.addEventListener('touchend', onDismiss);
+  if (closeBtn) closeBtn.addEventListener('touchend', dismiss);
+  // Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal.style.display !== 'none') dismiss();
+  });
   // re-check on resize
   if (window.matchMedia) {
     var mq = window.matchMedia('(max-width: 768px)');
     mq.addEventListener('change', function (e) {
-      if (e.matches) show(); else modal.hidden = true;
+      if (e.matches) show(); else { modal.style.display = 'none'; document.body.style.overflow = ''; }
     });
   }
   show();
