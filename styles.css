@@ -711,10 +711,8 @@ main {
 
 .filter-group-apps { margin-left: auto; }
 .filter-group-authors { width: 100%; }
-.filter-pill-creator { font-size: 12px; padding: 5px 12px; }
 .filter-pill-clear { background: var(--status-fail); color: #fff; border-color: var(--status-fail); margin-left: 8px; }
 .filter-pill-clear:hover { filter: brightness(1.1); }
-.filter-pill-creator i { font-style: normal; opacity: 0.6; font-size: 11px; margin-left: 2px; }
 
 /* Donation banner to the right of library title */
 .section-head {

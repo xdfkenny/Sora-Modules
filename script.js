@@ -356,7 +356,7 @@ function updateStats() {
 
 /* ---------------- filters ---------------- */
 
-var state = { q: '', cat: 'all', apps: {}, creators: new Set() }; // creators: Set of author names
+var state = { q: '', cat: 'all', apps: {} };
 
 function rawCategory(entry) {
   var m = manifests[entry.id] || {};
@@ -391,64 +391,14 @@ function matchApp(entry) {
 function matchSearch(entry) {
   if (!state.q) return true;
   var m = manifests[entry.id] || {};
-  var hay = [entry.name, entry.id, m.sourceName, m.description, m.language, m.type, m.quality, m.streamType]
+  var authorName = (m.author && m.author.name) || entry.name;
+  var hay = [entry.name, entry.id, m.sourceName, m.description, m.language, m.type, m.quality, m.streamType, authorName]
     .filter(Boolean).join(' ').toLowerCase();
   return hay.indexOf(state.q) !== -1;
 }
 
 function filtered() {
-  return entries.filter(function (e) { return matchCat(e) && matchApp(e) && matchCreator(e) && matchSearch(e); });
-}
-
-function matchCreator(entry) {
-  if (state.creators.size === 0) return true;
-  var m = manifests[entry.id] || {};
-  var authorName = (m.author && m.author.name) || entry.name;
-  return state.creators.has(authorName);
-}
-
-/* Build creator chips from hydrated manifests. Called after each manifest loads. */
-var creatorChipsRendered = false;
-function renderCreatorChips() {
-  if (creatorChipsRendered || !entries.length) return;
-  var host = $('authorFilters');
-  if (!host) return;
-  var seen = {};
-  for (var i = 0; i < entries.length; i++) {
-    var m = manifests[entries[i].id];
-    if (!m) continue;
-    var name = (m.author && m.author.name);
-    if (!name) continue;
-    seen[name] = (seen[name] || 0) + 1;
-  }
-  var sorted = Object.keys(seen).sort();
-  if (!sorted.length) return;
-  var html = '<span class="filter-label">Author:</span>' + sorted.map(function (n) {
-    var active = state.creators.has(n) ? ' active' : '';
-    var badge = seen[n] > 1 ? ' <i>(' + seen[n] + ')</i>' : '';
-    return '<button type="button" class="filter-pill filter-pill-creator' + active + '" data-creator="' + esc(n) + '">' + esc(n) + badge + '</button>';
-  }).join('') + (state.creators.size > 0 ? '<button type="button" class="filter-pill filter-pill-clear" data-i18n="filter.clear">Clear</button>' : '');
-  host.innerHTML = html;
-  enableChipDrag(host);
-  host.querySelectorAll('.filter-pill-creator').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var n = this.dataset.creator;
-      if (state.creators.has(n)) state.creators.delete(n); else state.creators.add(n);
-      this.classList.toggle('active', state.creators.has(n));
-      // re-render to show/hide the clear button
-      renderCreatorChips();
-      renderGrid();
-    });
-  });
-  var clearBtn = host.querySelector('.filter-pill-clear');
-  if (clearBtn) {
-    clearBtn.addEventListener('click', function () {
-      state.creators.clear();
-      renderCreatorChips();
-      renderGrid();
-    });
-  }
-  creatorChipsRendered = true;
+  return entries.filter(function (e) { return matchCat(e) && matchApp(e) && matchSearch(e); });
 }
 
 function updateResultCount() {
@@ -813,7 +763,7 @@ function bootLibrary() {
           ref.ver.textContent = '?';
           ref.meta.innerHTML = '<span class="chip">offline</span>';
         }
-      }).then(function () { renderGrid(); renderCreatorChips(); });
+      }).then(function () { renderGrid(); });
     });
   }).then(function () {
     booted = true;
