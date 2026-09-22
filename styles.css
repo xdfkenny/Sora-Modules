@@ -463,6 +463,19 @@ main {
   color: var(--fg-muted);
   max-width: 56ch;
 }
+.section-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--fg-muted);
+  max-width: 56ch;
+}
+.section-sub a {
+  color: var(--accent-dark);
+  text-decoration: none;
+}
+.section-sub a:hover {
+  text-decoration: underline;
+}
 
 .section-head.is-centered {
   text-align: center;
