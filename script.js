@@ -114,6 +114,7 @@ var I18N = {
     'footer.tag': 'Built with frost and curiosity.',
     'toast.copied': 'Manifest URL copied', 'toast.copyFail': 'Copy failed',
     'results': '{n} modules', 'results.one': '1 module',
+    'lib.donate': 'Support this library and the ongoing development & maintenance of modules. Your donations help keep everything alive.',
     'filter.clear': 'Clear',
     'empty.t': 'No modules found', 'empty.d': 'Try a different search or filter.',
     'state.loading': 'Loading module index…', 'state.fail': 'Could not load modules.json. Serve over HTTP or check GitHub Pages.'
@@ -134,6 +135,7 @@ var I18N = {
     'footer.tag': 'Hecho con escarcha y curiosidad.',
     'toast.copied': 'URL copiada', 'toast.copyFail': 'No se pudo copiar',
     'results': '{n} módulos', 'results.one': '1 módulo',
+    'lib.donate': 'Apoya esta librería y el desarrollo y mantenimiento continuo de módulos. Tus donaciones ayudan a mantener todo funcionando.',
     'filter.clear': 'Limpiar',
     'empty.t': 'Sin resultados', 'empty.d': 'Prueba con otra búsqueda o filtro.',
     'state.loading': 'Cargando índice…', 'state.fail': 'No se pudo cargar modules.json. Sirve por HTTP o revisa GitHub Pages.'

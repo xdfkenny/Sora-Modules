@@ -716,6 +716,33 @@ main {
 .filter-pill-clear:hover { filter: brightness(1.1); }
 .filter-pill-creator i { font-style: normal; opacity: 0.6; font-size: 11px; margin-left: 2px; }
 
+/* Donation banner under library title */
+.donate-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, var(--frost) 0%, var(--bg-warm) 100%);
+  border: 1px solid var(--border);
+}
+.donate-qr {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--r-md);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex: none;
+  background: var(--bg);
+}
+.donate-text {
+  margin: 0;
+  font-size: 13px;
+  color: var(--fg-muted);
+  line-height: 1.55;
+}
+
 .filter-label {
   font-family: var(--font-mono);
   font-size: 12px;
