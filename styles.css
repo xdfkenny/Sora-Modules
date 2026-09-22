@@ -464,17 +464,37 @@ main {
   max-width: 56ch;
 }
 .section-sub {
-  margin: 6px 0 0;
-  font-size: 13px;
+  margin: 12px 0 0;
+  font-size: 14px;
   color: var(--fg-muted);
   max-width: 56ch;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
-.section-sub a {
-  color: var(--accent-dark);
+.section-sub .og-lib-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s;
+}
+.section-sub .og-lib-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  color: #fff;
   text-decoration: none;
 }
-.section-sub a:hover {
-  text-decoration: underline;
+.section-sub .og-lib-btn iconify-icon {
+  font-size: 16px;
 }
 
 .section-head.is-centered {
