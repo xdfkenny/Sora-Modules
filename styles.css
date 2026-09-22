@@ -1446,6 +1446,15 @@ a.btn-card-action.btn-card-sora:hover,
   letter-spacing: 0.1em;
   color: var(--fg-muted);
 }
+.footer-bottom a {
+  color: var(--accent-dark);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.footer-bottom a:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
 
 /* ==========================================================================
    Animations
