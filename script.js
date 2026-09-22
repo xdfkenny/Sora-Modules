@@ -114,7 +114,7 @@ var I18N = {
     'footer.tag': 'Built with frost and curiosity.',
     'toast.copied': 'Manifest URL copied', 'toast.copyFail': 'Copy failed',
     'results': '{n} modules', 'results.one': '1 module',
-    'lib.donate': 'Support this library and the ongoing development & maintenance of modules. Your donations help keep everything alive.',
+    'lib.donate': 'Support this library and the ongoing development &amp; maintenance of modules. Your donations help keep everything alive.',
     'filter.clear': 'Clear',
     'empty.t': 'No modules found', 'empty.d': 'Try a different search or filter.',
     'state.loading': 'Loading module index…', 'state.fail': 'Could not load modules.json. Serve over HTTP or check GitHub Pages.'
@@ -869,10 +869,42 @@ function initHeroBtn() {
   if (b) b.href = 'sora://default_page?url=' + encodeURIComponent(libraryPageUrl());
 }
 
+/* Donation modal — only on mobile, shows once per session (localStorage). */
+var DONATE_MODAL_KEY = 'xdf.donateModalDismissed';
+function initDonateModal() {
+  var modal = $('donateModal');
+  if (!modal) return;
+  var closeBtn = $('donateClose');
+  var backdrop = $('donateBackdrop');
+  function isMobile() { return window.matchMedia('(max-width: 768px)').matches; }
+  function dismiss() {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    try { localStorage.setItem(DONATE_MODAL_KEY, '1'); } catch (e) { /* ignore */ }
+  }
+  function show() {
+    if (localStorage.getItem(DONATE_MODAL_KEY)) return;
+    if (!isMobile()) return;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  if (closeBtn) closeBtn.addEventListener('click', dismiss);
+  if (backdrop) backdrop.addEventListener('click', dismiss);
+  // re-check on resize
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(max-width: 768px)');
+    mq.addEventListener('change', function (e) {
+      if (e.matches) show(); else modal.hidden = true;
+    });
+  }
+  show();
+}
+
 initTheme();
 initNav();
 initHeroBtn();
 makeSnow();
 applyI18n();
 route();
+initDonateModal();
 preloadForLanding();
