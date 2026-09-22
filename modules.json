@@ -44,6 +44,7 @@
       "iconUrl": "https://anime.nexus/favicon-32x32.png",
       "category": "anime",
       "branch": "main",
+      "discontinued": true,
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-nexus/anime-nexus.json",
       "sampleQuery": "one piece"
     },
@@ -89,6 +90,7 @@
       "iconUrl": "https://comix.to/favicon.ico",
       "category": "mangas",
       "branch": "main",
+      "discontinued": true,
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/comix/comix.json",
       "sampleQuery": "one piece"
     },
@@ -98,6 +100,7 @@
       "iconUrl": "https://torrentio.strem.fun/images/logo_v1.png",
       "category": "torrent",
       "branch": "main",
+      "discontinued": true,
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/torrentio/torrentio.json",
       "sampleQuery": "one piece"
     },
