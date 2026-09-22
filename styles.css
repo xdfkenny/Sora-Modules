@@ -753,6 +753,23 @@ main {
   text-align: center;
 }
 
+/* Mobile: stack the QR below the title */
+@media (max-width: 768px) {
+  .section-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .donate-side {
+    align-items: center;
+    max-width: none;
+  }
+  .donate-qr {
+    width: 180px;
+    height: 180px;
+  }
+}
+
 .filter-label {
   font-family: var(--font-mono);
   font-size: 12px;
