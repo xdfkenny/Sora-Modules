@@ -1430,6 +1430,168 @@
       "name": "One Piece Treasure Edition",
       "category": "anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceTreasureEdition/onePieceTreasureEdition.json"
+    },
+    {
+      "id": "allmangadub",
+      "name": "AllManga (DUB)",
+      "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/AllManga-DUB/allmanga-dub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "allmangasub",
+      "name": "AllManga (SUB)",
+      "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/AllManga-SUB/allmanga-sub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "anikotodub",
+      "name": "Anikoto DUB",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Anikoto-DUB/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Anikoto-DUB/anikoto-dub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "anikotosub",
+      "name": "Anikoto SUB",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Anikoto-DUB/icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Anikoto-SUB/anikoto-sub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animepahedub",
+      "name": "Animepahe (DUB)",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-DUB/Icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-DUB/Animepahe-Dub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animepahesub",
+      "name": "Animepahe (SUB)",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-DUB/Icon.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-SUB/Animepahe-Sub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animexdub",
+      "name": "Animex (DUB)",
+      "iconUrl": "https://animex.one/assets/logo.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animex-Dub/animex-dub.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "animex",
+      "name": "Animex",
+      "iconUrl": "https://animex.one/assets/logo.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animex/animex.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "batcave",
+      "name": "BatCave",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/BatCave/icon.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/BatCave/batcave.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "mlbwebcast",
+      "name": "MLB WebCast",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/MLB-Webcast/MLBWC.png?raw=true",
+      "category": "live",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MLB-Webcast/mlbwebcast.json",
+      "sampleQuery": "yankees game"
+    },
+    {
+      "id": "mangaball",
+      "name": "MangaBall",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/Icon.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/mangaball.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "mangadot",
+      "name": "Mangadotnet",
+      "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=mangadot.net",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaDot/mangadot.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "nflwebcast",
+      "name": "NFL WebCast",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/NFL-WebCast/Icon.png",
+      "category": "live",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/NFL-WebCast/nflwebcast.json",
+      "sampleQuery": "chiefs game"
+    },
+    {
+      "id": "onepacedub",
+      "name": "One Pace (DUB)",
+      "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/main/One-Pace-DUB/One_Pace_Logo.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/One-Pace-DUB/onepace-dub.json",
+      "sampleQuery": "naruto"
+    },
+    {
+      "id": "readfreecomicsonline",
+      "name": "ReadFreeComicsOnline",
+      "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=readfreecomicsonline.com",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/ReadFreeComicsOnline/readfreecomicsonline.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "usatv",
+      "name": "USA TV",
+      "iconUrl": "https://848b3516657c-usatv.baby-beamup.club/public/logo.png",
+      "category": "live",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/USA-TV/usa-tv.json",
+      "sampleQuery": "nba finals"
+    },
+    {
+      "id": "weebcentral-kanzen",
+      "name": "Weebcentral",
+      "iconUrl": "https://favicons.statusgator.com/1bi5zotvuQiK08wI.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/WeebCentral/Weebcentral-Kanzen.json",
+      "sampleQuery": "one piece"
+    },
+    {
+      "id": "anibd",
+      "name": "AniBD",
+      "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=anibd.app",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/anibd/anibd.json",
+      "sampleQuery": "one piece"
     }
   ]
 }
