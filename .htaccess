@@ -3,6 +3,25 @@
     Header set Access-Control-Allow-Origin "*"
     Header set Access-Control-Allow-Methods "GET, OPTIONS"
     Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+
+    # Force no-cache on all static assets so updates are immediate
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+
+    # Also bypass cache for query-string-busted files (styles.css?v=..., script.js?v=...)
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    # Bypass cache for HTML files
+    <FilesMatch "\.(html)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
 </IfModule>
 
 # Ensure correct MIME types for JSON and JavaScript files
