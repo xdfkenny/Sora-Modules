@@ -468,33 +468,15 @@ main {
   font-size: 14px;
   color: var(--fg-muted);
   max-width: 56ch;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
 }
-.section-sub .og-lib-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: var(--r-full);
-  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-  color: #fff;
-  font-weight: 600;
-  font-size: 13px;
+.section-sub a {
+  color: var(--accent-dark);
   text-decoration: none;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s;
+  transition: opacity 0.2s;
 }
-.section-sub .og-lib-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  color: #fff;
-  text-decoration: none;
-}
-.section-sub .og-lib-btn iconify-icon {
-  font-size: 16px;
+.section-sub a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 .section-head.is-centered {
@@ -803,15 +785,6 @@ main {
   }
   .section-sub {
     margin-top: 14px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-  }
-  .section-sub .og-lib-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 20px;
-    font-size: 14px;
   }
 }
 
