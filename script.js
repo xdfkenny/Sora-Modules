@@ -824,7 +824,7 @@ function initHeroBtn() {
   if (b) b.href = 'sora://default_page?url=' + encodeURIComponent(libraryPageUrl());
 }
 
-/* Donation modal — only on mobile, shows every time */
+/* Donation modal — only on mobile, only on landing page */
 function initDonateModal() {
   var modal = $('donateModal');
   if (!modal) return;
@@ -836,17 +836,19 @@ function initDonateModal() {
     document.body.style.overflow = '';
   }
   function show() {
-    if (!isMobile()) return;
+    // only show on landing page, not library (avoids accidental clicks on library links)
+    if (!isMobile() || isLibraryRoute()) return;
     modal.style.display = '';
     document.body.style.overflow = 'hidden';
   }
   function onDismiss(e) {
+    // only dismiss when tapping the backdrop or modal itself, NOT the box content
     if (e.target === modal || e.target === backdrop) dismiss();
   }
   if (closeBtn) closeBtn.addEventListener('click', dismiss);
+  if (closeBtn) closeBtn.addEventListener('touchend', dismiss);
   if (backdrop) backdrop.addEventListener('click', onDismiss);
   if (backdrop) backdrop.addEventListener('touchend', onDismiss);
-  if (closeBtn) closeBtn.addEventListener('touchend', dismiss);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && modal.style.display !== 'none') dismiss();
   });

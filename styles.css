@@ -827,6 +827,7 @@ main {
 .donate-modal-backdrop {
   position: absolute;
   inset: 0;
+  min-height: 100dvh; /* covers mobile viewport including address bar */
   background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
