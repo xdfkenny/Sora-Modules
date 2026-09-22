@@ -1592,6 +1592,24 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/anibd/anibd.json",
       "sampleQuery": "one piece"
+    },
+    {
+      "id": "emby",
+      "name": "Emby",
+      "iconUrl": "https://nascompares.com/wp-content/uploads/2016/06/EMBY-LOGO.png",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/cranci1/Sora-Modules/refs/heads/main/Emby/Emby.json",
+      "sampleQuery": ""
+    },
+    {
+      "id": "jellyfin",
+      "name": "JellyFin",
+      "iconUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9hELYbRA5IB6-ci3AzpkvOTJ3BAq6-_LmMg&s",
+      "category": "movies/shows/anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/cranci1/Sora-Modules/refs/heads/main/JellyFin/jellyfin.json",
+      "sampleQuery": ""
     }
   ]
 }
