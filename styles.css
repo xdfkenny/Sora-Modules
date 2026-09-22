@@ -753,7 +753,7 @@ main {
   text-align: center;
 }
 
-/* Mobile: stack the QR below the title */
+/* Mobile: hide the inline donate QR, only show modal */
 @media (max-width: 768px) {
   .section-head {
     flex-direction: column;
@@ -761,12 +761,7 @@ main {
     gap: 20px;
   }
   .donate-side {
-    align-items: center;
-    max-width: none;
-  }
-  .donate-qr {
-    width: 180px;
-    height: 180px;
+    display: none;
   }
 }
 

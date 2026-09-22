@@ -869,7 +869,7 @@ function initHeroBtn() {
   if (b) b.href = 'sora://default_page?url=' + encodeURIComponent(libraryPageUrl());
 }
 
-/* Donation modal — only on mobile, shows once per session (localStorage). */
+/* Donation modal — only on mobile, shows every time */
 var DONATE_MODAL_KEY = 'xdf.donateModalDismissed';
 function initDonateModal() {
   var modal = $('donateModal');
@@ -880,28 +880,22 @@ function initDonateModal() {
   function dismiss() {
     modal.style.display = 'none';
     document.body.style.overflow = '';
-    try { localStorage.setItem(DONATE_MODAL_KEY, '1'); } catch (e) { /* ignore */ }
   }
   function show() {
-    if (localStorage.getItem(DONATE_MODAL_KEY)) return;
     if (!isMobile()) return;
     modal.style.display = '';
     document.body.style.overflow = 'hidden';
   }
   function onDismiss(e) {
-    // only dismiss when clicking the backdrop, not the modal box
     if (e.target === modal || e.target === backdrop) dismiss();
   }
   if (closeBtn) closeBtn.addEventListener('click', dismiss);
   if (backdrop) backdrop.addEventListener('click', onDismiss);
-  // touch support for mobile
   if (backdrop) backdrop.addEventListener('touchend', onDismiss);
   if (closeBtn) closeBtn.addEventListener('touchend', dismiss);
-  // Escape key
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && modal.style.display !== 'none') dismiss();
   });
-  // re-check on resize
   if (window.matchMedia) {
     var mq = window.matchMedia('(max-width: 768px)');
     mq.addEventListener('change', function (e) {
