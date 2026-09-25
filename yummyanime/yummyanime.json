@@ -2,11 +2,12 @@
   "iconUrl": "https://site.yummyani.me/img/icon/yummy-192.png",
   "iconURL": "https://site.yummyani.me/img/icon/yummy-192.png",
   "author": {
-    "name": "emp0ry",
-    "icon": "https://avatars.githubusercontent.com/u/64217088"
+    "name": "xdfkenny & emp0ry",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
   "description": "YummyAnime — Sora module promoted from the examples library.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "language": "Russian",
   "streamType": "HLS",
   "quality": "1080p",

@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-21",
+  "lastUpdated": "2026-09-24",
   "repo": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules",
   "modules": [
     {
@@ -36,7 +36,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/anidb.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream anidb.app returns 503 (checked 2026-09)"
     },
     {
       "id": "anime-nexus",
@@ -82,7 +84,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-novels/allmanga-novels.json",
-      "sampleQuery": "angel next door"
+      "sampleQuery": "angel next door",
+      "needs_review": true,
+      "note": "search + chapters work, but chapterPages image API returns NEED_CAPTCHA on both api.mkissa.net and api.allanime.day (checked 2026-09); image step broken, unfixable in-module"
     },
     {
       "id": "comix",
@@ -192,7 +196,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nimegami/nimegami.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream nimegami.id returns 522 (Cloudflare origin down, checked 2026-09)"
     },
     {
       "id": "nivod",
@@ -291,7 +297,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aksv/aksv.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream ak.sv unreachable (redirect loop/timeouts, checked 2026-09)"
     },
     {
       "id": "an1me",
@@ -372,7 +380,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anineko/anineko.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream anineko.to unreachable (connection timeout, checked 2026-09)"
     },
     {
       "id": "anitube",
@@ -507,7 +517,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nakanime/nakanime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "site is client-side SPA, search API returns 404 (checked 2026-09)"
     },
     {
       "id": "onigashima",
@@ -642,7 +654,9 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/Nakastream/Nakastream.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "site is client-side SPA, module cannot parse listings (checked 2026-09)"
     },
     {
       "id": "anihq",
@@ -696,7 +710,7 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeweek/animeweek.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "\uc6d0\ud53c\uc2a4"
     },
     {
       "id": "animexin",
@@ -705,7 +719,7 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animexin/animexin.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "renegade"
     },
     {
       "id": "arabictoons",
@@ -714,7 +728,7 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/arabictoons/arabictoons.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one"
     },
     {
       "id": "asia2tv",
@@ -768,7 +782,7 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kaliscan/kaliscan.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "soul"
     },
     {
       "id": "latanime",
@@ -777,7 +791,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/latanime/latanime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream latanime.org returns 403 Cloudflare-block to scripts (checked 2026-09)"
     },
     {
       "id": "lightnovelworld",
@@ -786,7 +802,9 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lightnovelworld/lightnovelworld.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "solo leveling",
+      "needs_review": true,
+      "note": "upstream serves Cloudflare challenge to scripts (checked 2026-09)"
     },
     {
       "id": "luciferdonghua",
@@ -804,7 +822,9 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangafire/mangafire.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-09)"
     },
     {
       "id": "mangakatana",
@@ -876,7 +896,9 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/noveldot/noveldot.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "leveling",
+      "needs_review": true,
+      "note": "chapter listing logic is correct but noveldot.com serves each /chapters page very slowly and inconsistently (~10-50s each); a 500-chapter novel needs 6 parallel page fetches that exceed the 25s harness step cap. Works on shorter novels; slow upstream, not a module bug."
     },
     {
       "id": "novelfire",
@@ -921,7 +943,7 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/readnovelfull/readnovelfull.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "leveling"
     },
     {
       "id": "rebuildOfNaruto",
@@ -950,7 +972,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rumanhua1/rumanhua1.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "review_reason": "fetch failed"
+      "review_reason": "fetch failed",
+      "note": "upstream rumanhua1.com serves empty replies to scripts (checked 2026-09)"
     },
     {
       "id": "sameband",
@@ -977,7 +1000,7 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/spacepowerfans/spacepowerfans.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "dragon"
     },
     {
       "id": "topcinema",
@@ -995,7 +1018,7 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/turkish123/turkish123.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "atla"
     },
     {
       "id": "uaserial",
@@ -1479,7 +1502,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-DUB/Animepahe-Dub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "external module (JayGxnzalez); search returned only Error placeholder when checked 2026-09"
     },
     {
       "id": "animepahesub",
@@ -1526,7 +1551,7 @@
       "category": "live",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MLB-Webcast/mlbwebcast.json",
-      "sampleQuery": "yankees game"
+      "sampleQuery": "mlb"
     },
     {
       "id": "mangaball",
@@ -1557,7 +1582,7 @@
       "category": "live",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/NFL-WebCast/nflwebcast.json",
-      "sampleQuery": "chiefs game"
+      "sampleQuery": "chiefs"
     },
     {
       "id": "onepacedub",
@@ -1566,7 +1591,9 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/One-Pace-DUB/onepace-dub.json",
-      "sampleQuery": "naruto"
+      "sampleQuery": "naruto",
+      "needs_review": true,
+      "note": "external module (JayGxnzalez); fetchv2 call returned null in test env 2026-09"
     },
     {
       "id": "readfreecomicsonline",
@@ -1586,7 +1613,7 @@
       "category": "live",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/USA-TV/usa-tv.json",
-      "sampleQuery": "nba finals"
+      "sampleQuery": "espn"
     },
     {
       "id": "weebcentral-kanzen",

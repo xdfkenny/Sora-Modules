@@ -2,10 +2,11 @@
   "sourceName": "AniDub",
   "iconUrl": "https://anidub.org/templates/CinemaBlue/images/jutfun.png",
   "author": {
-    "name": "anonymous",
-    "icon": "https://git.luna-app.eu/avatars/11bb6ee2fdba48e70ee21594f4ac96344358be3bb9770732ba8c406b5cda98f0?size=512$0"
+    "name": "xdfkenny & anonymous",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.3",
+  "version": "1.0.4",
   "language": "Russian",
   "streamType": "MP4",
   "quality": "4K",

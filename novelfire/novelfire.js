@@ -32,8 +32,6 @@ async function searchResults(keyword) {
     }
 }
 
-searchResults("class");
-
 async function extractDetails(url) {
     try {
         const response = await soraFetch(url);
@@ -198,11 +196,12 @@ async function extractText(url) {
 // extractText('https://novelfire.net/book/my-longevity-simulation/chapter-1');
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = Object.assign({ "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" }, options.headers ?? {});
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
     } catch(e) {
         try {
-            return await fetch(url, options);
+            return await fetch(url, Object.assign({}, options, { headers }));
         } catch(error) {
             return null;
         }

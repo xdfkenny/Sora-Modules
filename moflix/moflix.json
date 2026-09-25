@@ -2,11 +2,11 @@
   "sourceName": "Moflix",
   "iconUrl": "https://moflix-stream.xyz/favicon/icon-512x512.png",
   "author": {
-    "name": "Cufiy",
-    "icon": "https://files.catbox.moe/ttj4fc.gif",
-    "url": "https://github.com/JMcrafter26"
+    "name": "xdfkenny & Cufiy",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.13",
+  "version": "1.0.14",
   "language": "German",
   "streamType": "HLS",
   "quality": "1080p",

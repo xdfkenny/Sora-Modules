@@ -1,15 +1,16 @@
 {
   "sourceName": "MangaWorld",
   "iconUrl": "https://www.mangaworld.mx/public/assets/seo/favicon-96x96.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "Italian",
   "languageType": [
     "Translated"
   ],
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangaworld/mangaworld.js",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny & 50/50",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
   "type": "mangas",
   "supportsDartotsu": true,

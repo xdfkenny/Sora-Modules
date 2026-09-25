@@ -1,41 +1,56 @@
 async function searchResults(keyword) {
     const results = [];
     const baseUrl = "https://www.animesrbija.com";
-    const response = await fetchv2("https://www.animesrbija.com/filter?search=" + encodeURIComponent(keyword));
-    const html = await response.text();
-    
-    const animeItems = html.match(/<div class="ani-item">.*?<\/h3><\/a><\/div>/gs) || [];
-    
-    animeItems.forEach(itemHtml => {
-        const titleMatch = itemHtml.match(/<h3 class="ani-title" title="([^"]+)"/);
-        const hrefMatch = itemHtml.match(/<a href="([^"]+)"/);
-        const imgMatch = itemHtml.match(/<noscript>.*?src="([^"]+)".*?<\/noscript>/s);
-        
-        const title = titleMatch ? titleMatch[1].trim() : '';
-        const href = hrefMatch ? baseUrl + hrefMatch[1].trim() : '';
-        let imageUrl = '';
-        
-        if (imgMatch) {
-            let srcUrl = imgMatch[1];
-            if (srcUrl.includes('/_next/image?url=')) {
-                const urlParam = srcUrl.match(/url=([^&]+)/);
-                if (urlParam) {
-                    imageUrl = baseUrl + decodeURIComponent(urlParam[1]);
+    try {
+        // The filter page is a Next.js App Router page; its React Query cache
+        // is streamed as clean JSON when requested with the RSC header.
+        const response = await fetchv2(
+            "https://www.animesrbija.com/filter?q=" + encodeURIComponent(keyword),
+            { "RSC": "1", "User-Agent": "Mozilla/5.0" }
+        );
+        const text = await response.text();
+
+        // Locate the dehydrated entry for our query, then its "items" array.
+        const qMarker = '"q":' + JSON.stringify(keyword);
+        const qIdx = text.indexOf(qMarker);
+        let items = [];
+        if (qIdx !== -1) {
+            const dataIdx = text.indexOf('"data":{"items":', qIdx);
+            if (dataIdx !== -1) {
+                const arrStart = text.indexOf('[', dataIdx + '"data":{"items":'.length);
+                let depth = 0, inStr = false, esc = false, pos = arrStart;
+                for (pos = arrStart; pos < text.length; pos++) {
+                    const c = text[pos];
+                    if (inStr) {
+                        if (esc) esc = false;
+                        else if (c === '\\') esc = true;
+                        else if (c === '"') inStr = false;
+                    } else {
+                        if (c === '"') inStr = true;
+                        else if (c === '[' || c === '{') depth++;
+                        else if (c === ']' || c === '}') {
+                            depth--;
+                            if (depth === 0) break;
+                        }
+                    }
                 }
-            } else {
-                imageUrl = srcUrl.startsWith('http') ? srcUrl : baseUrl + srcUrl;
+                items = JSON.parse(text.slice(arrStart, pos + 1));
             }
         }
-        
-        if (title && href) {
+
+        for (const item of items) {
+            if (!item || !item.title) continue;
+            let image = item.img || "";
+            if (image && !image.startsWith("http")) image = baseUrl + image;
             results.push({
-                title,
-                image: imageUrl,
-                href
+                title: item.title,
+                image: image,
+                href: baseUrl + "/anime/" + (item.slug || "")
             });
         }
-    });
-    
+    } catch (err) {
+        console.error("animesrbija search error:", err);
+    }
     console.log(results);
     return JSON.stringify(results);
 }

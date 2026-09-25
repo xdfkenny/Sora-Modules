@@ -1,19 +1,22 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://uaserial.me/search?query=${encodedKeyword}`);
+        const responseText = await soraFetch(`https://uaserial.tv/search?query=${encodedKeyword}`);
         const html = await responseText.text();
 
-        const regex = /<a\s+href="([^"]+)"\s+title="([^"]+)">[\s\S]*?<img[^>]+src="([^"]+)"[\s\S]*?<\/a>/g;
+        const regex = /<a\s+href="([^"]+)"\s+title="([^"]+)">\s*<div class="img-wrap">[\s\S]*?<img[^>]+src="([^"]+)"/g;
 
         const results = [];
         let match;
 
         while ((match = regex.exec(html)) !== null) {
+            const href = match[1].trim();
+            // genre/selection tiles are not titles
+            if (href.indexOf('/selection/') === 0) continue;
             results.push({
                 title: match[2].trim(),
-                image: `https://uaserial.me${match[3].trim()}`,
-                href: `https://uaserial.me${match[1].trim()}`
+                image: `https://uaserial.tv${match[3].trim()}`,
+                href: `https://uaserial.tv${href}`
             });
         }
 
@@ -79,7 +82,7 @@ async function extractEpisodes(url) {
 
         if (episodeOptions.length > 0) {
             const episodes = episodeOptions.map(([, number, value, label]) => ({
-                href: value.startsWith('http') ? value : `https://uaserial.me${value}`,
+                href: value.startsWith('http') ? value : `https://uaserial.tv${value}`,
                 number: parseInt(number, 10),
                 title: label.trim()
             }));
@@ -93,7 +96,7 @@ async function extractEpisodes(url) {
         if (iframeMatch) {
             const iframeSrc = iframeMatch[1];
             const movieEpisode = {
-                href: iframeSrc.startsWith('http') ? iframeSrc : `https://uaserial.me${iframeSrc}`,
+                href: iframeSrc.startsWith('http') ? iframeSrc : `https://uaserial.tv${iframeSrc}`,
                 number: 1,
                 title: "Серія 1"
             };
@@ -211,15 +214,16 @@ async function extractStreamUrl(url) {
 }
 
 
-// extractStreamUrl('https://uaserial.me/embed/naruto/season-1/episode-2');
-// extractStreamUrl('https://uaserial.me/embed/naruto-legend-of-the-stone-of-gelel/season-1/episode-1');
+// extractStreamUrl('https://uaserial.tv/embed/naruto/season-1/episode-2');
+// extractStreamUrl('https://uaserial.tv/embed/naruto-legend-of-the-stone-of-gelel/season-1/episode-1');
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = Object.assign({ "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" }, options.headers ?? {});
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
     } catch(e) {
         try {
-            return await fetch(url, options);
+            return await fetch(url, Object.assign({}, options, { headers }));
         } catch(error) {
             return null;
         }

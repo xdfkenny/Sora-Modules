@@ -12,9 +12,13 @@ async function searchResults(keyword) {
             const href = match[1].startsWith("http") ? match[1].trim() : "https://kaliscan.io" + match[1].trim();
             if (!seen.has(href)) {
                 seen.add(href);
+                // Manga contract: id is what extractChapters/extractImages consume (the
+                // manga URL, from which extractChapters pulls the numeric manga_id).
                 results.push({
+                    id: href,
                     href: href,
                     image: match[2].trim(),
+                    imageURL: match[2].trim(),
                     title: match[3].replace(/<[^>]+>/g, '').trim()
                 });
             }
@@ -49,37 +53,38 @@ async function extractDetails(url) {
 }
 
 async function extractChapters(url) {
-    const results = [];
+    const results = { en: [] };
     try {
         const idRegex = /\/manga\/(\d+)-/;
         const idMatch = url.match(idRegex);
-        if (!idMatch) return [];
+        if (!idMatch) return results;
         const manga_id = idMatch[1];
 
         const chapUrl = `https://kaliscan.io/service/backend/chaplist/?manga_id=${manga_id}`;
         const response = await fetchv2(chapUrl);
         const html = await response.text();
 
-        const regex = /<a href="([^"]*)"[^>]*>[\s\S]*?Chapter\s*(\d+)/gi;
+        const regex = /<a href="([^"]*)"[^>]*>[\s\S]*?Chapter\s*([\d.]+)/gi;
         let match;
         const seen = new Set();
-        
+
         while ((match = regex.exec(html)) !== null) {
             const chapterUrl = match[1].startsWith("http") ? match[1].trim() : "https://kaliscan.io" + match[1].trim();
-            if (!seen.has(chapterUrl)) {
-                seen.add(chapterUrl);
-                const chapterNum = parseInt(match[2], 10);
-                results.push({
-                    href: chapterUrl,
-                    number: chapterNum,
-                    title: `Chapter ${chapterNum}`
-                });
-            }
+            if (seen.has(chapterUrl)) continue;
+            seen.add(chapterUrl);
+            const chapterNum = parseFloat(match[2], 10) || 0;
+            const chapterStr = match[2].trim();
+            // Language map entry: [chapterStr, [{id,title,chapter}]]
+            results.en.push([chapterStr, [{
+                id: chapterUrl,
+                title: `Chapter ${chapterStr}`,
+                chapter: chapterNum
+            }]]);
         }
 
-        return results.reverse();
+        return results;
     } catch (err) {
-        return [];
+        return results;
     }
 }
 

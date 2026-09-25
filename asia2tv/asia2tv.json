@@ -2,10 +2,11 @@
   "sourceName": "Asia2TV",
   "iconUrl": "https://ww1.asia2tv.pw/wp-content/uploads/2021/01/logo-1.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny & 50/50",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "language": "Arabic",
   "languageType": [
     "Native"

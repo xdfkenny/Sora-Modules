@@ -1,6 +1,18 @@
 async function searchResults(keyword) {
-    const response = await soraFetch(`https://spacepowerfans.com/search/?s_keyword=${keyword}`);
-    const html = await response.text();
+    // The /search/?s_keyword= page renders results client-side; the kiranime
+    // REST endpoint returns the same card HTML server-side, so POST to it.
+    const headers = {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "Referer": "https://spacepowerfans.com/search/",
+    };
+    const body = JSON.stringify({ keyword, query: keyword, tax: [] });
+    const response = await soraFetch(
+        "https://spacepowerfans.com/wp-json/kiranime/v1/anime/advancedsearch?_locale=user",
+        { method: "POST", headers, body }
+    );
+    const data = await response.json();
+    const html = typeof data?.data === "string" ? data.data : "";
 
     const blockRegex = /<div class="w-full bg-gradient-to-t[\s\S]*?<\/div>\s*<\/div>/g;
     const blocks = html.match(blockRegex) || [];

@@ -296,3 +296,24 @@ async function extractImages(url) {
         return [];
     }
 }
+// Canonical soraFetch wrapper — wraps fetchv2 (url, headers, method, body).
+// (searchResults above references this; it was previously undefined, so search
+//  always threw and returned [].)
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    try {
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
+        try {
+            const res = await fetch(url, { method: options.method || 'GET', headers, body: options.body || null });
+            return {
+                ok: res.ok,
+                status: res.status,
+                text: async () => await res.text(),
+                json: async () => await res.json()
+            };
+        } catch (error) {
+            return null;
+        }
+    }
+}

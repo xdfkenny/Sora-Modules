@@ -7,7 +7,7 @@
     "url": "https://github.com/xdfkenny"
   },
   "description": "Torrentio Stremio Addon module for Sora and Luna — search movies and series via Cinemeta and play high quality torrent magnets and video streams.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "Multi (SUB/DUB)",
   "streamType": "HLS",
   "quality": "4K/1080p",

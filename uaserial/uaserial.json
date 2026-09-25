@@ -2,16 +2,16 @@
   "sourceName": "UASERIAL",
   "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/uaserial/icon.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://files.catbox.moe/741wp7.png",
-    "url": "https://github.com/xibrox"
+    "name": "xdfkenny & ibro",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "2.0.4",
+  "version": "2.0.5",
   "language": "Ukrainian",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://uaserial.me/",
-  "searchBaseUrl": "https://uaserial.me/search?query=%s",
+  "baseUrl": "https://uaserial.tv/",
+  "searchBaseUrl": "https://uaserial.tv/search?query=%s",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/uaserial/uaserial.js",
   "type": "anime/shows/movies",
   "asyncJS": true,

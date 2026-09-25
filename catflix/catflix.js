@@ -20,6 +20,30 @@
  *
 */
 
+// soraFetch: try the app's fetchv2 bridge first, fall back to plain fetch.
+// Always returns a Response-like object with .text()/.json() (some app builds
+// resolve with the raw body string, others reject on non-2xx — normalize both).
+async function soraFetch(url, options = {}) {
+  const headers = options.headers || {};
+  let r = null;
+  try {
+    r = await fetchv2(url, headers, options.method || 'GET', options.body || null);
+  } catch (e) { /* fall through to plain fetch */ }
+  try {
+    if (!r) r = await fetch(url, { headers, method: options.method || 'GET', body: options.body || null });
+  } catch (e) { /* give up */ }
+  if (r && typeof r.text === 'function' && typeof r.json === 'function') return r;
+  let str = '';
+  if (r != null && typeof r !== 'string') { try { str = String(r); } catch (e) { str = ''; } }
+  else str = String(r == null ? '' : r);
+  return {
+    status: 200,
+    ok: true,
+    text: async () => str,
+    json: async () => JSON.parse(str),
+  };
+}
+
 async function searchResults(keyword) {
 
   try {
@@ -32,10 +56,10 @@ async function searchResults(keyword) {
     // });
 
     // this is my own api, it may be a pit slow, as it fetches data from tmdb, but i dont want to share the api key
-    const response = await fetch(
+    const response = await soraFetch(
       `https://api.jm26.net/sora-modules/tmdb-api/?type=search&query=${keyword}&page=1`
     );
-    let data = await JSON.parse(response);
+    let data = await response.json();
 
     // if there is a results array, use it, otherwise use the data object
     data = data.results || data;
@@ -76,10 +100,10 @@ async function extractDetails(url) {
 
 
     console.log("id:", id);
-    const response = await fetch(
+    const response = await soraFetch(
       `https://api.jm26.net/sora-modules/tmdb-api/?id=${id}`
     );
-    const data = await JSON.parse(response);
+    const data = await response.json();
     // console.log("Description data:", data);
     let aired = "";
     if (data.release_date) {
@@ -121,10 +145,10 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
   try {
     const id = getId(url);
-    const response = await fetch(
+    const response = await soraFetch(
       `https://api.jm26.net/sora-modules/tmdb-api/?id=${id}`
     );
-    const data = await JSON.parse(response);
+    const data = await response.json();
     console.log("Seasons data:", data);
 
     const imdbId = data.external_ids.imdb_id;
@@ -154,11 +178,11 @@ async function extractEpisodes(url) {
         const fetchPromises = [];
         
         seasonIds.forEach((seasonId) => {
-          const fetchPromise = fetch(
+          const fetchPromise = soraFetch(
             `https://api.jm26.net/sora-modules/tmdb-api/?season=${seasonCount}&id=${id}`
           )
-          .then(async (seasonData) => {
-            seasonData = await JSON.parse(seasonData);
+          .then(async (seasonResp) => {
+            const seasonData = await seasonResp.json();
               // console.log("seasonData:", seasonData);
               // add the episodes to the transformedResults array
               // https://catflix.su/episode/breaking-bad-season-1-episode-2/eid-62086 - example episode url
@@ -192,10 +216,10 @@ async function extractStreamUrl(url) {
   const phpsessid = ''; // no need for that actually
   // embedUrl = 'https://turbovid.eu/embed/ZhkbFoEBXfJu';
   try {
-    // fetch the embed url from the original url
-    const response = await fetch(url);
-    // get the embed link from the response: 'const main_origin = "aHR0cHM6Ly90dXJib3ZpZC5ldS9lbWJlZC9sUXRtYkxJRHhXQkQ=";' -is base64 encoded
-    const html = await response;
+      // fetch the embed url from the original url
+      const response = await soraFetch(url);
+      // get the embed link from the response: 'const main_origin = "aHR0cHM6Ly90dXJib3ZpZC5ldS9lbWJlZC9sUXRtYmxJRHhXQkQ=";' -is base64 encoded
+      const html = await response.text();
 	let embedUrl = null;
 	let base64EmbedUrl = null;
     try {
@@ -246,9 +270,8 @@ async function extractStreamUrl(url) {
 
 // Helper functions
 async function extractEmbedVariables(embedUrl) {
-  const response = await fetch(embedUrl);
-  // const html = await response.text();
-  const html = await response;
+  const response = await soraFetch(embedUrl);
+  const html = await response.text();
   // console.log('html of embedUrl:' + html);
   
   return {
@@ -267,8 +290,8 @@ let url = `https://justaproxy.xyz/subsApi.php?version=2&getsubs=simp&imdbid=${im
       url += `&season=${season}&episode=${episode}`;
   }
 
-  const response = await fetch(url);
-  const responseJson = await JSON.parse(response);
+  const response = await soraFetch(url);
+  const responseJson = await response.json();
   console.log('RJSON: ', responseJson);
 
   // let url = `https://justaproxy.xyz/subsApi.php?version=2&getsubs=simp&imdbid=${imdbId}&subkey=${language}`;
@@ -343,9 +366,8 @@ const fetchUrl = base64Decode('aHR0cHM6Ly90dXJib3ZpZC5ldS9hcGkvY3Vja2VkLw==') + 
   const vercelUrl = `https://sora-passthrough.vercel.app/passthrough?url=${ fetchUrl }&headers=${ headers } }`;
 
   // I use the base64 encoded url to hide the url from Claude, as it finds it inappropiate somehow and I needed advice from it
-  const response = await fetch(vercelUrl);
-  
-  return await JSON.parse(response);
+  const response = await soraFetch(vercelUrl);
+  return await response.json();
 }
 
 async function fetchEncryptedPayload(embedUrl, apKey, xxId) {
@@ -382,11 +404,9 @@ try {
   const vercelUrl = `https://sora-passthrough.vercel.app/passthrough?url=${ url }&headers=${ headers } }`;
 
   // I use the base64 encoded url to hide the url from Claude, as it finds it inappropiate somehow and I needed advice from it
-  const response = await fetch(vercelUrl);
-  
-  
-      const data = await JSON.parse(response);
-  
+  const response = await soraFetch(vercelUrl);
+  const data = await response.json();
+
   return data.data;
 }
 

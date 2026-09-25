@@ -7,11 +7,7 @@ async function searchResults(keyword, page = 0) {
         };
         const postData = `s=${encodeURIComponent(keyword)}&search_by=book_name`;
         
-        const response = await fetch("https://mangakatana.com/", {
-            method: "POST",
-            headers: headers,
-            body: postData
-        });
+        const response = await fetchv2("https://mangakatana.com/", headers, "POST", postData);
         
         const html = await response.text();
         

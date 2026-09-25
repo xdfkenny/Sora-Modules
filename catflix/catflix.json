@@ -2,11 +2,11 @@
   "sourceName": "Catflix (Website Down)",
   "iconUrl": "https://github.com/JMcrafter26/sora-modules/blob/main/modules/catflix/icon.png?raw=true",
   "author": {
-    "name": "Cufiy",
-    "icon": "https://files.catbox.moe/ttj4fc.gif",
-    "url": "https://github.com/JMcrafter26"
+    "name": "xdfkenny & Cufiy",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.1.464",
+  "version": "1.1.466",
   "language": "English (DUB)",
   "streamType": "HLS",
   "quality": "1080p",

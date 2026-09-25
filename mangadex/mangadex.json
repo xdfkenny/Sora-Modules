@@ -1,15 +1,17 @@
 {
   "sourceName": "MangaDex",
   "iconURL": "https://files.catbox.moe/ouogm2.png",
-  "version": "1.2",
+  "version": "1.3",
   "language": "English",
   "languageType": [
     "Translated"
   ],
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangadex/mangadex.js",
   "author": {
-    "name": "50/50",
-    "iconURL": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny & 50/50",
+    "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
   "type": "mangas",
   "supportsDartotsu": true,

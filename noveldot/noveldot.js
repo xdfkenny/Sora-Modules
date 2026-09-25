@@ -137,22 +137,40 @@ async function extractChapters(url) {
 
         const chapters = [];
 
-        for (let i = 1; i <= chaptersNumber; i++) {
-            const response2 = await soraFetch(`${url}/chapters?page=${i}&chorder=asc`);
-            const htmlText2 = await response2.text();
+        // Parallel page fetches: novels with many chapters have dozens of
+        // paginated /chapters pages; sequential fetches bust the 25s step
+        // timeout. A failing page must not kill the whole list.
+        const pageBatches = await Promise.all(
+            Array.from({ length: chaptersNumber }, async (_, idx) => {
+                const i = idx + 1;
+                try {
+                    const response2 = await soraFetch(`${url}/chapters?page=${i}&chorder=asc`);
+                    const htmlText2 = await response2.text();
 
-            // Regex to extract data-chapterno and href from each <li> block
-            const regex = /<li[^>]+data-chapterno="(\d+)"[^>]*>[\s\S]*?<a href="([^"]+)"[^>]*>/g;
+                    // Regex to extract data-chapterno and href from each <li> block
+                    const regex = /<li[^>]+data-chapterno="(\d+)"[^>]*>[\s\S]*?<a href="([^"]+)"[^>]*>/g;
 
-            let match;
-            while ((match = regex.exec(htmlText2)) !== null) {
-                chapters.push({
-                    href: match[2],
-                    number: parseInt(match[1]),
-                    title: `Chapter ${match[1]}`
-                });
-            }
+                    let match;
+                    while ((match = regex.exec(htmlText2)) !== null) {
+                        chapters.push({
+                            href: match[2],
+                            number: parseInt(match[1]),
+                            title: `Chapter ${match[1]}`
+                        });
+                    }
+                    return 0;
+                } catch (e) {
+                    return -1;
+                }
+            })
+        );
+        const failedPages = pageBatches.filter(v => v === -1).length;
+        if (failedPages > 0) {
+            console.log('extractChapters: ' + failedPages + ' page(s) failed, listing what succeeded');
         }
+
+        // Pages were fetched in parallel, so re-sort by chapter number.
+        chapters.sort((a, b) => a.number - b.number);
 
         console.log(chapters);
         return JSON.stringify(chapters);
@@ -202,11 +220,12 @@ async function extractText(url) {
 // extractText("https://www.noveldot.com/novel-16808-227546/Classroom-of-the-Elite-(LN)/chapter-1");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = Object.assign({ "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" }, options.headers ?? {});
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
     } catch(e) {
         try {
-            return await fetch(url, options);
+            return await fetch(url, Object.assign({}, options, { headers }));
         } catch(error) {
             return null;
         }

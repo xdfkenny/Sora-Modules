@@ -206,7 +206,8 @@ function loadModule(src) {
       'extractEpisodes: typeof extractEpisodes !== "undefined" ? extractEpisodes : null,' +
       'extractStreamUrl: typeof extractStreamUrl !== "undefined" ? extractStreamUrl : null,' +
       'extractChapters: typeof extractChapters !== "undefined" ? extractChapters : null,' +
-      'extractText: typeof extractText !== "undefined" ? extractText : null' +
+      'extractText: typeof extractText !== "undefined" ? extractText : null,' +
+      'extractImages: typeof extractImages !== "undefined" ? extractImages : null' +
     '};'
   );
   return factory(fetcher, fetcher, { fetch: fetcher, fetchv2: fetcher }, sandboxConsole, undefined);
@@ -268,7 +269,8 @@ async function runMediaTest(entry, keyword) {
   let mod;
   try {
     manifest = await loadManifest(entry.manifestUrl);
-    const src = await loadSource(manifest.scriptUrl);
+    // Some external manifests spell the key `scriptURL` (uppercase U) — accept both.
+    const src = await loadSource(manifest.scriptUrl || manifest.scriptURL);
     mod = loadModule(src);
   } catch (e) {
     return { ...out, search: { ok: false, error: 'No se pudo cargar el módulo: ' + errText(e) } };
@@ -276,6 +278,9 @@ async function runMediaTest(entry, keyword) {
   // Novels swap the video pair (extractEpisodes/extractStreamUrl) for
   // extractChapters/extractText — see documentation/NovelModules.md.
   const isNovel = manifest.novel === true || String(manifest.type || '').includes('novels');
+  // Manga modules use the raw-object contract ({id,title,imageURL},
+  // extractChapters → lang map, extractImages → url[]) — SORA_MODULES_GUIDE.md §B.
+  const isManga = !isNovel && (String(manifest.type || '').includes('mangas') || manifest.manga === true);
 
   /* search */
   let results = [];
@@ -292,16 +297,19 @@ async function runMediaTest(entry, keyword) {
   }
 
   const first = results[0];
-  if (!first || !first.href) {
+  // Video/novel items key on href; manga items key on id (guide §B).
+  const itemKey = first ? (first.href || first.id) : null;
+  if (!first || !itemKey) {
     out.details = { ok: false, error: 'sin resultados de búsqueda' };
     if (isNovel) { out.chapters = { ok: false, error: 'sin resultados de búsqueda' }; out.text = { ok: false, error: 'sin resultados de búsqueda' }; }
+    else if (isManga) { out.chapters = { ok: false, error: 'sin resultados de búsqueda' }; out.images = { ok: false, error: 'sin resultados de búsqueda' }; }
     else { out.episodes = { ok: false, error: 'sin resultados de búsqueda' }; out.stream = { ok: false, error: 'sin resultados de búsqueda' }; }
     return out;
   }
 
   /* details */
   try {
-    const d = await withTimeout(mod.extractDetails(first.href), 25000, 'details');
+    const d = await withTimeout(mod.extractDetails(itemKey), 25000, 'details');
     const parsed = normalizeArray(d)[0] || {};
     out.details = {
       ok: true,
@@ -347,6 +355,47 @@ async function runMediaTest(entry, keyword) {
     } catch (e) {
       out.text = { ok: false, error: errText(e) };
     }
+    return out;
+  }
+
+  /* manga pair: chapters (lang map) + page images — raw-object contract */
+  if (isManga) {
+    out.chapters = null;
+    out.images = null;
+
+    let chapterKeys = [];
+    try {
+      const rawCh = await withTimeout(mod.extractChapters(itemKey), 25000, 'chapters');
+      const map = typeof rawCh === 'string' ? JSON.parse(rawCh) : (rawCh || {});
+      // Map: { lang: [ [chapterStr, [ {id,title,chapter,...} ] ], ... ] }
+      for (const lang in map) {
+        const groups = map[lang];
+        if (!Array.isArray(groups)) continue;
+        for (const g of groups) {
+          const items = Array.isArray(g) ? g[1] : g;
+          if (Array.isArray(items)) for (const it of items) if (it && it.id) chapterKeys.push(it.id);
+        }
+      }
+      out.chapters = { ok: chapterKeys.length > 0, count: chapterKeys.length };
+    } catch (e) {
+      out.chapters = { ok: false, error: errText(e) };
+    }
+
+    // A module "works" if ANY chapter yields page images: some first/last
+    // chapters are legitimately image-less, so probe a handful of chapters
+    // (first, mid, last) instead of only index 0.
+    const candidates = [chapterKeys[0], chapterKeys[Math.floor(chapterKeys.length / 2)], chapterKeys[chapterKeys.length - 1]]
+      .filter((v, i, a) => v && a.indexOf(v) === i).slice(0, 3);
+    let imgs = [];
+    let imgError = null;
+    for (const chapterId of candidates) {
+      try {
+        const rawImgs = await withTimeout(mod.extractImages(chapterId), 40000, 'images');
+        imgs = Array.isArray(rawImgs) ? rawImgs : (typeof rawImgs === 'string' ? JSON.parse(rawImgs) : []);
+        if (imgs.length) break;
+      } catch (e) { imgError = errText(e); imgs = []; }
+    }
+    out.images = { ok: imgs.length > 0, count: imgs.length, sample: imgs[0], error: imgError };
     return out;
   }
 

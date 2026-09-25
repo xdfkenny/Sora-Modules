@@ -141,23 +141,33 @@ async function extractEpisodes(url) {
             const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
             const showData = await showResponseText.json();
 
+                        // Parallel season fetches: big shows (One Piece: ~20 seasons) took
+            // 40s+ when sequential and bust the 25s step timeout. A 404 season
+            // used to abort the whole thing; guard it so one bad season can't
+            // kill the list.
             let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
-                if (seasonNumber === 0) continue;
+            const seasonPromises = (showData.seasons || [])
+                .filter(season => season.season_number !== 0)
+                .map(async (season) => {
+                    const seasonNumber = season.season_number;
+                    try {
+                        const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                        const seasonData = await seasonResponseText.json();
+                        if (seasonData.episodes && seasonData.episodes.length) {
+                            return seasonData.episodes.map(episode => ({
+                                href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                                number: episode.episode_number,
+                                title: episode.name || ""
+                            }));
+                        }
+                        return [];
+                    } catch (e) {
+                        return [];
+                    }
+                });
+            const seasonBatches = await Promise.all(seasonPromises);
+            for (const batch of seasonBatches) allEpisodes = allEpisodes.concat(batch);
 
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
-
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
-                }
-            }
             return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
