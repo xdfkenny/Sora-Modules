@@ -36,22 +36,24 @@ const KEYGEN_URLS = [
     'https://raw.githubusercontent.com/sdaqo/anipy-cli/key-gen/scripts/keygen/keygen.json'
 ];
 
-// Key = partB XOR mask(166); mask bytes verified byte-for-byte against the app's
-// sy('166') via page crypto.subtle. Boot token algorithm (two-stage HMAC) verified:
+// Key = partB XOR mask(175); mask blocks/consts extracted from the mkissa.to
+// crypto chunk BEkTyDAE.js (build 175, verified 2026-09-25: boot token
+// reproduces the app's live capture; k9 bootstrap partB -> key cd753590...).
+// Boot token algorithm (two-stage HMAC, build 175):
 //   f    = HMAC(mask, AA_BOOT_PREFIX + build_id)
-//   boot = hex(HMAC(f, group:lane:epoch:host:build_id))   // ":"-joined, full host
-// Node reproduction matched the app's r4() token exactly. API accepts the derived
-// key (wrong key -> AA_CRYPTO_STALE). Keep this fallback fresh — the bootstrap
-// endpoint is now Cloudflare-protected in-app.
+//   boot = hex(HMAC(f, buildId|group|host|epoch|lane))   // "|" -joined
+// Note: content lanes are routed per persisted query — chapterPages runs on
+// k9, episode on k7, music on k2 (the app's cp() lane router). This module
+// only calls chapterPages, so the fallback lane is k9.
 const FALLBACK_KEYGEN = {
-    build_id: '81',
-    epoch: 6889,
-    lane: 'k7',
-    key: 'f7bd37902f0d7fc067d82c7a4f9c52dff5f1539561773d38e20012d2b91f442e',
+    build_id: '175',
+    epoch: 2960,
+    lane: 'k9',
+    key: 'cd753590624ca574d65e9cdfea4fea60bc97438f2e95f9be61b0595c75c144ca',
     static_key: 'Xot36i3lK3:v1'
 };
 
-// Self-bootstrap inputs (extracted from the mkissa.to crypto chunk, build 166).
+// Self-bootstrap inputs (extracted from the mkissa.to crypto chunk, build 175).
 // The client derives its own AES key without any secret server round-trip:
 //   embed[i]   = concat(base64decode(mask blocks))          [32 bytes]
 //   salt[i]    = (buildId.charCodeAt(i % len) || 0)
@@ -59,18 +61,18 @@ const FALLBACK_KEYGEN = {
 //   linear[i]  = ((i >> 3) * AA_FRAG_MUL + (i % 8) * AA_FRAG_ADD) & 255
 //   mask[i]    = embed[i] ^ salt[i] ^ linear[i]
 //   hmacKey    = HMAC-SHA256(mask, AA_BOOT_PREFIX + buildId)
-//   bootTok    = hex(HMAC-SHA256(hmacKey, `${group}:${lane}:${epoch}:${host}:${buildId}`))
+//   bootTok    = hex(HMAC-SHA256(hmacKey, `${buildId}|${group}|${host}|${epoch}|${lane}`))
 //   GET {AA_BOOTSTRAP_URL}?buildId=<id>&k=<lane>  (x-build-id / x-aa-boot headers)
 //   key        = first32(base64decode(partB)) XOR mask
 // Epochs are 7-day (floor(now/604800000)); during the first day of an epoch the
-// previous one is still accepted. group is "mkissa" for the public hosts, and the
-// boot message uses the FULL host (with TLD), not the stripped first segment.
-const AA_MASK_BLOCKS = ['0VmOiOTlfQ0=', 'F/SlaG5999I=', 'VTm6fMS7BdQ=', 'LIQNr2OipeQ='];
-const AA_SALT_MUL = 165;
-const AA_SALT_ADD = 115;
-const AA_FRAG_MUL = 197;
-const AA_FRAG_ADD = 200;
-const AA_BOOT_PREFIX = 'ld1faaOf3G:';
+// previous one is still accepted. group is "mkissa" for the public hosts, and
+// the boot message uses the FULL host (with TLD), not the stripped first segment.
+const AA_MASK_BLOCKS = ['jfTMXeWz1KY=', 'sSiL9IX1c1k=', 'jjOcW/T0DYU=', 'vRF6mguezW8='];
+const AA_SALT_MUL = 34;
+const AA_SALT_ADD = 47;
+const AA_FRAG_MUL = 93;
+const AA_FRAG_ADD = 29;
+const AA_BOOT_PREFIX = 'X8S061oCq:';
 const AA_WEEK_MS = 604800000;
 const AA_DAY_MS = 86400000;
 const AA_BOOTSTRAP_URL = 'https://api.mkissa.net/client-crypto/v1/bootstrap';
@@ -85,7 +87,7 @@ const DEFAULT_CHAPTER_HEAD = 'https://aln.youtube-anime.com/';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-console.log('[AllMangaNovels] module script loaded v1.2.0 (build 166 keygen + self-bootstrap, kanzen-env safe)');
+console.log('[AllMangaNovels] module script loaded v1.3.0 (build 175 keygen, k9 chapterPages lane + self-bootstrap, kanzen-env safe)');
 
 /* ---- fetch bridge --------------------------------------------------------- */
 
@@ -511,12 +513,16 @@ function aaUtf8ToStr(bytes) {
 
 /* ---- aaReq token + response decryption (same flow as allmanga anime) ------ */
 
-function aaBuildToken(keys, qh, ts) {
+// Seal the aaReq payload with the given IV base. mkissa build 175:
+// IV = SHA256(epoch:buildId:qh:ts:lane)[0:12] (verified against the app's ET()
+// chunk 2026-09-25). Earlier builds: 141 used SHA256(epoch:qh:ts) (anipy
+// style) and pre-141 used the same 5-part composition.
+function aaSealToken(keys, qh, ts, legacyIv) {
     const payload = '{"v":1,"ts":' + ts + ',"epoch":' + keys.epoch + ',"buildId":"' + keys.build_id + '","qh":"' + qh + '","k":"' + keys.lane + '"}';
-    // mkissa build 141: IV is SHA256(epoch:qh:ts)[0:12] (anipy style, verified live 2026-08-28
-    // against https://api.mkissa.net/api with partB EP0wX+zZT... and key 5414eefc...).
-    // Previous builds used epoch:buildId:qh:ts:lane — kept as fallback if the new IV fails.
-    const iv = aaSha256(aaAscii(keys.epoch + ':' + qh + ':' + ts)).slice(0, 12);
+    const ivBase = legacyIv
+        ? keys.epoch + ':' + qh + ':' + ts
+        : keys.epoch + ':' + keys.build_id + ':' + qh + ':' + ts + ':' + keys.lane;
+    const iv = aaSha256(aaAscii(ivBase)).slice(0, 12);
     const sealed = aaGcmSeal(aaHexToBytes(keys.key), iv, aaAscii(payload));
     const blob = new Uint8Array(1 + 12 + sealed.out.length + 16);
     blob[0] = 1;
@@ -524,6 +530,11 @@ function aaBuildToken(keys, qh, ts) {
     blob.set(sealed.out, 13);
     blob.set(sealed.tag, 13 + sealed.out.length);
     return aaB64(blob);
+}
+
+// Current composition by default; pass true for the pre-175 epoch:qh:ts IV.
+function aaBuildToken(keys, qh, ts, legacyIv) {
+    return aaSealToken(keys, qh, ts, legacyIv);
 }
 
 function aaDecrypt(keys, tobeparsed) {
@@ -603,35 +614,48 @@ function aaBuildMask(buildId) {
     return mask;
 }
 
+// One bootstrap round-trip with a given x-aa-boot token; returns the parsed
+// JSON with partB on success, null otherwise.
+async function aaBootstrapOnce(url, bootTok) {
+    const resp = await soraFetch(url, {
+        headers: {
+            'x-build-id': String(FALLBACK_KEYGEN.build_id),
+            'x-aa-boot': bootTok,
+            'Referer': 'https://' + AA_BOOT_HOST + '/',
+            'Origin': 'https://' + AA_BOOT_HOST,
+            'Accept': 'application/json, text/plain, */*',
+            'User-Agent': UA
+        }
+    });
+    if (!respIsOk(resp)) {
+        console.log('bootstrap http ' + (resp ? resp.status : 'no-response'));
+        return null;
+    }
+    const j = await jsonSafe(resp);
+    if (!j || !j.partB) {
+        console.log('bootstrap empty partB response');
+        return null;
+    }
+    return j;
+}
+
 async function aaBootstrapFor(lane, epoch) {
     try {
         const mask = aaBuildMask(String(FALLBACK_KEYGEN.build_id));
         const hmacKey = aaHmacSha256(mask, aaAscii(AA_BOOT_PREFIX + FALLBACK_KEYGEN.build_id));
-        // mkissa build 166: message is group/lane/epoch/host/buildId joined by ":"
-        // (captured live: "mkissa:k7:2957:mkissa.to:166" — full host with TLD).
-        // Keep the old "~" format as fallback for older builds.
-        const msgNew = AA_BOOT_GROUP + ':' + lane + ':' + epoch + ':' + AA_BOOT_HOST + ':' + FALLBACK_KEYGEN.build_id;
-        // const msgOld = epoch + '~' + AA_BOOT_HOST + '~' + lane + '~' + AA_BOOT_GROUP + '~' + FALLBACK_KEYGEN.build_id;
-        const bootTok = aaHex(aaHmacSha256(hmacKey, aaAscii(msgNew)));
+        // mkissa build 175: message is buildId|group|host|epoch|lane joined by "|"
+        // (verified live 2026-09-25: "175|mkissa|mkissa.to|2960|k7" reproduces the
+        // app's x-aa-boot token). Builds 166/141 used group:lane:epoch:host:buildId
+        // with ":" — tried second when the new format gets rejected.
+        const msgNew = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, AA_BOOT_HOST, String(epoch), lane].join('|');
+        const msgOld = AA_BOOT_GROUP + ':' + lane + ':' + epoch + ':' + AA_BOOT_HOST + ':' + FALLBACK_KEYGEN.build_id;
         const url = AA_BOOTSTRAP_URL + '?buildId=' + encodeURIComponent(FALLBACK_KEYGEN.build_id) +
             '&k=' + encodeURIComponent(lane);
-        const resp = await soraFetch(url, {
-            headers: {
-                'x-build-id': String(FALLBACK_KEYGEN.build_id),
-                'x-aa-boot': bootTok,
-                'Referer': 'https://' + AA_BOOT_HOST + '/',
-                'Origin': 'https://' + AA_BOOT_HOST,
-                'Accept': 'application/json, text/plain, */*',
-                'User-Agent': UA
-            }
-        });
-        if (!respIsOk(resp)) {
-            console.log('bootstrap http ' + (resp ? resp.status : 'no-response') + ' for lane ' + lane);
-            return null;
+        let j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgNew))));
+        if (!j) {
+            j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgOld))));
         }
-        const j = await jsonSafe(resp);
-        if (!j) { console.log('bootstrap unparsable response for lane ' + lane); return null; }
-        if (!j.partB) { console.log('bootstrap empty partB'); return null; }
+        if (!j) return null;
         const raw = aaUnb64(j.partB);
         if (!raw || raw.length < 32) { console.log('bootstrap short partB'); return null; }
         const key = new Uint8Array(32);
@@ -848,6 +872,24 @@ async function mangaChapterPagesOnce(keys, mangaId, chapterString, translationTy
     }
     if (msg.indexOf('AA_CRYPTO_STALE') === 0 || msg.indexOf('AA_CRYPTO_MISSING') === 0 || msg.indexOf('AA_CRYPTO_EXPIRED') === 0) {
         console.log('[AllMangaNovels] aaReq stale/missing: ' + msg.slice(0, 60));
+        return null;
+    }
+    if (msg.indexOf('NEED_CAPTCHA') === 0) {
+        // The key/IV composition may be one revision behind the live site.
+        // Retry once with the legacy epoch:qh:ts IV before giving up.
+        console.log('[AllMangaNovels] NEED_CAPTCHA; retrying with legacy IV composition');
+        const json2 = await apiQuery(variables, HASH_CHAPTER_PAGES, {
+            token: aaBuildToken(keys, qh, ts, true),
+            lane: keys.lane,
+            headers: cryptoHeaders,
+            timeout: 15000
+        });
+        if (!json2) return null;
+        const msg2 = (json2.errors && json2.errors[0] && json2.errors[0].message) || '';
+        if (msg2.indexOf('NEED_CAPTCHA') !== 0) {
+            const parsed2 = (json2.data && json2.data.tobeparsed) ? aaDecrypt(keys, json2.data.tobeparsed) : null;
+            if (parsed2) return parsed2;
+        }
         return null;
     }
     const parsed = (json.data && json.data.tobeparsed) ? aaDecrypt(keys, json.data.tobeparsed) : null;

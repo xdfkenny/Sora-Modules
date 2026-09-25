@@ -6,8 +6,8 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "description": "Módulo de AllManga (allmanga.to) — anime en inglés (sub/dub) vía el flow oficial AllAnime (aaReq + tobeparsed + clock). v1.10.0: keygen build 166 epoch 2957 (mask 0VmOiOT…, key 43724f7d…, boot ld1faaOf3G:, mensaje boot mkissa:k7:2957:mkissa.to:166) + URLs /anime/<CUID> y episodios /p-<n>. v1.9.3: build 141 + manejo NEED_CAPTCHA/rate-limit + vidPath legacy deshabilitado.",
-  "version": "1.10.3",
+  "description": "Módulo de AllManga (allmanga.to) — anime en inglés (sub/dub) vía el flow oficial AllAnime (aaReq + tobeparsed + clock). v1.11.0: keygen build 175 epoch 2960 lane k7 (boot 175|mkissa|mkissa.to|2960|k7, IV epoch:buildId:qh:ts:lane, mask jfTMXeWz1KY=…, key 64642f3d…), retry con IV legacy en NEED_CAPTCHA. v1.9.3: build 141 + manejo NEED_CAPTCHA/rate-limit + vidPath legacy deshabilitado.",
+  "version": "1.11.0",
   "language": "English (SUB/DUB)",
   "streamType": "HLS/MP4",
   "quality": "1080p",

@@ -86,7 +86,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-novels/allmanga-novels.json",
       "sampleQuery": "angel next door",
       "needs_review": true,
-      "note": "search + chapters work, but chapterPages image API returns NEED_CAPTCHA on both api.mkissa.net and api.allanime.day (checked 2026-09); image step broken, unfixable in-module"
+      "note": "search/details/chapters OK; image step broken: chapterPages API answers NEED_CAPTCHA to every non-interactive client on both api.mkissa.net and api.allanime.day (re-verified 2026-09-25 with the site's own build-175 key/IV/lane — upstream/edge block, not in-module). Keygen now matches the live app (mkissa build 175, lane k9)."
     },
     {
       "id": "comix",
