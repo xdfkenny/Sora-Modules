@@ -9,7 +9,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yfsp/yfsp.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "hydrahd",
@@ -18,7 +19,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hydrahd/hydrahd.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "hydrahd-shirox",
@@ -27,7 +29,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hydrahd/hydrahd-shirox.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "anidb",
@@ -38,7 +41,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/anidb.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream anidb.app returns 503 (checked 2026-09)"
+      "note": "upstream anidb.app returns 503 (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "anime-nexus",
@@ -48,7 +52,8 @@
       "branch": "main",
       "discontinued": true,
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-nexus/anime-nexus.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "henaojara",
@@ -57,7 +62,8 @@
       "category": "anime/movies",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/henaojara/henaojara.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "flixlatam",
@@ -66,7 +72,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/flixlatam/flixlatam.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "allmanga",
@@ -75,7 +82,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga/allmanga.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "allmanga-novels",
@@ -86,7 +94,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-novels/allmanga-novels.json",
       "sampleQuery": "angel next door",
       "needs_review": true,
-      "note": "search/details/chapters OK; image step broken: chapterPages API answers NEED_CAPTCHA to every non-interactive client on both api.mkissa.net and api.allanime.day (re-verified 2026-09-25 with the site's own build-175 key/IV/lane — upstream/edge block, not in-module). Keygen now matches the live app (mkissa build 175, lane k9)."
+      "note": "search/details/chapters OK; image step broken: chapterPages API answers NEED_CAPTCHA to every non-interactive client on both api.mkissa.net and api.allanime.day (re-verified 2026-09-25 with the site's own build-175 key/IV/lane — upstream/edge block, not in-module). Keygen now matches the live app (mkissa build 175, lane k9).",
+      "updated": "2026-09-25"
     },
     {
       "id": "comix",
@@ -96,7 +105,8 @@
       "branch": "main",
       "discontinued": true,
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/comix/comix.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "torrentio",
@@ -106,7 +116,8 @@
       "branch": "main",
       "discontinued": true,
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/torrentio/torrentio.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "kissasian",
@@ -115,7 +126,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kissasian/kissasian.json",
-      "sampleQuery": "lovely runner"
+      "sampleQuery": "lovely runner",
+      "updated": "2026-09-25"
     },
     {
       "id": "aniliberty",
@@ -124,7 +136,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aniliberty/aniliberty.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animegg",
@@ -133,7 +146,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animegg/animegg.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animevost",
@@ -142,7 +156,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animevost/animevost.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "iptv-org",
@@ -151,7 +166,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/iptv-org/iptv-org.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "kisskh",
@@ -160,7 +176,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kisskh/kisskh.json",
-      "sampleQuery": "lovely runner"
+      "sampleQuery": "lovely runner",
+      "updated": "2026-09-25"
     },
     {
       "id": "lmanime",
@@ -169,7 +186,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lmanime/lmanime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "lncrawler",
@@ -178,7 +196,8 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lncrawler/lncrawler.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangadex",
@@ -187,7 +206,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangadex/mangadex.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "nimegami",
@@ -198,7 +218,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nimegami/nimegami.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream nimegami.id returns 522 (Cloudflare origin down, checked 2026-09)"
+      "note": "upstream nimegami.id returns 522 (Cloudflare origin down, checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "nivod",
@@ -207,7 +228,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nivod/nivod.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "onetouch",
@@ -216,7 +238,8 @@
       "category": "shows/movies/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onetouch/onetouch.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "onwave",
@@ -225,7 +248,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onwave/onwave.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "yummyanime",
@@ -234,7 +258,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yummyanime/yummyanime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "123anime",
@@ -243,7 +268,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/123anime/123anime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "AnimeUnity",
@@ -252,7 +278,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/AnimeUnity/AnimeUnity.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "AnimeWorld",
@@ -261,7 +288,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/AnimeWorld/AnimeWorld.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "StreamingUnity",
@@ -270,7 +298,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/StreamingUnity/StreamingUnity.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "aether",
@@ -279,7 +308,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aether/aether.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "airflix",
@@ -288,7 +318,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/airflix/airflix.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "aksv",
@@ -299,7 +330,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aksv/aksv.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream ak.sv unreachable (redirect loop/timeouts, checked 2026-09)"
+      "note": "upstream ak.sv unreachable (redirect loop/timeouts, checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "an1me",
@@ -308,7 +340,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/an1me/an1me.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "anidub",
@@ -317,7 +350,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidub/anidub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "anime-sama",
@@ -326,7 +360,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-sama/anime-sama.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animeav1",
@@ -335,7 +370,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeav1/animeav1.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animedefenders",
@@ -344,7 +380,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animedefenders/animedefenders.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animeland",
@@ -353,7 +390,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeland/animeland.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animelib",
@@ -362,7 +400,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animelib/animelib.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animenosub",
@@ -371,7 +410,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animenosub/animenosub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "anineko",
@@ -382,7 +422,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anineko/anineko.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream anineko.to unreachable (connection timeout, checked 2026-09)"
+      "note": "upstream anineko.to unreachable (connection timeout, checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "anitube",
@@ -391,7 +432,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anitube/anitube.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "aniwave",
@@ -400,7 +442,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aniwave/aniwave.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "blackCloverPace",
@@ -409,7 +452,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/blackCloverPace/blackCloverPace.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "borucut",
@@ -418,7 +462,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/borucut/borucut.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "chireads",
@@ -427,7 +472,8 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/chireads/chireads.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-25"
     },
     {
       "id": "concentratedBleach",
@@ -436,7 +482,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/concentratedBleach/concentratedBleach.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "dbzRecut",
@@ -445,7 +492,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/dbzRecut/dbzRecut.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "dragonballrecut",
@@ -454,7 +502,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/dragonballrecut/dragonballrecut.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "gidonline",
@@ -463,7 +512,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/gidonline/gidonline.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "imdb",
@@ -472,7 +522,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/imdb/imdb.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangabuddy",
@@ -481,7 +532,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangabuddy/mangabuddy.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangafreak",
@@ -490,7 +542,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangafreak/mangafreak.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangaworld",
@@ -499,7 +552,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangaworld/mangaworld.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "monoschinos2",
@@ -508,7 +562,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/monoschinos2/monoschinos2.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "nakanime",
@@ -519,7 +574,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nakanime/nakanime.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "site is client-side SPA, search API returns 404 (checked 2026-09)"
+      "note": "site is client-side SPA, search API returns 404 (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "onigashima",
@@ -528,7 +584,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onigashima/onigashima.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "otaku-streamers",
@@ -537,7 +594,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otaku-streamers/otaku-streamers.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "peachify",
@@ -546,7 +604,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/peachify/peachify.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "readnovels",
@@ -555,7 +614,8 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/readnovels/readnovels.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-25"
     },
     {
       "id": "scan-sama",
@@ -564,7 +624,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/scan-sama/scan-sama.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "streamcloud",
@@ -573,7 +634,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/streamcloud/streamcloud.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "toontales",
@@ -582,7 +644,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/toontales/toontales.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "vidcore",
@@ -591,7 +654,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidcore/vidcore.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "videasy",
@@ -600,7 +664,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/videasy/videasy.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "vidfast",
@@ -609,7 +674,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidfast/vidfast.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "voir-anime",
@@ -618,7 +684,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/voir-anime/voir-anime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "weebcentral",
@@ -627,7 +694,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/weebcentral/weebcentral.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "xpass",
@@ -636,7 +704,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xpass/xpass.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "1tamilcrow",
@@ -645,7 +714,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/1tamilcrow/1tamilcrow.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "Nakastream",
@@ -656,7 +726,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/Nakastream/Nakastream.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "site is client-side SPA, module cannot parse listings (checked 2026-09)"
+      "note": "site is client-side SPA, module cannot parse listings (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "anihq",
@@ -665,7 +736,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anihq/anihq.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-26"
     },
     {
       "id": "anikoto",
@@ -674,7 +746,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anikoto/anikoto.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animeheaven",
@@ -683,7 +756,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeheaven/animeheaven.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animesdigital",
@@ -692,7 +766,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesdigital/animesdigital.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animesrbija",
@@ -701,7 +776,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesrbija/animesrbija.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "animeweek",
@@ -710,7 +786,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeweek/animeweek.json",
-      "sampleQuery": "\uc6d0\ud53c\uc2a4"
+      "sampleQuery": "원피스",
+      "updated": "2026-09-25"
     },
     {
       "id": "animexin",
@@ -719,7 +796,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animexin/animexin.json",
-      "sampleQuery": "renegade"
+      "sampleQuery": "renegade",
+      "updated": "2026-09-25"
     },
     {
       "id": "arabictoons",
@@ -728,7 +806,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/arabictoons/arabictoons.json",
-      "sampleQuery": "one"
+      "sampleQuery": "one",
+      "updated": "2026-09-25"
     },
     {
       "id": "asia2tv",
@@ -737,7 +816,8 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/asia2tv/asia2tv.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "catflix",
@@ -746,7 +826,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/catflix/catflix.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "doramaland",
@@ -755,7 +836,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/doramaland/doramaland.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "filmo",
@@ -764,7 +846,8 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmo/filmo.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "filmpalast",
@@ -773,7 +856,8 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmpalast/filmpalast.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "kaliscan",
@@ -782,7 +866,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kaliscan/kaliscan.json",
-      "sampleQuery": "soul"
+      "sampleQuery": "soul",
+      "updated": "2026-09-25"
     },
     {
       "id": "latanime",
@@ -793,7 +878,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/latanime/latanime.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream latanime.org returns 403 Cloudflare-block to scripts (checked 2026-09)"
+      "note": "upstream latanime.org returns 403 Cloudflare-block to scripts (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "lightnovelworld",
@@ -804,7 +890,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lightnovelworld/lightnovelworld.json",
       "sampleQuery": "solo leveling",
       "needs_review": true,
-      "note": "upstream serves Cloudflare challenge to scripts (checked 2026-09)"
+      "note": "upstream serves Cloudflare challenge to scripts (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "luciferdonghua",
@@ -813,7 +900,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/luciferdonghua/luciferdonghua.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangafire",
@@ -824,7 +912,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangafire/mangafire.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-09)"
+      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangakatana",
@@ -833,7 +922,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangakatana/mangakatana.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "mangataro",
@@ -842,7 +932,8 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangataro/mangataro.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "miruro",
@@ -851,7 +942,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/miruro/miruro.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "moflix",
@@ -860,7 +952,8 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/moflix/moflix.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "movix",
@@ -869,7 +962,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/movix/movix.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "narucannon",
@@ -878,7 +972,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/narucannon/narucannon.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "novelbuddy",
@@ -887,7 +982,8 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelbuddy/novelbuddy.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-25"
     },
     {
       "id": "noveldot",
@@ -898,7 +994,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/noveldot/noveldot.json",
       "sampleQuery": "leveling",
       "needs_review": true,
-      "note": "chapter listing logic is correct but noveldot.com serves each /chapters page very slowly and inconsistently (~10-50s each); a 500-chapter novel needs 6 parallel page fetches that exceed the 25s harness step cap. Works on shorter novels; slow upstream, not a module bug."
+      "note": "chapter listing logic is correct but noveldot.com serves each /chapters page very slowly and inconsistently (~10-50s each); a 500-chapter novel needs 6 parallel page fetches that exceed the 25s harness step cap. Works on shorter novels; slow upstream, not a module bug.",
+      "updated": "2026-09-25"
     },
     {
       "id": "novelfire",
@@ -907,7 +1004,8 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelfire/novelfire.json",
-      "sampleQuery": "solo leveling"
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-25"
     },
     {
       "id": "onepace",
@@ -916,7 +1014,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepace/onepace.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "otakutsu",
@@ -925,7 +1024,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "purstream",
@@ -934,7 +1034,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/purstream/purstream.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "readnovelfull",
@@ -943,7 +1044,8 @@
       "category": "novels",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/readnovelfull/readnovelfull.json",
-      "sampleQuery": "leveling"
+      "sampleQuery": "leveling",
+      "updated": "2026-09-25"
     },
     {
       "id": "rebuildOfNaruto",
@@ -952,7 +1054,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rebuildOfNaruto/rebuildOfNaruto.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "ristoanime",
@@ -961,7 +1064,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/ristoanime/ristoanime.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "rumanhua1",
@@ -973,7 +1077,8 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "review_reason": "fetch failed",
-      "note": "upstream rumanhua1.com serves empty replies to scripts (checked 2026-09)"
+      "note": "upstream rumanhua1.com serves empty replies to scripts (checked 2026-09)",
+      "updated": "2026-09-25"
     },
     {
       "id": "sameband",
@@ -982,7 +1087,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/sameband/sameband.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "shizaproject",
@@ -991,7 +1097,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/shizaproject/shizaproject.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "spacepowerfans",
@@ -1000,7 +1107,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/spacepowerfans/spacepowerfans.json",
-      "sampleQuery": "dragon"
+      "sampleQuery": "dragon",
+      "updated": "2026-09-25"
     },
     {
       "id": "topcinema",
@@ -1009,7 +1117,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/topcinema/topcinema.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "turkish123",
@@ -1018,7 +1127,8 @@
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/turkish123/turkish123.json",
-      "sampleQuery": "atla"
+      "sampleQuery": "atla",
+      "updated": "2026-09-25"
     },
     {
       "id": "uaserial",
@@ -1027,7 +1137,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/uaserial/uaserial.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "xiaoxintv",
@@ -1036,7 +1147,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xiaoxintv/xiaoxintv.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "id": "yuYuHakushoPace",
@@ -1045,7 +1157,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yuYuHakushoPace/yuYuHakushoPace.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "VidLink",
@@ -1078,7 +1191,8 @@
       "discontinued": true,
       "name": "VidLink",
       "category": "shows/movies/anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidlink/vidlink.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidlink/vidlink.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "RGShows",
@@ -1104,7 +1218,8 @@
       "discontinued": true,
       "name": "RGShows",
       "category": "shows/movies",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rgshows/rgshows.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/rgshows/rgshows.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "111movies",
@@ -1130,7 +1245,8 @@
       "discontinued": true,
       "name": "111movies",
       "category": "shows/movies",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/111movies/111movies.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/111movies/111movies.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Vidrock",
@@ -1156,7 +1272,8 @@
       "discontinued": true,
       "name": "Vidrock",
       "category": "shows/movies",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidrock/vidrock.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidrock/vidrock.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "VidAPI",
@@ -1181,7 +1298,8 @@
       "discontinued": true,
       "name": "VidAPI",
       "category": "shows/movies",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidapi/vidapi.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidapi/vidapi.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Anify",
@@ -1206,7 +1324,8 @@
       "discontinued": true,
       "name": "Anify",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anify/anify.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anify/anify.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "HDRezka",
@@ -1232,7 +1351,8 @@
       "discontinued": true,
       "name": "HDRezka",
       "category": "shows/movies/anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hdrezka/hdrezka.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hdrezka/hdrezka.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Anoboye",
@@ -1269,7 +1389,8 @@
       "discontinued": true,
       "name": "Anoboye",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anoboye/anoboye.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anoboye/anoboye.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Anime Base (DUB)",
@@ -1294,7 +1415,8 @@
       "discontinued": true,
       "name": "Anime Base (DUB)",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-base/anime-base.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-base/anime-base.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Anime-Portal",
@@ -1319,7 +1441,8 @@
       "discontinued": true,
       "name": "Anime-Portal",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeportal/animeportal.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeportal/animeportal.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Anizone",
@@ -1345,7 +1468,8 @@
       "discontinued": true,
       "name": "Anizone",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anizone/anizone.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anizone/anizone.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "Kuudere",
@@ -1371,7 +1495,8 @@
       "discontinued": true,
       "name": "Kuudere",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "DonghuaStream",
@@ -1408,7 +1533,8 @@
       "discontinued": true,
       "name": "DonghuaStream",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/donghuastream/donghuastream.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/donghuastream/donghuastream.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "One Piece Film Red: AmaLee Score",
@@ -1433,7 +1559,8 @@
       "discontinued": true,
       "name": "One Piece Film Red: AmaLee Score",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceFilmRedAmaLeeScore/onePieceFilmRedAmaLeeScore.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceFilmRedAmaLeeScore/onePieceFilmRedAmaLeeScore.json",
+      "updated": "2026-09-25"
     },
     {
       "sourceName": "One Piece Treasure Edition",
@@ -1457,7 +1584,8 @@
       "discontinued": true,
       "name": "One Piece Treasure Edition",
       "category": "anime",
-      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceTreasureEdition/onePieceTreasureEdition.json"
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceTreasureEdition/onePieceTreasureEdition.json",
+      "updated": "2026-09-25"
     },
     {
       "id": "allmangadub",
@@ -1466,7 +1594,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/AllManga-DUB/allmanga-dub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "allmangasub",
@@ -1475,7 +1604,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/AllManga-SUB/allmanga-sub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "anikotodub",
@@ -1484,7 +1614,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Anikoto-DUB/anikoto-dub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "anikotosub",
@@ -1493,7 +1624,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Anikoto-SUB/anikoto-sub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "animepahedub",
@@ -1504,7 +1636,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-DUB/Animepahe-Dub.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "external module (JayGxnzalez); search returned only Error placeholder when checked 2026-09"
+      "note": "external module (JayGxnzalez); search returned only Error placeholder when checked 2026-09",
+      "updated": null
     },
     {
       "id": "animepahesub",
@@ -1513,7 +1646,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animepahe-SUB/Animepahe-Sub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "animexdub",
@@ -1522,7 +1656,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animex-Dub/animex-dub.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "animex",
@@ -1531,7 +1666,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/Animex/animex.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "batcave",
@@ -1542,7 +1678,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/BatCave/batcave.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined"
+      "review_reason": "Failed to parse URL from undefined",
+      "updated": null
     },
     {
       "id": "mlbwebcast",
@@ -1551,7 +1688,8 @@
       "category": "live",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MLB-Webcast/mlbwebcast.json",
-      "sampleQuery": "mlb"
+      "sampleQuery": "mlb",
+      "updated": null
     },
     {
       "id": "mangaball",
@@ -1562,7 +1700,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/mangaball.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined"
+      "review_reason": "Failed to parse URL from undefined",
+      "updated": null
     },
     {
       "id": "mangadot",
@@ -1573,7 +1712,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaDot/mangadot.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined"
+      "review_reason": "Failed to parse URL from undefined",
+      "updated": null
     },
     {
       "id": "nflwebcast",
@@ -1582,7 +1722,8 @@
       "category": "live",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/NFL-WebCast/nflwebcast.json",
-      "sampleQuery": "chiefs"
+      "sampleQuery": "chiefs",
+      "updated": null
     },
     {
       "id": "onepacedub",
@@ -1593,7 +1734,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/One-Pace-DUB/onepace-dub.json",
       "sampleQuery": "naruto",
       "needs_review": true,
-      "note": "external module (JayGxnzalez); fetchv2 call returned null in test env 2026-09"
+      "note": "external module (JayGxnzalez); fetchv2 call returned null in test env 2026-09",
+      "updated": null
     },
     {
       "id": "readfreecomicsonline",
@@ -1604,7 +1746,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/ReadFreeComicsOnline/readfreecomicsonline.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined"
+      "review_reason": "Failed to parse URL from undefined",
+      "updated": null
     },
     {
       "id": "usatv",
@@ -1613,7 +1756,8 @@
       "category": "live",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/USA-TV/usa-tv.json",
-      "sampleQuery": "espn"
+      "sampleQuery": "espn",
+      "updated": null
     },
     {
       "id": "weebcentral-kanzen",
@@ -1624,7 +1768,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/WeebCentral/Weebcentral-Kanzen.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined"
+      "review_reason": "Failed to parse URL from undefined",
+      "updated": null
     },
     {
       "id": "anibd",
@@ -1633,7 +1778,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/anibd/anibd.json",
-      "sampleQuery": "one piece"
+      "sampleQuery": "one piece",
+      "updated": null
     },
     {
       "id": "emby",
@@ -1642,7 +1788,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/cranci1/Sora-Modules/refs/heads/main/Emby/Emby.json",
-      "sampleQuery": ""
+      "sampleQuery": "",
+      "updated": null
     },
     {
       "id": "jellyfin",
@@ -1651,7 +1798,8 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/cranci1/Sora-Modules/refs/heads/main/JellyFin/jellyfin.json",
-      "sampleQuery": ""
+      "sampleQuery": "",
+      "updated": null
     }
   ]
 }
