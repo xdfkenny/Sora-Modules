@@ -149,6 +149,8 @@ var I18N = {
     'results': '{n} modules', 'results.one': '1 module',
     'lib.donate': 'Support this library and the ongoing development & maintenance of modules. Your donations help keep everything alive.',
     'filter.clear': 'Clear',
+    'sort.label': 'Sort', 'sort.recent': 'Recently Updated',
+    'card.updated': 'Updated {d}',
     'empty.t': 'No modules found', 'empty.d': 'Try a different search or filter.',
     'state.loading': 'Loading module index…', 'state.fail': 'Could not load modules.json. Serve over HTTP or check GitHub Pages.'
   },
@@ -171,6 +173,8 @@ var I18N = {
     'results': '{n} módulos', 'results.one': '1 módulo',
     'lib.donate': 'Apoya esta librería y el desarrollo y mantenimiento continuo de módulos. Tus donaciones ayudan a mantener todo funcionando.',
     'filter.clear': 'Limpiar',
+    'sort.label': 'Ordenar', 'sort.recent': 'Actualizado recientemente',
+    'card.updated': 'Actualizado {d}',
     'empty.t': 'Sin resultados', 'empty.d': 'Prueba con otra búsqueda o filtro.',
     'state.loading': 'Cargando índice…', 'state.fail': 'No se pudo cargar modules.json. Sirve por HTTP o revisa GitHub Pages.'
   }
@@ -393,7 +397,23 @@ function updateStats() {
 
 /* ---------------- filters ---------------- */
 
-var state = { q: '', cat: 'all', apps: {} };
+var state = { q: '', cat: 'all', apps: {}, sort: '' };
+
+/* `updated` dates come from the index; "recent" sort shows newest first and
+ * undated modules last. */
+function updatedStamp(e) {
+  var d = e.updated;
+  if (!d) return 0;
+  return Date.parse(d + 'T00:00:00Z') || 0;
+}
+
+function sortEntry(a, b) {
+  if (state.sort === 'recent') {
+    var d = updatedStamp(b) - updatedStamp(a);
+    return d !== 0 ? d : String(b.name || '').localeCompare(String(a.name || ''));
+  }
+  return 0;
+}
 
 function rawCategory(entry) {
   var m = manifests[entry.id] || {};
@@ -435,7 +455,9 @@ function matchSearch(entry) {
 }
 
 function filtered() {
-  return entries.filter(function (e) { return matchCat(e) && matchApp(e) && matchSearch(e); });
+  var list = entries.filter(function (e) { return matchCat(e) && matchApp(e) && matchSearch(e); });
+  if (state.sort) list.sort(sortEntry);
+  return list;
 }
 
 function updateResultCount() {
@@ -556,6 +578,9 @@ function renderShells() {
   if (!grid) return;
   grid.innerHTML = entries.map(function (e, i) {
     var dis = e.discontinued ? ' card-discontinued' : '';
+    var updatedChip = e.updated
+      ? '<div class="card-updated"><span class="material-symbols-outlined icon-sm" aria-hidden="true">schedule</span><span class="chip chip-updated" data-role="updated"></span></div>'
+      : '';
     return '<article class="card' + dis + '" data-id="' + esc(e.id) + '" style="animation-delay:' + Math.min(i, 10) * 30 + 'ms">' +
       '<div class="card-head"><div class="card-icon">' +
       cardIconImg(e) +
@@ -563,7 +588,7 @@ function renderShells() {
       '<div class="card-title">' + esc(e.name) + '</div><span class="ver" data-role="ver">…</span>' +
       '</div><div class="card-branch">' + esc(e.id) + '</div></div>' +
       (e.discontinued ? '<span class="discontinued-badge"><span class="material-symbols-outlined icon-sm">block</span> Discontinued</span>' : '') +
-      '</div><div class="card-body"><div class="meta" data-role="meta"><span class="chip">loading…</span></div><div class="links" data-role="links"></div></div></article>';
+      '</div><div class="card-body"><div class="meta" data-role="meta"><span class="chip">loading…</span></div>' + updatedChip + '<div class="links" data-role="links"></div></div></article>';
   }).join('');
   entries.forEach(function (e) {
     var card = grid.querySelector('[data-id="' + cssEsc(e.id) + '"]');
@@ -571,7 +596,8 @@ function renderShells() {
       card: card,
       meta: card.querySelector('[data-role="meta"]'),
       links: card.querySelector('[data-role="links"]'),
-      ver: card.querySelector('[data-role="ver"]')
+      ver: card.querySelector('[data-role="ver"]'),
+      updated: card.querySelector('[data-role="updated"]')
     };
   });
 }
@@ -632,11 +658,20 @@ function hydrate(entry, m) {
 function renderGrid() {
   if (!grid || !entries.length) return;
   var visible = 0;
+  if (state.sort) {
+    // Float the visible cards to the front of the DOM in sort order;
+    // hidden cards stay put (they are invisible anyway).
+    filtered().forEach(function (e) {
+      var ref = cards[e.id];
+      if (ref && ref.card.parentNode === grid) grid.appendChild(ref.card);
+    });
+  }
   entries.forEach(function (e) {
     var ref = cards[e.id];
     if (!ref) return;
     var show = matchCat(e) && matchApp(e) && matchSearch(e);
     ref.card.style.display = show ? '' : 'none';
+    if (ref.updated) ref.updated.textContent = t('card.updated', { d: e.updated });
     if (show) visible++;
   });
   // Refresh labels baked at hydrate time so the lang switch applies to cards.
@@ -750,6 +785,22 @@ function initControls() {
           if (ic) ic.textContent = orig || 'link';
         }, 1500);
       }).catch(function () { toast(t('toast.copyFail')); });
+    });
+  }
+  var sortRow = $('sortFilters');
+  if (sortRow && !sortRow.dataset.bound) {
+    sortRow.dataset.bound = '1';
+    sortRow.addEventListener('click', function (ev) {
+      var b = ev.target.closest('[data-sort]');
+      if (!b) return;
+      var next = state.sort === b.dataset.sort ? '' : b.dataset.sort;
+      state.sort = next;
+      sortRow.querySelectorAll('.filter-pill-sort').forEach(function (x) {
+        var on = x.dataset.sort === state.sort;
+        x.classList.toggle('active', on);
+        x.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      renderGrid();
     });
   }
   enableChipDrag($('categoryFilters'));

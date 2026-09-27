@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://raw.githubusercontent.com" />
   <link rel="preconnect" href="https://img.passportindex.org" />
   <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20260921" />
+  <link rel="stylesheet" href="styles.css?v=20260925" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -148,6 +148,16 @@
               <button type="button" class="filter-pill filter-pill-app" data-app="shirox"><iconify-icon icon="mdi:star-four-points-outline" aria-hidden="true"></iconify-icon> Shirox</button>
             </div>
           </div>
+
+          <div class="filter-pills-row filter-pills-row-sort">
+            <div class="filter-group chips" id="sortFilters" aria-label="Sort">
+              <span class="filter-label" data-i18n="sort.label">Sort:</span>
+              <button type="button" class="filter-pill filter-pill-sort" data-sort="recent" aria-pressed="false">
+                <iconify-icon icon="mdi:clock-outline" aria-hidden="true"></iconify-icon>
+                <span data-i18n="sort.recent">Recently Updated</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="library-summary" aria-live="polite">
@@ -176,6 +186,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="material-symbols-outlined icon-sm">check_circle</span><span id="toastText"></span></div>
 
-  <script src="script.js?v=20260921" defer></script>
+  <script src="script.js?v=20260925" defer></script>
 </body>
 </html>

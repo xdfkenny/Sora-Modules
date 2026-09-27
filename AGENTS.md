@@ -10,7 +10,8 @@ Curated Sora/Luna/Shirox scraper modules (anime/movies/manga/novels/torrents). N
 <module>/           # e.g. henaojara/, anidb/, hydrahd/, comix/, torrentio/, yfsp/, allmanga-novels/
   <module>.json     # manifest — metadata + scriptUrl
   <module>.js       # scraper — single file, no imports
-modules.json        # global index consumed by modules.js + server.js
+modules.json        # global index consumed by modules.js + server.js (per-entry `updated` = last-modified date)
+refresh-updated.js  # helper: regenerates every `updated` field in modules.json from git history
 server.js           # status/test harness (Node)
 index.html + script.js     # home page — topbar/hero landing ('/')
 modules/index.html + modules.js  # full module library ('/modules')
@@ -109,8 +110,9 @@ const src = require('fs').readFileSync('allmanga-novels/allmanga-novels.js','utf
 1. Copy `henaojara/henaojara.json` as manifest template or `novel-examples/` for novels.
 2. Script: implement contract functions with `soraFetch` wrapper. Check `anidb/anidb.js:13` (simple anime) or `henaojara/henaojara.js:1` (multi-server) as references.
 3. Add entry to `modules.json`.
-4. Test: `node server.js` with ≥2 keywords, verify `stream`/`text` returns real URLs/HTML and images `200` without Referer. Grep for unguarded `setTimeout`/`setInterval` before shipping.
-5. Do not edit `test/hydrahd-copy/` (frozen v2.2.1 baseline per `test/README.md:1`) or `*.patch` files.
+4. After touching a module's files (or its entry in `modules.json`), run `node refresh-updated.js` so the entry's `updated` field matches today — the library page's "Recently Updated" sort and per-card "Updated …" chip read it. Modules whose manifest lives in another repo get `updated: null` and sort last.
+5. Test: `node server.js` with ≥2 keywords, verify `stream`/`text` returns real URLs/HTML and images `200` without Referer. Grep for unguarded `setTimeout`/`setInterval` before shipping.
+6. Do not edit `test/hydrahd-copy/` (frozen v2.2.1 baseline per `test/README.md:1`) or `*.patch` files.
 
 ## Deploy
 

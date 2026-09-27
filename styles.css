@@ -1327,6 +1327,35 @@ a.btn-card-action.btn-card-sora:hover,
   font-weight: 500;
 }
 
+/* "Recently Updated" card stamp — sits between the meta row and the links */
+.card-updated {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: -2px 0 2px;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+.card-updated .icon-sm {
+  font-size: 14px;
+  color: var(--accent-dark);
+  opacity: 0.8;
+}
+
+.chip-updated {
+  color: var(--accent-dark);
+  background: var(--frost);
+  border-color: var(--border);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Sort row (its own scroll row so it never reflows the app filters) */
+.filter-pills-row-sort {
+  margin-top: -2px;
+}
+
 .desc {
   font-size: 12.5px;
   color: var(--fg-muted);
@@ -1971,6 +2000,9 @@ html[data-theme="dark"] .card-title { color: #E6EDF3; }
 html[data-theme="dark"] .ver { background: #1E2D45; border-color: #2A3A52; color: #8ED0F0; }
 html[data-theme="dark"] .card-branch { color: #6B7E9A; }
 html[data-theme="dark"] .chip { background: #0F1729; border-color: #2A3A52; color: #8A9AB3; }
+html[data-theme="dark"] .chip-updated { background: #141E32; border-color: #2A3A52; color: #8ED0F0; }
+html[data-theme="dark"] .card-updated { color: #8A9AB3; }
+html[data-theme="dark"] .card-updated .icon-sm { color: #8ED0F0; }
 html[data-theme="dark"] .desc { color: #8A9AB3; }
 html[data-theme="dark"] .link { background: #0F1729; border-color: #2A3A52; color: #8ED0F0; }
 html[data-theme="dark"] .link:hover { background: #1E2D45; border-color: #3A5575; }
