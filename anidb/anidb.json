@@ -11,7 +11,7 @@
     "url": "https://github.com/xdfkenny"
   },
   "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app). Si anidb.app está caído/mantenimiento, cada paso cae al espejo anidb.se (búsqueda, episodios disponibles y stream mp4 directo).",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "language": "English (SUB/DUB)",
   "streamType": "HLS/MP4",
   "quality": "1080p",

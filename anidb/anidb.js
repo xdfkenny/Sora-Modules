@@ -18,7 +18,9 @@ const MIRROR_SEARCH_URL = `${MIRROR_URL}/?s=`;
 /**
  * Searches anidb.app for anime titles matching the given keyword. While the
  * main site is down (maintenance page / network failure) it falls back to
- * the anidb.se mirror search.
+ * the anidb.se mirror search. Mirror results keep the mirror's own URLs;
+ * when the main site is up again its URLs keep working because every step
+ * that fails on the main site re-maps the show onto the mirror.
  * Returns a JSON string array of {title, image, href} objects.
  */
 async function searchResults(keyword) {
@@ -26,24 +28,29 @@ async function searchResults(keyword) {
         const query = (keyword || '').trim();
         if (!query) return JSON.stringify([]);
 
-        try {
-            const browseSrc = await fetchTextOrThrow(`${BROWSE_URL}${encodeURIComponent(query)}`);
-            const fromBrowse = parseBrowseCards(browseSrc);
-            if (fromBrowse.length > 0) return JSON.stringify(fromBrowse);
+        // Main site first. Fallback is result-based, not exception-based:
+        // in-app fetchv2 may resolve a 503 response without throwing and
+        // without exposing .ok, so "main produced nothing" is the signal.
+        const main = await mainSearch(query);
+        if (main.length > 0) return JSON.stringify(main);
 
-            const suggestSrc = await fetchTextOrThrow(`${SUGGEST_URL}${encodeURIComponent(query)}`);
-            const fromSuggest = parseBrowseCards(suggestSrc);
-            if (fromSuggest.length > 0) return JSON.stringify(fromSuggest);
-        } catch (mainError) {
-            // main site unreachable / maintenance: mirror search
-            const mirror = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(query)}`));
-            if (mirror.length > 0) return JSON.stringify(mirror);
-        }
-
-        return JSON.stringify([]);
+        const mirror = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(query)}`));
+        return JSON.stringify(mirror);
     } catch (error) {
         console.log('Search error: ' + error);
         return JSON.stringify([]);
+    }
+}
+
+async function mainSearch(query) {
+    try {
+        const browseSrc = await fetchTextOrThrow(`${BROWSE_URL}${encodeURIComponent(query)}`);
+        const fromBrowse = parseBrowseCards(browseSrc);
+        if (fromBrowse.length > 0) return fromBrowse;
+        return parseBrowseCards(await fetchTextOrThrow(`${SUGGEST_URL}${encodeURIComponent(query)}`));
+    } catch (e) {
+        // main unreachable / maintenance / HTTP error: caller mirrors
+        return [];
     }
 }
 
