@@ -37,6 +37,38 @@ function esc(s) {
   });
 }
 
+/* Module icon with a fallback chain. An entry may carry `iconFallbackUrl`
+ * (string or array): on load error the img walks down those URLs in order
+ * instead of disappearing. The chain is embedded in the <img> so the onerror
+ * handler needs no per-card JS wiring. */
+function cardIconImg(e) {
+  var chain = [];
+  if (e.iconUrl) chain.push(String(e.iconUrl));
+  var fb = e.iconFallbackUrl;
+  if (fb) (Array.isArray(fb) ? fb : [fb]).forEach(function (u) { if (u) chain.push(String(u)); });
+  if (!chain.length) return '<span class="card-icon-fallback" aria-hidden="true"></span>';
+  if (chain.length === 1) {
+    return '<img src="' + esc(chain[0]) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
+  }
+  return '<img src="' + esc(chain[0]) + '" data-icon-chain="' + esc(JSON.stringify(chain.slice(1))) + '" data-icon-idx="-1" alt="" loading="lazy" decoding="async" onerror="if(__iconFallback(this))this.remove()">';
+}
+
+/* Walks a card icon's fallback chain. Returns true when the icon is dead
+ * for good (caller removes the element), false when it advanced to the next
+ * candidate. Called from the <img>'s inline onerror handler. */
+function __iconFallback(img) {
+  var chain = [];
+  try { chain = JSON.parse(img.getAttribute('data-icon-chain') || '[]'); } catch (e) { return true; }
+  if (!chain.length) return true;
+  var cur = parseInt(img.getAttribute('data-icon-idx'), 10);
+  if (isNaN(cur)) cur = -1;
+  var next = cur + 1;
+  if (next >= chain.length) return true;
+  img.setAttribute('data-icon-idx', String(next));
+  img.src = chain[next];
+  return false;
+}
+
 function cssEsc(s) {
   if (window.CSS && CSS.escape) return CSS.escape(s);
   return String(s).replace(/["\\]/g, '\\$&');
@@ -526,7 +558,7 @@ function renderShells() {
     var dis = e.discontinued ? ' card-discontinued' : '';
     return '<article class="card' + dis + '" data-id="' + esc(e.id) + '" style="animation-delay:' + Math.min(i, 10) * 30 + 'ms">' +
       '<div class="card-head"><div class="card-icon">' +
-      '<img src="' + esc(e.iconUrl) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' +
+      cardIconImg(e) +
       '</div><div class="cufiy-head-info"><div class="card-title-row">' +
       '<div class="card-title">' + esc(e.name) + '</div><span class="ver" data-role="ver">…</span>' +
       '</div><div class="card-branch">' + esc(e.id) + '</div></div>' +

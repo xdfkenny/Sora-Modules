@@ -36,13 +36,17 @@
       "id": "anidb",
       "name": "AniDB",
       "iconUrl": "https://anidb.app/images/fav-192.png",
+      "iconFallbackUrl": [
+        "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/icon.png",
+        "https://www.google.com/s2/favicons?sz=192&domain=anidb.net"
+      ],
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/anidb.json",
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "upstream anidb.app returns 503 (checked 2026-09)",
-      "updated": "2026-09-25"
+      "updated": "2026-09-27"
     },
     {
       "id": "anime-nexus",
