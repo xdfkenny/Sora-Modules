@@ -45,7 +45,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/anidb.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream anidb.app returns 503 (checked 2026-09)",
+      "note": "anidb.app 503 (maintenance, checked 2026-09); module falls back to anidb.se mirror for search/episodes/streams while it's down",
       "updated": "2026-09-27"
     },
     {
