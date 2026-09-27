@@ -17,10 +17,11 @@ const MIRROR_SEARCH_URL = `${MIRROR_URL}/?s=`;
 
 /**
  * Searches anidb.app for anime titles matching the given keyword. While the
- * main site is down (maintenance page / network failure) it falls back to
- * the anidb.se mirror search. Mirror results keep the mirror's own URLs;
- * when the main site is up again its URLs keep working because every step
- * that fails on the main site re-maps the show onto the mirror.
+ * main site is down (maintenance page / network failure) it chains to the
+ * classic AniDB XML API (via Shirox's fetchv2 impersonation), then to the
+ * anidb.se mirror search. Mirror results keep the mirror's own URLs; when
+ * the main site is up again its URLs keep working because every step that
+ * fails on the main site re-maps the show onto the mirror.
  * Returns a JSON string array of {title, image, href} objects.
  */
 async function searchResults(keyword) {
@@ -33,6 +34,12 @@ async function searchResults(keyword) {
         // without exposing .ok, so "main produced nothing" is the signal.
         const main = await mainSearch(query);
         if (main.length > 0) return JSON.stringify(main);
+
+        // Classic AniDB (anidb.net/...info) — the XML API behind ani-cli.
+        // Its host sits behind a Cloudflare datacenter-IP block, so it only
+        // resolves with browser impersonation (Shirox fetchv2 arg 5).
+        const classic = await classicSearch(query);
+        if (classic.length > 0) return JSON.stringify(classic);
 
         const mirror = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(query)}`));
         return JSON.stringify(mirror);
@@ -49,8 +56,166 @@ async function mainSearch(query) {
         if (fromBrowse.length > 0) return fromBrowse;
         return parseBrowseCards(await fetchTextOrThrow(`${SUGGEST_URL}${encodeURIComponent(query)}`));
     } catch (e) {
-        // main unreachable / maintenance / HTTP error: caller mirrors
+        // main unreachable / maintenance / HTTP error: caller chains on
         return [];
+    }
+}
+
+/* Classic AniDB (anidb.net) — the XML API behind ani-cli. anidb.app's
+ * actual backend: same data, original site. Its host is Cloudflare-blocked
+ * for datacenter IPs, so it only resolves with browser impersonation
+ * (Shirox fetchv2 arg 5: { impersonate: 'chrome' }). On builds without
+ * impersonation the classic fetches just 403 and the chain moves on. */
+const CLASSIC_BASE = 'https://anidb.net';
+var CLASSIC_CACHE = {};
+
+function isClassicUrl(url) {
+    return /anidb\.(net|info)\//i.test(String(url || ''));
+}
+
+function classicAnimeUrl(hime) {
+    return `${CLASSIC_BASE}/anime.php?hime=${hime}`;
+}
+
+// Cached classic API fetch: the chain asks for the same show XML more than
+// once (details + episodes + stream) within one browsing session.
+async function classicFetchXml(path) {
+    const key = CLASSIC_BASE + path;
+    if (CLASSIC_CACHE[key]) return CLASSIC_CACHE[key];
+    const xml = await fetchText(key, 'chrome');
+    CLASSIC_CACHE[key] = xml;
+    return xml;
+}
+
+function isUsableClassicXml(xml) {
+    return !!xml && !/<html|<!DOCTYPE/i.test(xml.slice(0, 300));
+}
+
+async function classicSearch(query) {
+    try {
+        const xml = await fetchText(`${CLASSIC_BASE}/xml/v1/site/search/anime.php?s=${encodeURIComponent(query)}&limit=20`, 'chrome');
+        return parseClassicSearchXml(xml);
+    } catch (e) {
+        return [];
+    }
+}
+
+// Classic API responses are XML — parse with regex/indexOf only.
+// Each <anime> block: <hime>135</hime><titles><title lang="en">One Piece</title>...
+function parseClassicSearchXml(xml) {
+    const results = [];
+    if (!isUsableClassicXml(xml)) return results;
+
+    const seen = new Set();
+    const animeRe = /<anime[^>]*>[\s\S]*?<\/anime>/gi;
+    let block;
+    while ((block = animeRe.exec(xml)) !== null) {
+        const chunk = block[0];
+        const hime = extractFirst(chunk, /<hime>(\d+)<\/hime>/i);
+        // Prefer the English title, then the main title, then any title.
+        const title = extractFirst(chunk, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i)
+            || extractFirst(chunk, /<title[^>]*lang="main"[^>]*>([\s\S]*?)<\/title>/i)
+            || extractFirst(chunk, /<title[^>]*>([\s\S]*?)<\/title>/i);
+        if (!hime || !title || seen.has(hime)) continue;
+        seen.add(hime);
+        results.push({
+            title: cleanText(title),
+            image: '',
+            href: classicAnimeUrl(hime)
+        });
+    }
+    return results;
+}
+
+async function classicEpisodes(hime) {
+    try {
+        const xml = await classicFetchXml(`/xml/v1/info/anime/episodes/${hime}`);
+        if (!isUsableClassicXml(xml)) return [];
+
+        const episodes = [];
+        const epRe = /<episode[^>]*>[\s\S]*?<\/episode>/gi;
+        let block;
+        while ((block = epRe.exec(xml)) !== null) {
+            const chunk = block[0];
+            const id = extractFirst(chunk, /<eid>(\d+)<\/eid>/i);
+            const epNumber = extractFirst(chunk, /<ep>(\d+)<\/ep>/i);
+            const episodeType = extractFirst(chunk, /<episode_type>([^<]*)<\/episode_type>/i);
+            // Main-season episodes only; specials/OVA come from other
+            // endpoints and would interleave badly.
+            if (!id || !epNumber || episodeType !== 'main_season') continue;
+            episodes.push({
+                href: `${CLASSIC_BASE}/episode.php?eid=${id}`,
+                number: parseInt(epNumber, 10)
+            });
+        }
+        episodes.sort((a, b) => a.number - b.number);
+        return episodes;
+    } catch (e) {
+        return [];
+    }
+}
+
+// Classic show details: real synopsis + release date + all titles, straight
+// from the same DB anidb.app fronts.
+async function classicDetails(hime) {
+    try {
+        const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
+        if (!isUsableClassicXml(xml)) return null;
+
+        const description = cleanText(extractFirst(xml, /<anidb_synopsis>([\s\S]*?)<\/anidb_synopsis>/i));
+        const airdate = extractFirst(xml, /<date>([\d-]+)<\/date>/i);
+
+        const titles = [];
+        const titleRe = /<title[^>]*>([\s\S]*?)<\/title>/gi;
+        let t;
+        while ((t = titleRe.exec(xml)) !== null) {
+            const x = cleanText(t[1]);
+            if (x) titles.push(x);
+        }
+
+        return {
+            description: description || 'No description available',
+            airdate: airdate || 'Unknown',
+            aliases: titles.length > 1 ? titles.join(', ') : (titles[0] || 'No alternative titles')
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+// Mirror show URL for a classic hime: the mirror only exposes search, so we
+// go hime -> English title (classic API) -> mirror search -> show card.
+async function mirrorUrlForClassicHime(hime) {
+    if (!hime) return '';
+    const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
+    if (!isUsableClassicXml(xml)) return '';
+    const en = extractFirst(xml, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i);
+    const title = cleanText(en || extractFirst(xml, /<title[^>]*>([\s\S]*?)<\/title>/i));
+    if (!title) return '';
+    const found = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(title)}`));
+    return found.length ? found[0].href : '';
+}
+
+// Mirror stream for a classic episode URL: eid -> ep number + hime ->
+// mirror show page -> the matching mirror episode page -> its direct mp4.
+async function classicEpisodeStream(url) {
+    try {
+        const eid = extractFirst(String(url || ''), /[?&]eid=(\d+)/i);
+        if (!eid) return null;
+        const xml = await classicFetchXml(`/xml/v1/info/episode/${eid}`);
+        if (!isUsableClassicXml(xml)) return null;
+        const hime = extractFirst(xml, /<hime>(\d+)<\/hime>/i);
+        const epNum = extractFirst(xml, /<ep>(\d+)<\/ep>/i);
+        if (!hime || !epNum) return null;
+        const mirrorShow = await mirrorUrlForClassicHime(hime);
+        if (!mirrorShow) return null;
+        const html = await fetchText(mirrorShow);
+        const eps = parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow));
+        const match = eps.find(function (e) { return e.number === parseInt(epNum, 10); });
+        if (!match) return null;
+        return parseMirrorStream(await fetchText(match.href));
+    } catch (e) {
+        return null;
     }
 }
 
@@ -65,13 +230,20 @@ async function extractDetails(url) {
             const mirrorDetails = parseMirrorDetails(await fetchText(String(url)));
             return JSON.stringify([mirrorDetails || detailsFallback()]);
         }
+        if (isClassicUrl(url)) {
+            const hime = extractFirst(String(url), /[?&]hime=(\d+)/i);
+            return JSON.stringify([classicDetails(hime) || detailsFallback()]);
+        }
         try {
             const html = await fetchTextOrThrow(String(url));
             if (/under maintenance/i.test(html)) throw new Error('main site maintenance page');
             return JSON.stringify([parseMainDetails(html)]);
         } catch (mainError) {
-            // main site unreachable / maintenance: mirror details (title only,
-            // the mirror carries no synopsis/metadata)
+            // main site unreachable / maintenance: classic API first (real
+            // synopsis + dates + aliases), mirror title-only last.
+            const hime = parseAnimeId(url);
+            const classic = hime ? classicDetails(hime) : null;
+            if (classic) return JSON.stringify([classic]);
             const mirrorDetails = parseMirrorDetails(await fetchText(resolveMirrorUrl(url)));
             return JSON.stringify([mirrorDetails || detailsFallback()]);
         }
@@ -99,27 +271,48 @@ async function extractEpisodes(url) {
             return JSON.stringify([]);
         }
 
-        try {
-            const animeId = parseAnimeId(url);
-            if (animeId) {
-                const response = await soraFetch(EPISODES_API.replace('%s', animeId));
-                if (response) {
-                    const data = await response.json();
-                    const main = parseMainEpisodes(data, BASE_URL);
-                    if (main.length > 0) return JSON.stringify(main);
+        // Result-based fallback: in-app fetchv2 may resolve a 503 API
+        // response without throwing, so "main produced no episodes" is the
+        // signal to chain onto the classic XML API, then the mirror.
+        const main = await mainEpisodes(url);
+        if (main.length > 0) return JSON.stringify(main);
+
+        const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
+        if (hime) {
+            const classicEps = await classicEpisodes(hime);
+            if (classicEps.length > 0) {
+                // Classic episode URLs are metadata-only (no stream); the
+                // playable chain (extractStreamUrl) works off mirror episode
+                // pages, so try to hand Sora mirror URLs for this show.
+                const mirrorShow = await mirrorUrlForClassicHime(hime);
+                if (mirrorShow) {
+                    const html = await fetchText(mirrorShow);
+                    const mirror = parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow));
+                    if (mirror.length > 0) return JSON.stringify(mirror);
                 }
+                return JSON.stringify(classicEps);
             }
-        } catch (mainError) {
-            // main API unreachable / maintenance: mirror episode list
-            const html = await fetchText(resolveMirrorUrl(url));
-            const mirror = parseMirrorEpisodes(html, mirrorShowSlug(url));
-            if (mirror.length > 0) return JSON.stringify(mirror);
         }
 
-        return JSON.stringify([]);
+        const html = await fetchText(resolveMirrorUrl(url));
+        const mirror = parseMirrorEpisodes(html, mirrorShowSlug(url));
+        return JSON.stringify(mirror);
     } catch (error) {
         console.log('Episodes error: ' + error);
         return JSON.stringify([]);
+    }
+}
+
+async function mainEpisodes(url) {
+    try {
+        const animeId = parseAnimeId(url);
+        if (!animeId) return [];
+        const response = await soraFetch(EPISODES_API.replace('%s', animeId));
+        if (!response) return [];
+        const data = await response.json();
+        return parseMainEpisodes(data, BASE_URL);
+    } catch (e) {
+        return [];
     }
 }
 
@@ -137,6 +330,14 @@ async function extractStreamUrl(url) {
             const mirror = parseMirrorStream(await fetchText(String(url)));
             return JSON.stringify({ streams: mirror ? [mirror] : [], subtitle: '' });
         }
+        if (isClassicUrl(url)) {
+            const classic = await classicEpisodeStream(url);
+            return JSON.stringify({ streams: classic ? [classic] : [], subtitle: '' });
+        }
+        // While the main site is down, the app's episode URLs came from the
+        // mirror's extractEpisodes and are already anidb.se URLs (handled
+        // above). A raw anidb.app/episode/<id> URL has no mirror
+        // counterpart, so main only.
         const main = await resolveMainStream(String(url));
         return JSON.stringify({ streams: main || [], subtitle: '' });
     } catch (error) {
@@ -533,7 +734,10 @@ async function soraFetch(url, options) {
     const body = typeof opts.body === 'undefined' ? null : opts.body;
 
     try {
-        return await fetchv2(url, mergedHeaders, method, body);
+        // Shirox's fetchv2 accepts a 5th arg ({ impersonate: 'chrome', ... })
+        // that dresses the request up as a real browser — useful against
+        // datacenter-IP blocks; older Sora/Luna builds ignore it.
+        return await fetchv2(url, mergedHeaders, method, body, opts.impersonate ? { impersonate: opts.impersonate } : undefined);
     } catch (e) {
         try {
             const text = await fetch(url, {
@@ -555,8 +759,8 @@ async function soraFetch(url, options) {
 // Fetch URL text; throws on non-2xx so callers can chain to the mirror.
 // (fetchv2 may reject on network failure but still resolve on 4xx/5xx,
 // hence the explicit status check.)
-async function fetchTextOrThrow(url) {
-    const response = await soraFetch(url);
+async function fetchTextOrThrow(url, impersonate) {
+    const response = await soraFetch(url, impersonate ? { impersonate: impersonate } : undefined);
     if (!response) throw new Error('no response: ' + url);
     if (response.ok !== undefined && response.ok === false) {
         const status = response.status || 0;
@@ -565,9 +769,9 @@ async function fetchTextOrThrow(url) {
     return await response.text();
 }
 
-async function fetchText(url) {
+async function fetchText(url, impersonate) {
     if (!url) return '';
-    const response = await soraFetch(url);
+    const response = await soraFetch(url, impersonate ? { impersonate: impersonate } : undefined);
     if (!response) return '';
     return await response.text();
 }

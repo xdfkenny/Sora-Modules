@@ -10,8 +10,8 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app). Si anidb.app está caído/mantenimiento, cada paso cae al espejo anidb.se (búsqueda, episodios disponibles y stream mp4 directo).",
-  "version": "1.2.1",
+  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app). Si anidb.app está caído/mantenimiento, cada paso cae al API clásico de AniDB (anidb.net, con impersonation en Shirox) y después al espejo anidb.se (búsqueda, episodios disponibles y stream mp4 directo).",
+  "version": "1.3.0",
   "language": "English (SUB/DUB)",
   "streamType": "HLS/MP4",
   "quality": "1080p",
