@@ -732,12 +732,12 @@
     {
       "id": "anihq",
       "name": "AniHQ",
-      "iconUrl": "https://anihq.to/wp-content/uploads/cropped-Icon-1-1-192x192.png",
+      "iconUrl": "https://anihq.cc/apple-touch-icon.png",
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anihq/anihq.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-26"
+      "updated": "2026-09-27"
     },
     {
       "id": "anikoto",
