@@ -1,0 +1,131 @@
+/* Bridge page — minimal, matches the library's frost aesthetic. */
+
+:root {
+  --bg: #F4FAFE;
+  --frost: #E1F5FE;
+  --card: #FFFFFF;
+  --fg: #16283C;
+  --fg-muted: #5E7389;
+  --accent: #7EC8E3;
+  --accent-dark: #4A9ECF;
+  --accent-deep: #2B7A9E;
+  --border: #D8E8F2;
+  --shadow: 0 18px 50px rgba(43, 122, 158, 0.14);
+  --r-lg: 20px;
+  --r-full: 999px;
+  --font: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0C1424;
+    --frost: #14213A;
+    --card: #101B30;
+    --fg: #EAF4FB;
+    --fg-muted: #8DA2BD;
+    --accent: #7EC8E3;
+    --accent-dark: #4A9ECF;
+    --accent-deep: #8ED0F0;
+    --border: #22344F;
+    --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--fg);
+  background:
+    radial-gradient(1100px 520px at 50% -8%, var(--frost), transparent 62%),
+    var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  padding: 34px 30px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+.mark {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--accent-deep);
+  background: var(--frost);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.sub {
+  margin: 0 0 18px;
+  color: var(--fg-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.status {
+  margin: 0 0 18px;
+  color: var(--accent-deep);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #08131F;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(74, 158, 207, 0.32);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+.note {
+  margin: 16px 0 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .status { animation: none; }
+}

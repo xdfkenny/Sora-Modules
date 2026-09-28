@@ -588,6 +588,7 @@ function renderShells() {
       '<div class="card-title">' + esc(e.name) + '</div><span class="ver" data-role="ver">…</span>' +
       '</div><div class="card-branch">' + esc(e.id) + '</div></div>' +
       (e.discontinued ? '<span class="discontinued-badge"><span class="material-symbols-outlined icon-sm">block</span> Discontinued</span>' : '') +
+      (!e.discontinued && e.badge ? '<span class="fresh-badge"><span class="material-symbols-outlined icon-sm">new_releases</span> ' + esc(String(e.badge)) + '</span>' : '') +
       '</div><div class="card-body"><div class="meta" data-role="meta"><span class="chip">loading…</span></div>' + updatedChip + '<div class="links" data-role="links"></div></div></article>';
   }).join('');
   entries.forEach(function (e) {

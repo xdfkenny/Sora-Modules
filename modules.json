@@ -1,5 +1,4 @@
 {
-  "lastUpdated": "2026-09-24",
   "repo": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules",
   "modules": [
     {
@@ -41,6 +40,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/dessin-anime/dessin-anime.json",
       "sampleQuery": "naruto",
       "updated": "2026-09-21",
+      "badge": "new",
       "note": "player4me decrypted 100% locally (AES-128-CBC); works on Shirox after tapping Verify Cloudflare for dessinanime.cc."
     },
     {
