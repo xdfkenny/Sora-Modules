@@ -87,7 +87,7 @@ const DEFAULT_CHAPTER_HEAD = 'https://aln.youtube-anime.com/';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-console.log('[AllMangaNovels] module script loaded v1.4.0 (build 175 keygen, k9 chapterPages lane + self-bootstrap + fetchv2 impersonate:chrome, kanzen-env safe)');
+console.log('[AllMangaNovels] module script loaded v1.4.2 (build 175 keygen, k9 chapterPages lane + self-bootstrap + fetchv2 impersonate:chrome + 403 plain-fetch retry, kanzen-env safe)');
 
 /* ---- fetch bridge --------------------------------------------------------- */
 
@@ -111,7 +111,15 @@ async function soraFetch(url, options) {
         if (opts.impersonate) {
             try {
                 const r = await fetchv2(url, headers, method, body, { impersonate: opts.impersonate });
-                if (r) return toResponseLike(r);
+                if (r) {
+                    const norm = toResponseLike(r);
+                    // An impersonated request that the edge rejects (403
+                    // challenge page, Cloudflare 4xx, ...) is NOT a valid
+                    // answer — drop the fingerprint and retry plain fetchv2
+                    // on the same URL before giving up on this call.
+                    if (!(typeof norm.status === 'number' && norm.status >= 400)) return norm;
+                    console.log('impersonated fetchv2 http ' + norm.status + ' on ' + url + '; retrying plain fetchv2');
+                }
             } catch (e5) {
                 console.log('impersonated fetchv2 threw (' + e5 + '); retrying plain fetchv2');
             }

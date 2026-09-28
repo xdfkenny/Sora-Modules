@@ -67,7 +67,7 @@ const CDN_BASES = [
 
 let aaKeyCache = { keys: null, ts: 0 };
 
-if (typeof console !== 'undefined') console.log('allmanga module v1.12.1 (build 175 keygen, k7 episode lane, fetchv2 impersonate:chrome + toResponseLike normalization)');
+if (typeof console !== 'undefined') console.log('allmanga module v1.12.2 (build 175 keygen, k7 episode lane, fetchv2 impersonate:chrome + toResponseLike + 403 plain-fetch retry)');
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -1296,7 +1296,15 @@ async function soraFetch(url, options) {
         if (opts.impersonate) {
             try {
                 const r = await fetchv2(url, headers, method, body, { impersonate: opts.impersonate });
-                if (r) return toResponseLike(r);
+                if (r) {
+                    const norm = toResponseLike(r);
+                    // An impersonated request that the edge rejects (403
+                    // challenge page, Cloudflare 4xx, ...) is NOT a valid
+                    // answer — drop the fingerprint and retry plain fetchv2
+                    // on the same URL before giving up on this call.
+                    if (!(typeof norm.status === 'number' && norm.status >= 400)) return norm;
+                    console.log('impersonated fetchv2 http ' + norm.status + ' on ' + url + '; retrying plain fetchv2');
+                }
             } catch (e5) {
                 console.log('impersonated fetchv2 threw (' + e5 + '); retrying plain fetchv2');
             }
