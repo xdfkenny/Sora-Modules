@@ -35,9 +35,13 @@ async function searchResults(keyword) {
         const main = await mainSearch(query);
         if (main.length > 0) return JSON.stringify(main);
 
-        // Classic AniDB (anidb.net/...info) — the XML API behind ani-cli.
-        // Its host sits behind a Cloudflare datacenter-IP block, so it only
-        // resolves with browser impersonation (Shirox fetchv2 arg 5).
+        // AniList (public GraphQL, no auth) — full catalog with posters,
+        // results mapped onto classic anidb.net URLs (idMal = hime).
+        const al = await alSearchResults(query);
+        if (al.length > 0) return JSON.stringify(al);
+
+        // Classic AniDB (anidb.net) XML API — covers the niche AniDB-only
+        // titles; only resolves with Shirox browser impersonation.
         const classic = await classicSearch(query);
         if (classic.length > 0) return JSON.stringify(classic);
 
@@ -68,6 +72,11 @@ async function mainSearch(query) {
  * impersonation the classic fetches just 403 and the chain moves on. */
 const CLASSIC_BASE = 'https://anidb.net';
 var CLASSIC_CACHE = {};
+
+// AniList public GraphQL — no auth, no Cloudflare block. Its media IDs are
+// MAL IDs, which equal classic AniDB hime numbers, so it can cover the
+// full catalog even when anidb.net is blocked: search, posters, synopsis.
+const AL_GRAPHQL = 'https://graphql.anilist.co';
 
 function isClassicUrl(url) {
     return /anidb\.(net|info)\//i.test(String(url || ''));
@@ -183,40 +192,182 @@ async function classicDetails(hime) {
     }
 }
 
-// Mirror show URL for a classic hime: the mirror only exposes search, so we
-// go hime -> English title (classic API) -> mirror search -> show card.
-async function mirrorUrlForClassicHime(hime) {
+/* --- AniList (public, unauthenticated) --- */
+
+function alPost(query, variables) {
+    const body = JSON.stringify({ query: query, variables: variables || {} });
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+    return soraFetch(AL_GRAPHQL, { method: 'POST', headers: headers, body: body });
+}
+
+async function alSearchResults(query) {
+    try {
+        const gq = 'query($s:String!){ Page(perPage:10){ media(search:$s, type:ANIME, sort:SEARCH_MATCH, isAdult:false){ id title{romaji english} coverImage{large} } } }';
+        const res = await alPost(gq, { s: query });
+        if (!res) return [];
+        const data = await res.json();
+        const media = (data && data.data && data.data.Page && data.data.Page.media) || [];
+        const results = [];
+        for (let i = 0; i < media.length; i++) {
+            const m = media[i];
+            if (!m || !m.id) continue;
+            const title = cleanText(((m.title && (m.title.english || m.title.romaji)) || ''));
+            if (!title) continue;
+            // AniList media id == MAL id == classic AniDB hime.
+            results.push({
+                title: title,
+                image: (m.coverImage && m.coverImage.large) || '',
+                href: classicAnimeUrl(m.id)
+            });
+        }
+        return results;
+    } catch (e) {
+        return [];
+    }
+}
+
+// English display title for a hime: classic first (niche names), AniList
+// as the public fallback.
+async function himeTitle(hime) {
     if (!hime) return '';
     const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
-    if (!isUsableClassicXml(xml)) return '';
-    const en = extractFirst(xml, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i);
-    const title = cleanText(en || extractFirst(xml, /<title[^>]*>([\s\S]*?)<\/title>/i));
+    if (isUsableClassicXml(xml)) {
+        const en = extractFirst(xml, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i);
+        if (cleanText(en)) return cleanText(en);
+    }
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english} } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (res) {
+            const data = await res.json();
+            const t = data && data.data && data.data.Media && data.data.Media.title;
+            if (t) return cleanText(t.english || t.romaji || '');
+        }
+    } catch (e) { /* fall through */ }
+    return '';
+}
+
+async function alDetails(hime) {
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english native} description startDate{year month day} } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (!res) return null;
+        const data = await res.json();
+        const m = data && data.data && data.data.Media;
+        if (!m) return null;
+        const aliases = [];
+        if (m.title) {
+            [m.title.romaji, m.title.english, m.title.native].forEach(function (t) {
+                const x = cleanText(String(t || ''));
+                if (x && aliases.indexOf(x) === -1) aliases.push(x);
+            });
+        }
+        let airdate = 'Unknown';
+        if (m.startDate && m.startDate.year) {
+            airdate = String(m.startDate.year);
+            if (m.startDate.month) airdate += '-' + m.startDate.month;
+            if (m.startDate.day) airdate += '-' + m.startDate.day;
+        }
+        return {
+            description: cleanText(m.description || '') || 'No description available',
+            airdate: airdate,
+            aliases: aliases.length ? aliases.join(', ') : 'No alternative titles'
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+// Mirror show URL for a hime: the mirror only exposes search, so we go
+// hime -> display title -> mirror search -> show card.
+async function mirrorShowForHime(hime, titleHint) {
+    if (!hime) return '';
+    let title = cleanText(String(titleHint || ''));
+    if (!title) title = await himeTitle(hime);
     if (!title) return '';
     const found = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(title)}`));
     return found.length ? found[0].href : '';
+}
+
+/* --- Jikan (public MAL REST proxy): full numbered episode lists without
+ * auth or Cloudflare. Episode numbers map onto playable mirror URLs. --- */
+const JIKAN_BASE = 'https://api.jikan.moe/v2';
+
+async function jikanEpisodes(malId) {
+    const numbers = [];
+    const titleRef = { t: '' };
+    try {
+        for (let page = 1; page <= 3; page++) {
+            const res = await soraFetch(`${JIKAN_BASE}/anime/${malId}/episodes?page=${page}&limit=100`);
+            if (!res) break;
+            const data = await res.json();
+            if (!data || !Array.isArray(data.data)) break;
+            if (!titleRef.t && data.data.anime && data.data.anime.title) titleRef.t = String(data.data.anime.title);
+            data.data.episodes.forEach(function (ep) {
+                const n = parseInt(ep.number, 10);
+                if (!isNaN(n) && n > 0) numbers.push(n);
+            });
+            if (data.data.episodes.length < 100) break;
+        }
+    } catch (e) {
+        return [];
+    }
+    if (!numbers.length) return [];
+    numbers.sort(function (a, b) { return a - b; });
+
+    const mirrorShow = await mirrorShowForHime(malId, titleRef.t);
+    let byNum = {};
+    if (mirrorShow) {
+        const html = await fetchText(mirrorShow);
+        parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
+    }
+    return numbers.map(function (n) {
+        // Playable mirror episode when the mirror hosts it; otherwise the
+        // synthetic hime+ep URL (extractStreamUrl re-resolves it when the
+        // mirror adds the episode — the classic URL would have no player).
+        return byNum[n]
+            ? { href: byNum[n].href, number: n }
+            : { href: `${CLASSIC_BASE}/episode.php?hime=${malId}&ep=${n}`, number: n };
+    });
 }
 
 // Mirror stream for a classic episode URL: eid -> ep number + hime ->
 // mirror show page -> the matching mirror episode page -> its direct mp4.
 async function classicEpisodeStream(url) {
     try {
-        const eid = extractFirst(String(url || ''), /[?&]eid=(\d+)/i);
-        if (!eid) return null;
-        const xml = await classicFetchXml(`/xml/v1/info/episode/${eid}`);
-        if (!isUsableClassicXml(xml)) return null;
-        const hime = extractFirst(xml, /<hime>(\d+)<\/hime>/i);
-        const epNum = extractFirst(xml, /<ep>(\d+)<\/ep>/i);
-        if (!hime || !epNum) return null;
-        const mirrorShow = await mirrorUrlForClassicHime(hime);
+        const u = String(url || '');
+        const eid = extractFirst(u, /[?&]eid=(\d+)/i);
+        const hime = extractFirst(u, /[?&]hime=(\d+)/i);
+        const epNum = extractFirst(u, /[?&]ep=(\d+(?:\.\d+)?)/i);
+
+        let num = epNum ? parseInt(epNum, 10) : null;
+        if (!hime && eid) {
+            const xml = await classicFetchXml(`/xml/v1/info/episode/${eid}`);
+            if (isUsableClassicXml(xml)) {
+                num = parseInt(extractFirst(xml, /<ep>(\d+)<\/ep>/i), 10);
+            }
+        }
+        const showHime = hime || (eid ? extractFirst(await classicFetchXml(`/xml/v1/info/episode/${eid}`) || '', /<hime>(\d+)<\/hime>/i) : '');
+        if (!showHime || isNaN(num)) return null;
+
+        const mirrorShow = await mirrorShowForHime(showHime);
         if (!mirrorShow) return null;
         const html = await fetchText(mirrorShow);
         const eps = parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow));
-        const match = eps.find(function (e) { return e.number === parseInt(epNum, 10); });
+        const match = eps.find(function (e) { return e.number === num; });
         if (!match) return null;
         return parseMirrorStream(await fetchText(match.href));
     } catch (e) {
         return null;
     }
+}
+
+function detailsFallback() {
+    return {
+        description: 'No description available',
+        airdate: 'Unknown',
+        aliases: 'No alternative titles'
+    };
 }
 
 /**
@@ -232,20 +383,25 @@ async function extractDetails(url) {
         }
         if (isClassicUrl(url)) {
             const hime = extractFirst(String(url), /[?&]hime=(\d+)/i);
-            return JSON.stringify([classicDetails(hime) || detailsFallback()]);
+            // Classic AniDB details are preferred (AniDB-native synopsis);
+            // when the CF block denies it, AniList covers it publicly.
+            const classic = hime ? await classicDetails(hime) : null;
+            const al = classic ? null : await alDetails(hime);
+            const mirror = parseMirrorDetails(await fetchText(await mirrorShowForHime(hime)));
+            return JSON.stringify([classic || al || mirror || detailsFallback()]);
         }
         try {
             const html = await fetchTextOrThrow(String(url));
             if (/under maintenance/i.test(html)) throw new Error('main site maintenance page');
             return JSON.stringify([parseMainDetails(html)]);
         } catch (mainError) {
-            // main site unreachable / maintenance: classic API first (real
-            // synopsis + dates + aliases), mirror title-only last.
-            const hime = parseAnimeId(url);
-            const classic = hime ? classicDetails(hime) : null;
-            if (classic) return JSON.stringify([classic]);
+            // main site unreachable / maintenance: classic API first,
+            // AniList second, mirror title-only last.
+            const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
+            const classic = hime ? await classicDetails(hime) : null;
+            const al = (classic || !hime) ? null : await alDetails(hime);
             const mirrorDetails = parseMirrorDetails(await fetchText(resolveMirrorUrl(url)));
-            return JSON.stringify([mirrorDetails || detailsFallback()]);
+            return JSON.stringify([classic || al || mirrorDetails || detailsFallback()]);
         }
     } catch (error) {
         console.log('Details error: ' + error);
@@ -279,24 +435,26 @@ async function extractEpisodes(url) {
 
         const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
         if (hime) {
+            // Full catalog, playable where the mirror hosts it.
+            const jikan = await jikanEpisodes(hime);
+            if (jikan.length > 0) return JSON.stringify(jikan);
+
+            // Classic only if impersonation is available (Shirox); otherwise
+            // its XML 403s and this yields [].
             const classicEps = await classicEpisodes(hime);
-            if (classicEps.length > 0) {
-                // Classic episode URLs are metadata-only (no stream); the
-                // playable chain (extractStreamUrl) works off mirror episode
-                // pages, so try to hand Sora mirror URLs for this show.
-                const mirrorShow = await mirrorUrlForClassicHime(hime);
-                if (mirrorShow) {
-                    const html = await fetchText(mirrorShow);
-                    const mirror = parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow));
-                    if (mirror.length > 0) return JSON.stringify(mirror);
-                }
-                return JSON.stringify(classicEps);
-            }
+            if (classicEps.length > 0) return JSON.stringify(classicEps);
         }
 
-        const html = await fetchText(resolveMirrorUrl(url));
-        const mirror = parseMirrorEpisodes(html, mirrorShowSlug(url));
-        return JSON.stringify(mirror);
+        // Classic hime URLs have no mirror-slug to derive from; resolve the
+        // mirror show through hime -> title -> mirror search instead.
+        let mirrorUrl = resolveMirrorUrl(url);
+        if (!mirrorUrl && hime) mirrorUrl = await mirrorShowForHime(hime);
+        if (mirrorUrl) {
+            const html = await fetchText(mirrorUrl);
+            const mirror = parseMirrorEpisodes(html, mirrorShowSlug(mirrorUrl));
+            return JSON.stringify(mirror);
+        }
+        return JSON.stringify([]);
     } catch (error) {
         console.log('Episodes error: ' + error);
         return JSON.stringify([]);

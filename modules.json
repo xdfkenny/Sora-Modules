@@ -45,8 +45,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/anidb.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "anidb.app 503 (maintenance, checked 2026-09); module falls back to classic anidb.net API (with Shirox impersonation) then anidb.se mirror",
-      "updated": "2026-09-27"
+      "note": "anidb.app 503 (maintenance, checked 2026-09); module searches via public AniList + Jikan APIs (no Cloudflare), details via classic anidb.net (Shirox impersonation) / AniList / anidb.se mirror; playable streams from anidb.se mirror shows (one piece, rezero s4, etc.)",
+      "updated": "2026-09-28"
     },
     {
       "id": "anime-nexus",
