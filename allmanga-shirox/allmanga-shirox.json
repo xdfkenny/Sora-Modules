@@ -6,8 +6,8 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "description": "Módulo de AllAnime (allmanga.to) — build Shirox con fetchv2 impersonate:chrome en todas las llamadas a la API (api.mkissa.net / api.allanime.day / clock / bootstrap), fingerprint de navegador completo contra el edge de Cloudflare. Base v1.11.0 (keygen build 175 epoch 2960 lane k7, IV epoch:buildId:qh:ts:lane, retry con IV legacy en NEED_CAPTCHA) + v1.12.0 impersonation. Para Sora/Luna clásicos, usa el módulo 'AllAnime' clásico.",
-  "version": "1.12.0",
+  "description": "Módulo de AllAnime (allmanga.to) — build Shirox con fetchv2 impersonate:chrome en todas las llamadas a la API (api.mkissa.net / api.allanime.day / clock / bootstrap), fingerprint de navegador completo contra el edge de Cloudflare. Base v1.11.0 (keygen build 175 epoch 2960 lane k7, IV epoch:buildId:qh:ts:lane, retry con IV legacy en NEED_CAPTCHA) + v1.12.0 impersonation. v1.12.1: normalización toResponseLike (fetchv2 que resuelve con string o con .json() síncrono ya no devuelve búsquedas vacías) + guard de 4xx/5xx por host. Para Sora/Luna clásicos, usa el módulo 'AllAnime' clásico.",
+  "version": "1.12.1",
   "language": "English (SUB/DUB)",
   "streamType": "HLS/MP4",
   "quality": "1080p",

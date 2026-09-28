@@ -188,6 +188,13 @@ async function jsonSafe(resp) {
         return null;
     }
     if (j === null || typeof j !== 'object') {
+        // A build whose .json() resolves to a primitive: parse the raw body
+        // text instead so the host still counts as a hit.
+        try {
+            const t = await resp.text();
+            const parsed = JSON.parse(String(t || ''));
+            if (parsed && typeof parsed === 'object') return parsed;
+        } catch (e3) { /* fall through */ }
         console.log('[AllMangaNovels] unexpected response json type: ' + typeof j);
         return null;
     }
@@ -801,6 +808,9 @@ async function apiQuery(variables, hash, options) {
         }
         const resp = await soraFetchTimed(url, { headers: apiHeaders(opts.headers), impersonate: 'chrome' }, opts.timeout || 12000);
         if (!resp) continue;
+        // 4xx/5xx (NEED_CAPTCHA page, Cloudflare 403, ...) — do not let an
+        // error object from host 1 stop us from trying host 2.
+        if (typeof resp.status === 'number' && resp.status >= 400) continue;
         const json = await jsonSafe(resp);
         if (json) return json;
     }

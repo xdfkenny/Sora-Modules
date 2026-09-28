@@ -67,7 +67,7 @@ const CDN_BASES = [
 
 let aaKeyCache = { keys: null, ts: 0 };
 
-if (typeof console !== 'undefined') console.log('allmanga module v1.12.0 (build 175 keygen, k7 episode lane, fetchv2 impersonate:chrome)');
+if (typeof console !== 'undefined') console.log('allmanga module v1.12.1 (build 175 keygen, k7 episode lane, fetchv2 impersonate:chrome + toResponseLike normalization)');
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -1245,12 +1245,32 @@ async function gql(query) {
             impersonate: 'chrome'
         });
         if (!response) continue;
-        try {
-            const json = await response.json();
-            if (json && json.data) return json.data;
-        } catch (error) {
+        // Guard: 4xx/5xx responses (NEED_CAPTCHA page, Cloudflare 403, ...)
+        // resolve .json() into an error object with no .data — try the next
+        // host instead of treating them as an empty search.
+        if (typeof response.status === 'number' && response.status >= 400) {
+            console.log('gql http ' + response.status + ' from ' + API_URLS[i] + '; trying next host');
             continue;
         }
+        let json = null;
+        try {
+            json = await response.json();
+        } catch (parseError) {
+            // Non-JSON body (challenge page, empty body from a build that
+            // hands back a string, ...) — log it and try the next host.
+            try {
+                const t = await response.text();
+                console.log('gql non-json from ' + API_URLS[i] + ': ' + String(t).replace(/\s+/g, ' ').slice(0, 120));
+            } catch (e2) { /* ignore */ }
+            continue;
+        }
+        if (!json) continue;
+        // Some builds' json() can resolve to an Error VALUE instead of
+        // throwing (kanzen-style shim) — treat that as "no data" too.
+        if (json instanceof Error) continue;
+        const errMsg = (json.errors && json.errors[0] && json.errors[0].message) || '';
+        if (json.data) return json.data;
+        if (errMsg) console.log('gql error from ' + API_URLS[i] + ': ' + errMsg.slice(0, 80));
     }
     return null;
 }
@@ -1275,12 +1295,14 @@ async function soraFetch(url, options) {
     try {
         if (opts.impersonate) {
             try {
-                return await fetchv2(url, headers, method, body, { impersonate: opts.impersonate });
+                const r = await fetchv2(url, headers, method, body, { impersonate: opts.impersonate });
+                if (r) return toResponseLike(r);
             } catch (e5) {
                 console.log('impersonated fetchv2 threw (' + e5 + '); retrying plain fetchv2');
             }
         }
-        return await fetchv2(url, headers, method, body);
+        const r2 = await fetchv2(url, headers, method, body);
+        if (r2) return toResponseLike(r2);
     } catch (e) {
         try {
             const text = await fetch(url, {
@@ -1288,15 +1310,53 @@ async function soraFetch(url, options) {
                 headers: headers,
                 body: body
             });
-            return {
-                text: async () => text,
-                json: async () => JSON.parse(text)
-            };
+            return toResponseLike(text);
         } catch (error) {
             console.log('soraFetch error: ' + error);
             return null;
         }
     }
+}
+
+// Normalize whatever Shirox's fetchv2 returned into a Response-like object.
+// Two known fetchv2 quirks kill this module's search otherwise:
+//  1. some builds resolve with the body STRING instead of a Response, so
+//     `response.json` is undefined and gql() silently returns null -> [];
+//  2. Shirox's fetchv2 Response returns .json() SYNCHRONOUSLY as a plain
+//     object, so `.json().catch(...)` throws "catch is not a function".
+// Re-wrap so text()/json() are always real promises in both apps
+// (same pattern as hydrahd/hydrahd.js:20 and allmanga-novels-shirox).
+function toResponseLike(value) {
+    if (value && typeof value.text === 'function') {
+        return {
+            status: typeof value.status === 'number' ? value.status : 200,
+            ok: value.ok !== false && !(typeof value.status === 'number' && value.status >= 400),
+            headers: value.headers || { get: function() { return null; } },
+            text: async function() {
+                return String((await Promise.resolve(value.text())) || '');
+            },
+            json: async function() {
+                try {
+                    const parsed = await Promise.resolve(value.json());
+                    if (parsed != null) return parsed;
+                } catch (e) { /* body not JSON — parse text below */ }
+                return JSON.parse(String((await Promise.resolve(value.text())) || ''));
+            }
+        };
+    }
+    let str = '';
+    try {
+        if (value == null) str = '';
+        else if (typeof value === 'string') str = value;
+        else str = String(value);
+    } catch (e) { str = ''; }
+    return {
+        status: 200,
+        ok: true,
+        headers: { get: function() { return null; } },
+        text: async function() { return str; },
+        json: async function() { return JSON.parse(str); }
+    };
 }
 
 /* P.A.C.K.E.R. UNPACKER (needed for some iframe embed pages) */
