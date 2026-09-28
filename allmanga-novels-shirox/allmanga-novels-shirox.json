@@ -8,7 +8,7 @@
     "url": "https://github.com/xdfkenny"
   },
   "description": "Módulo tipo manga de AllManga (allmanga.to) — build Shirox con fetchv2 impersonate:chrome en apiQuery (chapterPages + search/details) y bootstrap, fingerprint de navegador completo contra el edge de Cloudflare. Base v1.3.0 (keygen build 175 epoch 2960 lane k9, auto-registro del persisted query en PersistedQueryNotFound) + v1.4.0 impersonation. v1.4.1: jsonSafe con fallback a texto y guard 4xx/5xx por host (búsquedas vacías en builds con .json() síncrono). Para Sora/Luna clásicos, usa el módulo 'AllManga Manga' clásico. Contrato mangas de kanzen: searchResults / extractDetails / extractChapters / extractImages con salida cruda.",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "language": "English",
   "languageType": [
     "Translated"
