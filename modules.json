@@ -46,7 +46,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "anidb.app 503 (maintenance, checked 2026-09); module searches via public AniList + Jikan APIs (no Cloudflare), details via classic anidb.net (Shirox impersonation) / AniList / anidb.se mirror; playable streams from anidb.se mirror shows (one piece, rezero s4, etc.)",
-      "updated": "2026-09-28"
+      "updated": "2026-09-27"
     },
     {
       "id": "anime-nexus",
@@ -87,7 +87,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga/allmanga.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-09-28"
     },
     {
       "id": "allmanga-novels",
@@ -99,7 +99,7 @@
       "sampleQuery": "angel next door",
       "needs_review": true,
       "note": "search/details/chapters OK; image step broken: chapterPages API answers NEED_CAPTCHA to every non-interactive client on both api.mkissa.net and api.allanime.day (re-verified 2026-09-25 with the site's own build-175 key/IV/lane — upstream/edge block, not in-module). Keygen now matches the live app (mkissa build 175, lane k9).",
-      "updated": "2026-09-25"
+      "updated": "2026-09-28"
     },
     {
       "id": "comix",

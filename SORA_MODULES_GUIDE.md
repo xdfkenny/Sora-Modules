@@ -64,7 +64,8 @@ function fetchv2(
   url: string,
   headers: Record<string, string>,
   method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
-  body: string | null
+  body: string | null,
+  opts?: { impersonate?: "chrome" | "safari" | "firefox" }  // Shirox 2026-09+
 ): Promise<FetchV2Response>;
 
 interface FetchV2Response {
@@ -73,6 +74,17 @@ interface FetchV2Response {
   headers: Record<string, string>;
 }
 ```
+
+> **Browser impersonation (new in the 2026-09 Shirox/Sora update).** Pass a 5th
+> `opts` object — `{ impersonate: "chrome" }` (or `"safari"` / `"firefox"`) — to
+> have the request dressed with a full, consistent browser fingerprint
+> (matching `sec-ch-ua`, `accept-encoding`, header ordering). Use it for hosts
+> that fingerprint non-browser TLS/header stacks behind Cloudflare (e.g. the
+> AllAnime API `api.mkissa.net`). Older app builds ignore the 5th argument, so
+> always pass it through a wrapper that tolerates both:
+> `fetchv2(url, headers, method, body, opts)` where `opts` is optional.
+> A separate `{ engine: "webview" }` option fetches through a WebView that
+> carries the site's own cookies — not needed for stateless API flows.
 
 ### Standard Fetch Boilerplate
 AI assistants should include this wrapper at the top of all generated script files to normalize requests and handle environment fallback:
