@@ -4,7 +4,7 @@ const SUGGEST_URL = `${BASE_URL}/search/suggestions?q=`;
 const EPISODES_API = `${BASE_URL}/api/frontend/anime/%s/episodes`;
 const LANGUAGES_API = `${BASE_URL}/api/frontend/episode/%s/languages`;
 
-if (typeof console !== 'undefined') console.log('[AniDB] module script loaded v1.5.0 (AniList/Jikan/MAL-HTML episode tiers)');
+if (typeof console !== 'undefined') console.log('[AniDB] module script loaded v1.6.0 (AniList/Jikan/MAL-HTML episodes + AniLibria HLS streams)');
 
 /* Mirror: anidb.se — an anidb-named streaming mirror used as fallback while
  * anidb.app is under maintenance (503 on every page/API route). Search
@@ -443,6 +443,230 @@ function detailsFallback() {
     };
 }
 
+/* --- Anilibria (public REST, no auth): playable HLS for the full catalog.
+ * The 1Anime network's stream backend (flixcloud tokens + WASM obfuscation)
+ * is unworkable in-app, but Anilibria serves plain m3u8s on
+ * cache.libria.fun that answer 200 without a Referer — verified for
+ * One Piece / Frieren / Golden Kamuy. Search is by title, matched by
+ * MAL id (when it equals hime) or exact English title. Episode hrefs are
+ * anilibria.top watch-page URLs that extractStreamUrl re-resolves. --- */
+const LIBRIA_API = 'https://anilibria.top/api/v1';
+const LIBRIA_BASE = 'https://anilibria.top';
+const LIBRIA_RELEASE = `${LIBRIA_BASE}/releases/`;
+const LIBRIA_CACHE = {};
+
+function libriaHeaders() {
+    return {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Referer': LIBRIA_BASE + '/'
+    };
+}
+
+function isLibriaUrl(url) {
+    return String(url || '').indexOf(LIBRIA_RELEASE) !== -1 ||
+        String(url || '').indexOf(LIBRIA_BASE + '/anime/releases/') !== -1;
+}
+
+function libriaReleaseId(url) {
+    return extractFirst(String(url || ''), /anilibria\.top\/(?:releases\/|api\/v1\/anime\/releases\/)(\d+)/i);
+}
+
+async function libriaRelease(libId) {
+    if (LIBRIA_CACHE[libId]) return LIBRIA_CACHE[libId];
+    try {
+        const res = await soraFetch(`${LIBRIA_API}/anime/releases/${libId}`, { headers: libriaHeaders() });
+        if (!res) return null;
+        const rel = await res.json();
+        if (!rel || !rel.id) return null;
+        LIBRIA_CACHE[libId] = rel;
+        return rel;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Find the Anilibria release for a hime: search by display title, prefer an
+// exact MAL-id hit, then an exact English-title hit, then the first result.
+function normTitle(s) {
+    // Lowercase, drop apostrophes/quotes, strip ASCII punctuation, collapse
+    // whitespace. Kept to conservative char classes: Unicode property
+    // escapes (\p{L}) are not available in every JSCore/QuickJS build.
+    return String(s || '')
+        .toLowerCase()
+        .replace(/[\u2019'`’‘]/g, '')
+        .replace(/[^a-z0-9\u00c0-\uffff\s]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// Candidate scoring against a display title. AniList ids are MAL ids but
+// AniLibria's `mal.id` field is populated with Shikimori ids for many
+// releases, so only title evidence is trusted — an id match is allowed to
+// break ties, never to pick a release on its own.
+function scoreLibriaRelease(r, q) {
+    const en = normTitle(r.name && (r.name.english || r.name.main));
+    if (!en) return 0;
+    if (en === q) return 1;
+    if (en.indexOf(q) !== -1 || q.indexOf(en) !== -1) return 0.7;
+    const qt = q.split(' ').filter(function (t) { return t.length > 2; });
+    if (!qt.length) return 0;
+    const hit = qt.filter(function (t) { return en.indexOf(t) !== -1; }).length;
+    return hit / qt.length;
+}
+
+async function libriaReleaseForHime(hime, titleHint, minScore) {
+    if (!hime) return null;
+    const need = minScore || 0.7;
+    let title = cleanText(String(titleHint || ''));
+    if (!title) title = await himeTitle(hime);
+    if (!title) return null;
+    try {
+        // Anilibria's English titles are romaji-flavored ("Sousou no
+        // Frieren") while the app's titles are AniList English, so score
+        // against every available title flavor, not just the hint.
+        const candidates = [title];
+        const al = await alTitles(hime);
+        [al.romaji, al.english, al.native].forEach(function (t) {
+            const x = cleanText(t);
+            if (x && candidates.indexOf(x) === -1) candidates.push(x);
+        });
+
+        const res = await soraFetch(`${LIBRIA_API}/app/search/releases?query=${encodeURIComponent(candidates[0])}`, { headers: libriaHeaders() });
+        if (!res) return null;
+        let list = await res.json();
+        // The search is fuzzy but single-query: when the hint flavor
+        // matches nothing, the romaji flavor often still finds the release.
+        if (!Array.isArray(list) || !list.length) {
+            const alt = candidates[1] || candidates[0];
+            const res2 = await soraFetch(`${LIBRIA_API}/app/search/releases?query=${encodeURIComponent(alt)}`, { headers: libriaHeaders() });
+            if (res2) {
+                const list2 = await res2.json();
+                if (Array.isArray(list2) && list2.length) list = list2;
+            }
+        }
+        if (!Array.isArray(list) || !list.length) return null;
+
+        let pick = null;
+        let best = 0;
+        let bestExact = false;
+        for (let i = 0; i < list.length; i++) {
+            let s = 0;
+            let exact = false;
+            for (let c = 0; c < candidates.length; c++) {
+                const cs = scoreLibriaRelease(list[i], normTitle(candidates[c]));
+                if (cs > s) { s = cs; exact = cs === 1; }
+            }
+            if (s > best || (s === best && s > 0 && exact && !bestExact)) {
+                best = s;
+                bestExact = exact;
+                pick = list[i];
+            }
+        }
+        // No confident title hit: the search results may be a different
+        // release (e.g. Shippuuden for "Naruto"), which would serve the
+        // wrong episodes. Stay honest instead.
+        if (!pick || best < need) return null;
+        return libriaRelease(pick.id);
+    } catch (e) {
+        return null;
+    }
+}
+
+// All AniList title flavors for a hime (romaji/english/native), used to
+// score Anilibria releases.
+async function alTitles(hime) {
+    const out = { romaji: '', english: '', native: '' };
+    if (!hime) return out;
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english native} } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (res) {
+            const data = await res.json();
+            const t = data && data.data && data.data.Media && data.data.Media.title;
+            if (t) {
+                out.romaji = String(t.romaji || '');
+                out.english = String(t.english || '');
+                out.native = String(t.native || '');
+            }
+        }
+    } catch (e) { /* fall through */ }
+    return out;
+}
+
+async function libriaEpisodes(hime, titleHint) {
+    const rel = await libriaReleaseForHime(hime, titleHint);
+    if (!rel || !Array.isArray(rel.episodes) || !rel.episodes.length) return [];
+    const libId = rel.id;
+    return rel.episodes
+        .filter(function (e) { return (e.hls_720 || e.hls_480) && e.id; })
+        .map(function (e) {
+            const n = parseInt(e.ordinal, 10);
+            return { href: `${LIBRIA_RELEASE}${libId}/${e.id}`, number: isNaN(n) ? 0 : n };
+        })
+        .filter(function (e) { return e.number > 0; })
+        .sort(function (a, b) { return a.number - b.number; });
+}
+
+// Anilibria watch-page URL: /releases/<libId>/<episodeUuid> (uuid optional
+// for show-level URLs) -> the release's playable hls for that episode.
+async function libriaEpisodeStream(url) {
+    try {
+        const u = String(url || '');
+        const m = u.match(/anilibria\.top\/releases\/(\d+)\/?([0-9a-fA-F-]{36})?/i);
+        if (!m) return null;
+        const rel = await libriaRelease(m[1]);
+        if (!rel) return null;
+        let ep;
+        if (m[2]) {
+            ep = (rel.episodes || []).find(function (e) { return e.id === m[2]; });
+        } else {
+            ep = (rel.episodes || []).filter(function (e) { return e.hls_720 || e.hls_480; })[0];
+        }
+        if (!ep) return null;
+        const hls = ep.hls_720 || ep.hls_480;
+        if (!hls) return null;
+        return {
+            title: ep.hls_720 ? 'AniLibria (720p)' : 'AniLibria (480p)',
+            streamUrl: hls,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Referer': LIBRIA_BASE + '/' }
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+// hime + episode number -> Anilibria hls, for the classic placeholder
+// episode URLs that the mirror can't cover. When the URL names a number,
+// only that episode (ordinal == ep) may be served — falling back to a
+// different episode would play the wrong content for a partial title match.
+async function libriaStreamForHimeEp(hime, epNumber) {
+    try {
+        const title = await himeTitle(hime);
+        const rel = await libriaReleaseForHime(hime, title);
+        if (!rel || !Array.isArray(rel.episodes)) return null;
+        const n = parseInt(epNumber, 10);
+        let ep;
+        if (!isNaN(n)) {
+            ep = (rel.episodes || []).find(function (e) {
+                return parseInt(e.ordinal, 10) === n && (e.hls_720 || e.hls_480);
+            });
+        } else {
+            ep = (rel.episodes || []).filter(function (e) { return e.hls_720 || e.hls_480; })[0];
+        }
+        if (!ep) return null;
+        const hls = ep.hls_720 || ep.hls_480;
+        if (!hls) return null;
+        return {
+            title: ep.hls_720 ? 'AniLibria (720p)' : 'AniLibria (480p)',
+            streamUrl: hls,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Referer': LIBRIA_BASE + '/' }
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
 /**
  * Fetches the anime watch page and extracts description, airdate and alternative titles.
  * @param {string} url - The anidb.app anime page URL (or an anidb.se mirror URL).
@@ -522,6 +746,12 @@ async function extractEpisodes(url) {
                 const al = await alEpisodes(hime);
                 if (al.length) eps.push.apply(eps, al);
             }
+            if (!eps.length) {
+                // Playable HLS for the full catalog (Anilibria): watch-page
+                // URLs that extractStreamUrl re-resolves to m3u8.
+                const libria = await libriaEpisodes(hime);
+                if (libria.length) eps.push.apply(eps, libria);
+            }
             if (eps.length) return JSON.stringify(eps);
 
             const classicEps = await classicEpisodes(hime);
@@ -571,9 +801,22 @@ async function extractStreamUrl(url) {
             const mirror = parseMirrorStream(await fetchText(String(url)));
             return JSON.stringify({ streams: mirror ? [mirror] : [], subtitle: '' });
         }
+        if (isLibriaUrl(url)) {
+            const libria = await libriaEpisodeStream(url);
+            return JSON.stringify({ streams: libria ? [libria] : [], subtitle: '' });
+        }
         if (isClassicUrl(url)) {
             const classic = await classicEpisodeStream(url);
-            return JSON.stringify({ streams: classic ? [classic] : [], subtitle: '' });
+            // Mirror has no mp4 for this show/episode: playable HLS via
+            // Anilibria instead (the classic placeholder URL is its trigger).
+            const libria = classic
+                ? null
+                : await libriaStreamForHimeEp(
+                    extractFirst(String(url), /[?&]hime=(\d+)/i),
+                    extractFirst(String(url), /[?&]ep=(\d+(?:\.\d+)?)/i)
+                );
+            const stream = classic || libria;
+            return JSON.stringify({ streams: stream ? [stream] : [], subtitle: '' });
         }
         // While the main site is down, the app's episode URLs came from the
         // mirror's extractEpisodes and are already anidb.se URLs (handled
