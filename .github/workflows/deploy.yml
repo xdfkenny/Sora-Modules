@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target-dir: ['htdocs/', 'xdfkecraft.qzz.io/htdocs/']
+        target-dir: ['htdocs/', 'xdfkecraft.qzz.io/htdocs/', 'xdfke.me/Sora-Modules/']
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
