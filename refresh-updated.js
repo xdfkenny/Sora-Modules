@@ -29,8 +29,12 @@ const today = new Date().toISOString().slice(0, 10);
 let changed = 0;
 
 for (const m of idx.modules) {
-  const pending = (git('status --porcelain -- "' + m.id + '"') || '').length > 0;
-  const d = pending ? today : (git('log -1 --format=%cs -- "' + m.id + '"') || null);
+  // `-eclipse` entries are ported copies under eclipse/<base>/, not their own dir
+  const path = m.id.endsWith('-eclipse')
+    ? 'eclipse/' + m.id.slice(0, -'-eclipse'.length)
+    : m.id;
+  const pending = (git('status --porcelain -- "' + path + '"') || '').length > 0;
+  const d = pending ? today : (git('log -1 --format=%cs -- "' + path + '"') || null);
   const next = d || null;
   if ((m.updated || null) !== next) {
     m.updated = next;

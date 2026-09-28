@@ -1,7 +1,7 @@
 {
-  "sourceName": "Comix",
+  "sourceName": "Comix (Eclipse)",
   "description": "Módulo tipo manga de Comix (comix.to / comix.ws) — cómics y manga en inglés vía su API protegida por el SDK anti-scraping X-Scramble. Implementación 100% JS del token `_` por request y del descifrado de respuestas (cadenas de cajas-S con claves extraídas del chunk seguro), sin proxy ni navegador. Resiliencia estilo AllManga: fallback multi-host (comix.to → comix.ws), cabeceras completas de navegador y clasificación de fallos Cloudflare/502 en el log. Contrato mangas de kanzen: searchResults / extractDetails / extractChapters / extractImages con salida cruda. Eclipse-ported copy (shim prelude + baseUrl fields); logic identical to comix.",
-  "version": "1.1.4-e1",
+  "version": "1.1.4-e2",
   "language": "English",
   "languageType": [
     "Translated"

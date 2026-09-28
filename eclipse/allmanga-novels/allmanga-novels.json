@@ -1,7 +1,7 @@
 {
-  "sourceName": "AllManga Manga",
+  "sourceName": "AllManga Manga (Eclipse)",
   "description": "Módulo tipo manga de AllManga (allmanga.to) — el build de manga del ecosistema AllAnime (230k+ series). Búsqueda y detalles vía GraphQL (mangas/manga, sin token), capítulos desde availableChaptersDetail (soporta números fraccionarios 25.5/14.1), páginas de imagen desde chapterPages con token aaReq + descifrado AES-GCM (mismo flujo que el módulo de anime AllManga, con fallback de keygen). v1.4.0: fetchv2 impersonate:chrome en apiQuery (chapterPages + search/details) y bootstrap — fingerprint de navegador completo contra la API. v1.3.0: keygen build 175 epoch 2960 lane k9 (boot 175|mkissa|mkissa.to|2960|k9, IV epoch:buildId:qh:ts:lane) + auto-registro del persisted query en PersistedQueryNotFound. Contrato mangas de kanzen: searchResults / extractDetails / extractChapters / extractImages con salida cruda; las páginas se entregan como URLs de imagen directas. Eclipse-ported copy (shim prelude + baseUrl fields); logic identical to allmanga-novels.",
-  "version": "1.4.0-e1",
+  "version": "1.4.0-e2",
   "language": "English",
   "languageType": [
     "Translated"

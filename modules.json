@@ -1837,6 +1837,228 @@
       "manifestUrl": "https://raw.githubusercontent.com/cranci1/Sora-Modules/refs/heads/main/JellyFin/jellyfin.json",
       "sampleQuery": "",
       "updated": null
+    },
+    {
+      "id": "allmanga-novels-eclipse",
+      "name": "AllManga Manga (Eclipse)",
+      "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/allmanga-novels/allmanga-novels.json",
+      "sampleQuery": "angel next door",
+      "needs_review": true,
+      "note": "search/details/chapters OK; image step broken: chapterPages API answers NEED_CAPTCHA to every non-interactive client on both api.mkissa.net and api.allanime.day (re-verified 2026-09-25 with the site's own build-175 key/IV/lane — upstream/edge block, not in-module). Keygen now matches the live app (mkissa build 175, lane k9).",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "chireads-eclipse",
+      "name": "ChiReads (Eclipse)",
+      "iconUrl": "https://chireads.com/wp-content/uploads/2020/04/2020LOGO-2.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/chireads/chireads.json",
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "comix-eclipse",
+      "name": "Comix (Eclipse)",
+      "iconUrl": "https://comix.to/favicon.ico",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/comix/comix.json",
+      "sampleQuery": "one piece",
+      "discontinued": true,
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "kaliscan-eclipse",
+      "name": "KaliScan (Eclipse)",
+      "iconUrl": "https://kaliscan.io/static/sites/icons/apple-touch-icon.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/kaliscan/kaliscan.json",
+      "sampleQuery": "soul",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "lightnovelworld-eclipse",
+      "name": "LightNovelWorld (Eclipse)",
+      "iconUrl": "https://lightnovelworld.org/static/favicon.ico",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/lightnovelworld/lightnovelworld.json",
+      "sampleQuery": "solo leveling",
+      "needs_review": true,
+      "note": "upstream serves Cloudflare challenge to scripts (checked 2026-09)",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "lncrawler-eclipse",
+      "name": "LnCrawler (Eclipse)",
+      "iconUrl": "https://files.catbox.moe/ec7bnh.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/lncrawler/lncrawler.json",
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangabuddy-eclipse",
+      "name": "MangaBuddy (Eclipse)",
+      "iconUrl": "https://mangabuddy.com/static/sites/mangabuddy/icons/apple-touch-icon.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangabuddy/mangabuddy.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangadex-eclipse",
+      "name": "MangaDex (Eclipse)",
+      "iconUrl": "https://files.catbox.moe/ouogm2.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangadex/mangadex.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangafire-eclipse",
+      "name": "MangaFire (Eclipse)",
+      "iconUrl": "https://s.mfcdn.cc/assets/sites/mangafire/favicon.png?v3",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangafire/mangafire.json",
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-09)",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangafreak-eclipse",
+      "name": "MangaFreak (Eclipse)",
+      "iconUrl": "https://files.catbox.moe/903u7e.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangafreak/mangafreak.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangakatana-eclipse",
+      "name": "MangaKatana (Eclipse)",
+      "iconUrl": "https://mangakatana.com/static/img/fav.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangakatana/mangakatana.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangataro-eclipse",
+      "name": "MangaTaro (Eclipse)",
+      "iconUrl": "https://mangataro.org/content/media/cropped-favicon-192x192.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangataro/mangataro.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "mangaworld-eclipse",
+      "name": "MangaWorld (Eclipse)",
+      "iconUrl": "https://www.mangaworld.mx/public/assets/seo/favicon-96x96.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangaworld/mangaworld.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "novelbuddy-eclipse",
+      "name": "NovelBuddy (Eclipse)",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelbuddy/icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/novelbuddy/novelbuddy.json",
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "noveldot-eclipse",
+      "name": "NovelDot (Eclipse)",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/noveldot/icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/noveldot/noveldot.json",
+      "sampleQuery": "leveling",
+      "needs_review": true,
+      "note": "chapter listing logic is correct but noveldot.com serves each /chapters page very slowly and inconsistently (~10-50s each); a 500-chapter novel needs 6 parallel page fetches that exceed the 25s harness step cap. Works on shorter novels; slow upstream, not a module bug.",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "novelfire-eclipse",
+      "name": "NovelFire (Eclipse)",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelfire/icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/novelfire/novelfire.json",
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "readnovelfull-eclipse",
+      "name": "ReadNovelFull (Eclipse)",
+      "iconUrl": "https://readnovelfull.com/img/logo.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/readnovelfull/readnovelfull.json",
+      "sampleQuery": "leveling",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "readnovels-eclipse",
+      "name": "ReadNovels (Eclipse)",
+      "iconUrl": "https://readnovel.eu/apple-touch-icon.png",
+      "category": "novels",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/readnovels/readnovels.json",
+      "sampleQuery": "solo leveling",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "rumanhua1-eclipse",
+      "name": "RumanHua1 (Eclipse)",
+      "iconUrl": "https://i.ibb.co/TDfbbwDB/Untitled-design.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.json",
+      "sampleQuery": "one piece",
+      "needs_review": true,
+      "note": "upstream rumanhua1.com serves empty replies to scripts (checked 2026-09)",
+      "review_reason": "fetch failed",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "scan-sama-eclipse",
+      "name": "Scan Sama (Eclipse)",
+      "iconUrl": "https://raw.githubusercontent.com/Anime-Sama/IMG/img/autres/logo.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/scan-sama/scan-sama.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "weebcentral-eclipse",
+      "name": "WeebCentral (Eclipse)",
+      "iconUrl": "https://favicons.statusgator.com/1bi5zotvuQiK08wI.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/weebcentral/weebcentral.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
     }
   ]
 }
