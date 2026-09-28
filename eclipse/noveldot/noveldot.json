@@ -1,0 +1,21 @@
+{
+  "sourceName": "NovelDot",
+  "version": "1.0.6-e1",
+  "language": "English",
+  "streamType": "novels",
+  "type": "novels",
+  "quality": "N/A",
+  "novel": true,
+  "baseUrl": "https://noveldot.com/",
+  "searchBaseUrl": "https://www.noveldot.com/novel/lnsearchlive/index.php",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/noveldot/noveldot.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/noveldot/noveldot.js",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/noveldot/icon.png",
+  "author": {
+    "name": "xdfkenny & ibro",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "supportsEclipse": true
+}

@@ -1,0 +1,28 @@
+{
+  "sourceName": "ChiReads",
+  "version": "1.0.2-e1",
+  "language": "French",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "novels",
+  "type": "novels",
+  "quality": "N/A",
+  "novel": true,
+  "baseUrl": "https://chireads.com/",
+  "searchBaseUrl": "https://chireads.com/search/%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/chireads/chireads.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/chireads/chireads.js",
+  "iconUrl": "https://chireads.com/wp-content/uploads/2020/04/2020LOGO-2.png",
+  "author": {
+    "name": "xdfkenny & 50/50",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "downloadSupport": false,
+  "supportsEclipse": true,
+  "supportsHiyoku": true,
+  "supportsSora": true,
+  "supportsTsumi": true
+}

@@ -1,0 +1,28 @@
+{
+  "sourceName": "MangaBuddy",
+  "version": "2.1-e1",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "mangas",
+  "type": "mangas",
+  "quality": "N/A",
+  "baseUrl": "https://mangak.io/",
+  "searchBaseUrl": "https://mangak.io/?keyword=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangabuddy/mangabuddy.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangabuddy/mangabuddy.js",
+  "iconURL": "https://mangabuddy.com/static/sites/mangabuddy/icons/apple-touch-icon.png",
+  "author": {
+    "name": "xdfkenny & 50/50",
+    "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "supportsAnymex": true,
+  "supportsDartotsu": true,
+  "supportsEclipse": true,
+  "supportsLuna": true,
+  "supportsShirox": true
+}

@@ -1,0 +1,28 @@
+{
+  "sourceName": "MangaDex",
+  "version": "1.3-e1",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "mangas",
+  "type": "mangas",
+  "quality": "N/A",
+  "baseUrl": "https://api.mangadex.org/",
+  "searchBaseUrl": "https://api.mangadex.org/?keyword=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangadex/mangadex.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangadex/mangadex.js",
+  "iconURL": "https://files.catbox.moe/ouogm2.png",
+  "author": {
+    "name": "xdfkenny & 50/50",
+    "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "supportsAnymex": true,
+  "supportsDartotsu": true,
+  "supportsEclipse": true,
+  "supportsLuna": true,
+  "supportsShirox": true
+}

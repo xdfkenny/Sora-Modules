@@ -1,0 +1,28 @@
+{
+  "sourceName": "ReadNovelFull",
+  "version": "1.0.1-e1",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "novels",
+  "type": "novels",
+  "quality": "N/A",
+  "novel": true,
+  "baseUrl": "https://readnovelfull.com/",
+  "searchBaseUrl": "https://readnovelfull.com/search/?wd=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/readnovelfull/readnovelfull.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/readnovelfull/readnovelfull.js",
+  "iconUrl": "https://readnovelfull.com/img/logo.png",
+  "author": {
+    "name": "xdfkenny & 50/50",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "downloadSupport": false,
+  "supportsEclipse": true,
+  "supportsHiyoku": true,
+  "supportsSora": true,
+  "supportsTsumi": true
+}

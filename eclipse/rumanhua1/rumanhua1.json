@@ -1,0 +1,28 @@
+{
+  "sourceName": "RumanHua1",
+  "version": "1.1-e1",
+  "language": "Chinese",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "mangas",
+  "type": "mangas",
+  "quality": "N/A",
+  "baseUrl": "http://rumanhua1.com/",
+  "searchBaseUrl": "http://rumanhua1.com/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.js",
+  "iconURL": "https://i.ibb.co/TDfbbwDB/Untitled-design.png",
+  "author": {
+    "name": "xdfkenny & 50/50",
+    "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "supportsAnymex": true,
+  "supportsDartotsu": true,
+  "supportsEclipse": true,
+  "supportsLuna": true,
+  "supportsShirox": true
+}

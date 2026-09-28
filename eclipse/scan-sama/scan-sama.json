@@ -1,0 +1,26 @@
+{
+  "sourceName": "Scan Sama",
+  "version": "1.2.4-e1",
+  "language": "French",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "mangas",
+  "type": "mangas",
+  "quality": "N/A",
+  "baseUrl": "https://anime-sama.to/",
+  "searchBaseUrl": "https://anime-sama.to/?keyword=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/scan-sama/scan-sama.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/scan-sama/scan-sama.js",
+  "iconURL": "https://raw.githubusercontent.com/Anime-Sama/IMG/img/autres/logo.png",
+  "author": {
+    "name": "xdfkenny & MXFia19",
+    "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "baseURL": "https://anime-sama.to/",
+  "searchBaseURL": "https://anime-sama.to/catalogue/",
+  "supportsEclipse": true
+}

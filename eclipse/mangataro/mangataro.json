@@ -1,0 +1,28 @@
+{
+  "sourceName": "MangaTaro",
+  "version": "1.0.2-e1",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "streamType": "mangas",
+  "type": "mangas",
+  "quality": "N/A",
+  "baseUrl": "https://mangataro.org/",
+  "searchBaseUrl": "https://mangataro.org/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangataro/mangataro.js",
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangataro/mangataro.js",
+  "iconURL": "https://mangataro.org/content/media/cropped-favicon-192x192.png",
+  "author": {
+    "name": "xdfkenny & 50/50",
+    "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
+  },
+  "asyncJS": true,
+  "supportsAnymex": true,
+  "supportsDartotsu": true,
+  "supportsEclipse": true,
+  "supportsLuna": true,
+  "supportsShirox": true
+}
