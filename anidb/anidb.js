@@ -4,6 +4,8 @@ const SUGGEST_URL = `${BASE_URL}/search/suggestions?q=`;
 const EPISODES_API = `${BASE_URL}/api/frontend/anime/%s/episodes`;
 const LANGUAGES_API = `${BASE_URL}/api/frontend/episode/%s/languages`;
 
+if (typeof console !== 'undefined') console.log('[AniDB] module script loaded v1.5.0 (AniList/Jikan/MAL-HTML episode tiers)');
+
 /* Mirror: anidb.se — an anidb-named streaming mirror used as fallback while
  * anidb.app is under maintenance (503 on every page/API route). Search
  * results that come from the mirror keep the mirror's own URLs; when the
@@ -514,11 +516,11 @@ async function extractEpisodes(url) {
             if (jikan.length) eps.push.apply(eps, jikan);
             if (!eps.length) {
                 const mal = await malEpisodes(hime);
-                if (mal.length) { eps.push.apply(eps, mal); source = 1; }
+                if (mal.length) eps.push.apply(eps, mal);
             }
             if (!eps.length) {
                 const al = await alEpisodes(hime);
-                if (al.length) { eps.push.apply(eps, al); source = 2; }
+                if (al.length) eps.push.apply(eps, al);
             }
             if (eps.length) return JSON.stringify(eps);
 
