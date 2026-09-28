@@ -10,8 +10,8 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app). Si anidb.app está caído/mantenimiento: catálogo completo vía AniList/Jikan (sin auth), detalles clásicos de anidb.net (con impersonation en Shirox), y streams/episodios reproducibles desde el espejo anidb.se.",
-  "version": "1.4.0",
+  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app). Si anidb.app está caído/mantenimiento: catálogo completo vía AniList (sin auth), detalles clásicos de anidb.net (con impersonation en Shirox), episodios numerados vía Jikan / HTML de MAL / recuento de AniList, y streams/episodios reproducibles desde el espejo anidb.se.",
+  "version": "1.5.0",
   "language": "English (SUB/DUB)",
   "streamType": "HLS/MP4",
   "quality": "1080p",
@@ -31,6 +31,6 @@
   "supportsAnymex": false,
   "supportsTsumi": false,
   "supportsHiyoku": false,
-  "supportsShirox": false,
+  "supportsShirox": true,
   "supportsEclipse": true
 }

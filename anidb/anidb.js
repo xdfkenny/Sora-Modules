@@ -278,6 +278,47 @@ async function alDetails(hime) {
     }
 }
 
+/* --- MAL HTML (public, no Cloudflare): numbered episode lists when the
+ * Jikan proxy is down. The plain anime page embeds the episode table. --- */
+const MAL_BASE = 'https://myanimelist.net';
+
+function parseMalEpisodes(html) {
+    const out = [];
+    const seen = {};
+    if (!html) return out;
+    const re = /<tr class="ep-row[^"]*"[^>]*>[\s\S]*?<td class="ep-number">\s*(\d+(?:\.\d+)?)\s*<\/td>/g;
+    let m;
+    while ((m = re.exec(html)) !== null) {
+        const n = parseFloat(m[1]);
+        if (isNaN(n) || n <= 0 || seen[n]) continue;
+        seen[n] = 1;
+        out.push(n);
+    }
+    out.sort(function (a, b) { return a - b; });
+    return out;
+}
+
+async function malEpisodes(malId, titleHint) {
+    try {
+        const numbers = parseMalEpisodes(await fetchText(`${MAL_BASE}/anime/${malId}`));
+        if (!numbers.length) return [];
+
+        const title = cleanText(String(titleHint || await himeTitle(malId)));
+        const mirrorShow = await mirrorShowForHime(malId, title);
+        let byNum = {};
+        if (mirrorShow) {
+            parseMirrorEpisodes(await fetchText(mirrorShow), mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
+        }
+        return numbers.map(function (n) {
+            return byNum[n]
+                ? { href: byNum[n].href, number: n }
+                : { href: `${CLASSIC_BASE}/episode.php?hime=${malId}&ep=${n}`, number: n };
+        });
+    } catch (e) {
+        return [];
+    }
+}
+
 // Mirror show URL for a hime: the mirror only exposes search, so we go
 // hime -> display title -> mirror search -> show card.
 async function mirrorShowForHime(hime, titleHint) {
@@ -287,6 +328,36 @@ async function mirrorShowForHime(hime, titleHint) {
     if (!title) return '';
     const found = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(title)}`));
     return found.length ? found[0].href : '';
+}
+
+// AniList episode count for hime == MAL id: public, no auth, no Cloudflare.
+// Older shows may have episodes: null — that is not an error, just no data.
+async function alEpisodes(hime) {
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ episodes } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (!res) return [];
+        const data = await res.json();
+        const m = data && data.data && data.data.Media;
+        const n = m ? parseInt(m.episodes, 10) : NaN;
+        if (isNaN(n) || n <= 0 || n > 1500) return [];
+        const numbers = [];
+        for (let i = 1; i <= n; i++) numbers.push(i);
+
+        const title = cleanText(await himeTitle(hime));
+        const mirrorShow = await mirrorShowForHime(hime, title);
+        let byNum = {};
+        if (mirrorShow) {
+            parseMirrorEpisodes(await fetchText(mirrorShow), mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
+        }
+        return numbers.map(function (i) {
+            return byNum[i]
+                ? { href: byNum[i].href, number: i }
+                : { href: `${CLASSIC_BASE}/episode.php?hime=${hime}&ep=${i}`, number: i };
+        });
+    } catch (e) {
+        return [];
+    }
 }
 
 /* --- Jikan (public MAL REST proxy): full numbered episode lists without
@@ -435,12 +506,22 @@ async function extractEpisodes(url) {
 
         const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
         if (hime) {
-            // Full catalog, playable where the mirror hosts it.
+            // Numbered episode lists, public tiers in order:
+            // Jikan (full catalog) -> MAL HTML -> AniList count ->
+            // classic XML (Shirox impersonation only).
+            const eps = [];
             const jikan = await jikanEpisodes(hime);
-            if (jikan.length > 0) return JSON.stringify(jikan);
+            if (jikan.length) eps.push.apply(eps, jikan);
+            if (!eps.length) {
+                const mal = await malEpisodes(hime);
+                if (mal.length) { eps.push.apply(eps, mal); source = 1; }
+            }
+            if (!eps.length) {
+                const al = await alEpisodes(hime);
+                if (al.length) { eps.push.apply(eps, al); source = 2; }
+            }
+            if (eps.length) return JSON.stringify(eps);
 
-            // Classic only if impersonation is available (Shirox); otherwise
-            // its XML 403s and this yields [].
             const classicEps = await classicEpisodes(hime);
             if (classicEps.length > 0) return JSON.stringify(classicEps);
         }

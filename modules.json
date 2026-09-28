@@ -45,8 +45,8 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/anidb.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "anidb.app 503 (maintenance, checked 2026-09); module searches via public AniList + Jikan APIs (no Cloudflare), details via classic anidb.net (Shirox impersonation) / AniList / anidb.se mirror; playable streams from anidb.se mirror shows (one piece, rezero s4, etc.)",
-      "updated": "2026-09-27"
+      "note": "anidb.app 503 (maintenance, checked 2026-09); module searches via public AniList, episode lists via Jikan/MAL HTML/AniList count, details via classic anidb.net (Shirox impersonation) / AniList / anidb.se mirror; playable streams from anidb.se mirror shows (one piece, rezero s4, etc.)",
+      "updated": "2026-09-28"
     },
     {
       "id": "anime-nexus",
@@ -90,6 +90,16 @@
       "updated": "2026-09-28"
     },
     {
+      "id": "allmanga-shirox",
+      "name": "AllAnime (Shirox)",
+      "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-shirox/allmanga-shirox.json",
+      "sampleQuery": "one piece",
+      "updated": "2026-09-28"
+    },
+    {
       "id": "allmanga-novels",
       "name": "AllManga Manga",
       "iconUrl": "https://allmanga.to/pics/avatar-w.png",
@@ -99,6 +109,16 @@
       "sampleQuery": "angel next door",
       "needs_review": true,
       "note": "search/details/chapters OK; image step broken: chapterPages API answers NEED_CAPTCHA to every non-interactive client on both api.mkissa.net and api.allanime.day (re-verified 2026-09-25 with the site's own build-175 key/IV/lane — upstream/edge block, not in-module). Keygen now matches the live app (mkissa build 175, lane k9).",
+      "updated": "2026-09-28"
+    },
+    {
+      "id": "allmanga-novels-shirox",
+      "name": "AllManga Manga (Shirox)",
+      "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+      "category": "mangas",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-novels-shirox/allmanga-novels-shirox.json",
+      "sampleQuery": "angel next door",
       "updated": "2026-09-28"
     },
     {
