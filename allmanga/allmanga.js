@@ -67,7 +67,7 @@ const CDN_BASES = [
 
 let aaKeyCache = { keys: null, ts: 0 };
 
-if (typeof console !== 'undefined') console.log('allmanga module v1.11.0 (build 175 keygen, k7 episode lane)');
+if (typeof console !== 'undefined') console.log('allmanga module v1.12.0 (build 175 keygen, k7 episode lane, fetchv2 impersonate:chrome)');
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -316,7 +316,8 @@ async function aaBootstrapOnce(url, bootTok) {
             'Origin': 'https://' + AA_BOOT_HOST,
             'Accept': 'application/json, text/plain, */*',
             'User-Agent': UA
-        }
+        },
+        impersonate: 'chrome'
     });
     if (!resp || !resp.ok) {
         console.log('bootstrap http ' + (resp ? resp.status : 'no-response'));
@@ -518,12 +519,14 @@ async function aaSendEpisodeRequest(host, method, query, variables, extensions, 
             resp = await soraFetch(url, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({ query: query, variables: variables, extensions: extensions })
+                body: JSON.stringify({ query: query, variables: variables, extensions: extensions }),
+                impersonate: 'chrome'
             });
         } else {
             resp = await soraFetch(url, {
                 method: 'GET',
-                headers: headers
+                headers: headers,
+                impersonate: 'chrome'
             });
         }
     } catch (err) {
@@ -715,7 +718,8 @@ async function aaFetchClockSource(src, tt) {
     try {
         const clockUrl = CLOCK_BASE + aaXor56(src.sourceUrl.slice(2)).replace('clock', 'clock.json');
         const resp = await soraFetch(clockUrl, {
-            headers: { 'Referer': CLOCK_BASE + '/', 'User-Agent': UA }
+            headers: { 'Referer': CLOCK_BASE + '/', 'User-Agent': UA },
+            impersonate: 'chrome'
         });
         if (!resp) {
             console.log('Clock source ' + (src.sourceName || '?') + ': no response');
@@ -772,7 +776,8 @@ async function resolveIframeSource(embedUrl, sourceName, tt) {
 
 async function resolveOkRu(embedUrl, sourceName, tt) {
     const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
+        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA },
+        impersonate: 'chrome'
     });
     if (!resp) return null;
     const html = await resp.text();
@@ -808,7 +813,8 @@ async function resolveOkRu(embedUrl, sourceName, tt) {
 
 async function resolveMp4Upload(embedUrl, sourceName, tt) {
     const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
+        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA },
+        impersonate: 'chrome'
     });
     if (!resp) return null;
     const html = await resp.text();
@@ -825,7 +831,8 @@ async function resolveMp4Upload(embedUrl, sourceName, tt) {
 
 async function resolveGenericIframe(embedUrl, sourceName, tt) {
     const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
+        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA },
+        impersonate: 'chrome'
     });
     if (!resp) return null;
     const html = await resp.text();
@@ -1234,7 +1241,8 @@ async function gql(query) {
         const response = await soraFetch(API_URLS[i], {
             method: 'POST',
             headers: API_HEADERS,
-            body: JSON.stringify({ query })
+            body: JSON.stringify({ query }),
+            impersonate: 'chrome'
         });
         if (!response) continue;
         try {
@@ -1247,6 +1255,14 @@ async function gql(query) {
     return null;
 }
 
+// soraFetch — fetchv2 wrapper with optional browser impersonation.
+// Shirox/Sora's fetchv2 accepts a 5th options object: { impersonate:
+// "chrome" | "safari" | "firefox" } dresses the request with a full,
+// consistent browser fingerprint (headers, sec-ch-ua, accept-encoding).
+// Callers that talk to the AllAnime API/clock/bootstrap (which sit behind
+// Cloudflare) pass impersonate: "chrome" via opts.impersonate. Older app
+// builds whose fetchv2 has no 5th arg simply ignore it; the plain
+// fetch() fallback can't impersonate but still keeps the module alive.
 async function soraFetch(url, options) {
     const opts = options || {};
     const method = opts.method || 'GET';
@@ -1254,6 +1270,9 @@ async function soraFetch(url, options) {
     const body = typeof opts.body === 'undefined' ? null : opts.body;
 
     try {
+        if (opts.impersonate) {
+            return await fetchv2(url, headers, method, body, { impersonate: opts.impersonate });
+        }
         return await fetchv2(url, headers, method, body);
     } catch (e) {
         try {

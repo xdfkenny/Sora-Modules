@@ -87,17 +87,26 @@ const DEFAULT_CHAPTER_HEAD = 'https://aln.youtube-anime.com/';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-console.log('[AllMangaNovels] module script loaded v1.3.0 (build 175 keygen, k9 chapterPages lane + self-bootstrap, kanzen-env safe)');
+console.log('[AllMangaNovels] module script loaded v1.4.0 (build 175 keygen, k9 chapterPages lane + self-bootstrap + fetchv2 impersonate:chrome, kanzen-env safe)');
 
 /* ---- fetch bridge --------------------------------------------------------- */
 
+// fetchv2 bridge with optional browser impersonation. Shirox/Sora's fetchv2
+// accepts a 5th options object: { impersonate: "chrome" | "safari" |
+// "firefox" } which dresses the request with a full, consistent browser
+// fingerprint (headers, sec-ch-ua, accept-encoding) — useful for hosts
+// behind Cloudflare. Callers that talk to the AllAnime API/bootstrap pass
+// opts.impersonate = "chrome". Older app builds whose fetchv2 has no 5th
+// arg simply ignore it; the plain fetch() fallback keeps the module alive.
 async function soraFetch(url, options) {
     const opts = options || {};
     const method = opts.method || 'GET';
     const headers = opts.headers || {};
     const body = typeof opts.body === 'undefined' ? null : opts.body;
     try {
-        const r = await fetchv2(url, headers, method, body);
+        const r = opts.impersonate
+            ? await fetchv2(url, headers, method, body, { impersonate: opts.impersonate })
+            : await fetchv2(url, headers, method, body);
         if (r) return toResponseLike(r);
     } catch (e) { /* fall through */ }
     try {
@@ -625,7 +634,8 @@ async function aaBootstrapOnce(url, bootTok) {
             'Origin': 'https://' + AA_BOOT_HOST,
             'Accept': 'application/json, text/plain, */*',
             'User-Agent': UA
-        }
+        },
+        impersonate: 'chrome'
     });
     if (!respIsOk(resp)) {
         console.log('bootstrap http ' + (resp ? resp.status : 'no-response'));
@@ -779,7 +789,7 @@ async function apiQuery(variables, hash, options) {
         if (opts.queryText) {
             url += '&query=' + encodeURIComponent(opts.queryText);
         }
-        const resp = await soraFetchTimed(url, { headers: apiHeaders(opts.headers) }, opts.timeout || 12000);
+        const resp = await soraFetchTimed(url, { headers: apiHeaders(opts.headers), impersonate: 'chrome' }, opts.timeout || 12000);
         if (!resp) continue;
         const json = await jsonSafe(resp);
         if (json) return json;
