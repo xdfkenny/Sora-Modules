@@ -5,28 +5,58 @@
 <p align="center"><b>Streaming modules for anime, movies, manga and novels.</b></p>
 
 <p align="center">
-  <a href="#overview">Overview</a> •
-  <a href="#documentation">Documentation</a> •
-  <a href="#recommended-agent-workflow">Agent Workflow</a>
+  <a href="#library">Library</a> •
+  <a href="#hosts">Host Apps</a> •
+  <a href="#how-it-works">How It Works</a> •
+  <a href="#developing">Developing</a> •
+  <a href="#documentation">Documentation</a>
+</p>
 
 ---
 
-## Overview
+## Library
 
-Curated collection of streaming modules.
+A curated, growing collection of JavaScript scraper modules for Sora, Luna and Shirox — one manifest (`*.json`) plus one self-contained scraper (`*.js`) per module, no build step, no dependencies. The full registry lives in [`modules.json`](modules.json); the web library ([`index.html`](index.html)) hydrates cards live from each manifest so versions, languages and "Recently Updated" chips always reflect reality.
 
-| Surface | Route | Description | Data Source |
-| :--- | :--- | :--- | :--- |
-| **HenaoJara** | [`henaojara`](henaojara/henaojara.json) | Feature-rich anime scraper with Spanish Latino localization and multi-server resolution. | [AnimeJara](https://animejara.com/) |
-| **AniDB** | [`anidb`](anidb/anidb.json) | Anime (sub/dub) using the same anidb.app backend that powers [ani-cli](https://github.com/pystardust/ani-cli) — public frontend JSON API + JWPlayer HLS embeds. | [AniDB](https://anidb.app/) |
-| **HydraHD** | [`hydrahd`](hydrahd/hydrahd.json) | Movies & TV in 1080p (English sub/dub) with stream resolution via embed servers + vidfast.vc HLS/MP4 pipeline. | [HydraHD](https://hydrahd.ru/) |
-| **YFSP** | [`yfsp`](yfsp/yfsp.json) | Movies, series, variety & anime in Chinese via the signed iYifan API — search without signature, detail/episodes/streams with rotating vv+pub (MD5) keys scraped from the page. Free tier is 576P (720P/1080P/4K are VIP-gated). | [YFSP](https://www.yfsp.tv/) |
-| **FlixLatam** | [`flixlatam`](flixlatam/flixlatam.json) | Movies, series & anime in Spanish (LAT/SUB) up to 1080p — vidurl embeds solved with pure-JS SHA-256 proof-of-work + AES-256-CBC, then HLS streams unpacked from the VidHide (minochinos.com) P.A.C.K.E.R. host. | [FlixLatam](https://flixlatam.com/) |
+**Current catalog (September 2026):**
 
-| **Comix** | [`comix`](comix/comix.json) | Comics & manga in English via the X-Scramble-protected API. Pure-JS reimplementation of the anti-scraping client: per-request `_` token (chained S-box ciphers) + response decryption — no proxy, no browser. | [Comix](https://comix.to/) |
-## Architecture
+| | |
+| :--- | :--- |
+| **148** registered modules | **108** anime, **40** movies & shows, **18** manga, **8** novels, **3** live, **1** torrent |
+| **26** source languages (Chinese, Spanish LAT/SUB, multi SUB/DUB, Tamil, Arabic, …) | **18** discontinued entries kept for history |
 
-The framework leverages a high-performance **fetchv2** bridge to handle complex network requests, bypass cross-origin restrictions, and manage session headers.
+Browse and install one-tap from the library site — search by name, category, language or supported app:
+
+- Web library: [xdfkenny.dpdns.org](https://xdfkenny.dpdns.org/xdfkenny-sora-modules/modules/?embed=true) (also deployed to `xdfkecraft.qzz.io/htdocs/`)
+- GitHub: [xdfkenny/xdfkenny-sora-modules](https://github.com/xdfkenny/xdfkenny-sora-modules)
+- Sora deep link: `sora://default_page?url=<library URL>` — one tap installs the whole set
+
+Highlights:
+
+| Module | What it does | Source |
+| :--- | :--- | :--- |
+| [HydraHD](hydrahd/hydrahd.json) | Movies & TV in 1080p (EN sub/dub) — embed servers + vidfast.vc HLS/MP4 pipeline | [HydraHD](https://hydrahd.ws/) |
+| [AniDB](anidb/anidb.json) | Anime (sub/dub) on the anidb.app backend, with AniLibria HLS fallback so the whole catalog stays playable | [AniDB](https://anidb.app/) |
+| [FlixLatam](flixlatam/flixlatam.json) | Movies, series & anime (LAT/SUB) up to 1080p — pure-JS SHA-256 PoW + AES-256-CBC, HLS unpacked from VidHide | [FlixLatam](https://flixlatam.com/) |
+| [YFSP](yfsp/yfsp.json) | Movies, series, variety & anime in Chinese via the signed iYifan API (rotating vv+pub MD5 keys) | [YFSP](https://www.yfsp.tv/) |
+| [Comix](comix/comix.json) | Comics & manga in English — pure-JS reimplementation of the X-Scramble anti-scraping client | [Comix](https://comix.to/) |
+| [AllManga / AllManga Novels](allmanga-novels/allmanga-novels.json) | Manga + novels in English, classic no-impersonation builds; Shirox variants ([`allmanga-shirox`](allmanga-shirox/allmanga-shirox.json), [`allmanga-novels-shirox`](allmanga-novels-shirox/allmanga-novels-shirox.json)) add impersonated fetch with plain-`fetchv2` retry on 4xx | AllManga |
+| [AnimeJara](henaojara/henaojara.json) | Feature-rich anime scraper with Spanish LAT localization and multi-server resolution | [AnimeJara](https://animejara.com/) |
+
+> Tip: the library's "Recently Updated" sort (backed by the per-entry `updated` fields in `modules.json`) is the fastest way to see what moved last.
+
+## Host Apps
+
+Modules target the Sora family of hosts. `modules.json` carries per-entry support flags:
+
+- **Sora**, **Luna**, **Shirox** — primary targets
+- **Eclipse**, **Hiyoku**, **Mojuru**, **Tsumi**, **Anymex**, **Dartotsu** — where the manifest says so
+
+The library UI filters by app, and Shirox variants get their own entries (e.g. [`hydrahd-shirox`](hydrahd/hydrahd-shirox.json)) when the host's runtime needs a different build.
+
+## How It Works
+
+The host engine runs bare JavaScriptCore/QuickJS, so each module is a single global-scope script with `async` entry points — no DOM, no `setTimeout`, no `require`.
 
 ```text
     +-------------------+         +-----------------------+         +-----------------------+
@@ -34,43 +64,35 @@ The framework leverages a high-performance **fetchv2** bridge to handle complex 
     |   (Host Engine)   | <-----> |   (Regex + Scraper)   | <-----> |   (Streaming Sites)   |
     +-------------------+         +-----------------------+         +-----------------------+
               |                               |                             |
-              |                               v                             |
-              +----------------------- [ soraFetch ] -----------------------+
+              +-------------------------------+ ---------------------------+
+                     all network calls go through the fetchv2 bridge
 ```
+
+- **Network**: only `fetchv2(url, headers, method, body)` — the browser `fetch` fails (CORS), so scrapers wrap it in a `soraFetch` helper with cookie/session handling.
+- **Parsing**: regex / `indexOf` / `substring` — no DOMParser in the runtime.
+- **Contracts** (all async, all stringified JSON for video modules):
+  - `searchResults(keyword)` → `[{title, image, href}]`
+  - `extractDetails(url)` → `[{description, aliases, airdate}]`
+  - `extractEpisodes(url)` → `[{href, number}]`
+  - `extractStreamUrl(url)` → `{streams: [{title, streamUrl, headers?}], subtitles?}`
+
+  Novels swap the last two for `extractChapters(url)` and `extractText(url)` (raw HTML); manga modules return plain objects, not strings.
+
+## Developing
+
+- `AGENTS.md` — repo conventions, runtime constraints and module contracts (read this first)
+- `server.js` — local test harness: `node server.js` → `http://localhost:8765`, click a module card and run a media test; or `curl` the `/api/test` endpoint directly
+- `refresh-updated.js` — regenerates every `updated` field in `modules.json` from git history; run it after touching a module
+- Deploy: push to `main` → FTP deploy via `.github/workflows/deploy.yml`
+
 ## Documentation
 
-### Core Docs
-1. [Module Manifest Specification](henaojara/henaojara.json) — Configuration for metadata, versioning, and stream types.
-2. [Scraper Implementation Guide](example.js) — The foundational template for developing new scrapers.
-3. [Network Layer Protocol](henaojara/henaojara.js) — Deep dive into header merging and request management.
-4. [HydraHD Stream Resolution](hydrahd/hydrahd.js) — Movie/TV scraper using `mov_0.php`/`tv_0.php` AJAX + vidfast.vc HLS pipeline with enc-dec.app decryption.
+- [SORA_MODULES_GUIDE.md](SORA_MODULES_GUIDE.md) — the full spec: manifest fields, scraper contracts, the `soraFetch` pattern
+- [`documentation/`](documentation/) — how-to-test guides (video, novels, subtitles), client compatibility notes, and post-mortems
+- [`novel-examples/`](novel-examples/) — ready-to-fork novel manga-reader templates
+- [`test/`](test/) — harness snapshots and frozen baselines
 
-### Specialized Docs
-- **Multi-Server Resolution**: Logic for extracting and prioritizing diverse streaming servers.
-- **Language Localization**: Handling Spanish Latino and Japanese subtitle/audio tracks.
-- **ani-cli Backend**: [AniDB publish flow](anidb/anidb.js) — mirrors pystardust/ani-cli's anidb.app endpoints exactly.
-- **Public JSON API**: The [episodes](anidb/anidb.js) + [languages](anidb/anidb.js) endpoints feed the HLS embed resolver.
-
-> **Instruction**: Start with the Manifest Specification to understand module registration, then proceed to the Reference Scraper for logic implementation.
-
-## Recommended Agent Workflow
-
-1. **Target Analysis**: Deconstruct the provider's search and episode listing HTML structure.
-2. **Manifest Definition**: Configure `henaojara.json` with the appropriate `baseUrl` and metadata.
-3. **Core Development**: Implement `searchResults` and `extractEpisodes` using the provided template.
-4. **Stream Resolution**: Optimize `extractStreamUrl` to handle multi-server embeds.
-5. **Validation**: Verify that the returned stream object meets the Sora HLS requirements.
-
-## Current Reality / Caveats
-
-<details>
-<summary>Click to view implementation risks</summary>
-
-**Pattern Sensitivity**: Scrapers are dependent on **fixed HTML patterns**; provider updates may require immediate regex adjustments.
-**Runtime Environment**: Optimized for the **Sora/Luna host engine**; direct Node.js execution requires a network shim.
-**Data Policy**: Use these modules responsibly. Scrapers are for **educational and interoperability purposes** only.
-
-</details>
+> **Caveats**: scrapers depend on fixed HTML/API patterns — provider updates can break them and need regex follow-ups. They run inside the host engine, not directly in Node (use the `server.js` shim to test). Use responsibly — these modules are for educational and interoperability purposes only.
 
 ---
 
