@@ -2133,3 +2133,43 @@ html[data-theme="light"] { color-scheme: light; }
   .stat-num { font-size: 28px; }
 }
 
+
+
+/* =====================================================================
+   Cufiy cards — verified modules from the original cufiy library,
+   rendered into the main grid with the same card format. The only
+   distinguishing cue is the .cufiy-card-badge (origin) badge; the
+   action button opens cufiy's library (?q=<name>) instead of installing.
+   ===================================================================== */
+
+.cufiy-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--r-full);
+  background: var(--mint);
+  color: #062a22;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="dark"] .cufiy-card-badge {
+  background: #24463e;
+  color: #a7f0dc;
+}
+
+/* Cufiy "Open in Cufiy" action — same .split/.add format as "Add to Sora",
+   tinted mint to signal it leaves the app. */
+.card-cufiy .split .add {
+  background: linear-gradient(135deg, var(--mint), #4d9d92);
+}
+.card-cufiy .split .add:hover { filter: brightness(1.05); }

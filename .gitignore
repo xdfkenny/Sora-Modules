@@ -5,3 +5,5 @@ examples
 .playwright-mcp
 novel-examples
 git.luna-app.eu
+# cufiy bridge test harness (scratch — keep cufiy-bridge.json data file tracked)
+cufiy-test/

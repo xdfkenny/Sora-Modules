@@ -1,0 +1,1169 @@
+{
+  "source": "https://library.cufiy.net/api/modules.json",
+  "sourcePage": "https://library.cufiy.net/library/",
+  "generatedAt": "2026-09-30",
+  "verifiedCount": 58,
+  "discardedCount": 53,
+  "modules": [
+    {
+      "name": "Aether",
+      "type": "shows/movies/anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://aether.bar/favicon.ico",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.2.2",
+      "redirect": "https://library.cufiy.net/library/?q=Aether",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 11083,
+        "retry": false
+      }
+    },
+    {
+      "name": "AllManga Manga",
+      "type": "manga",
+      "language": "English",
+      "quality": "N/A",
+      "status": "active",
+      "note": "",
+      "author": "xdfkenny",
+      "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+      "authorIcon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+      "authorUrl": "https://github.com/xdfkenny",
+      "version": "1.3.0",
+      "redirect": "https://library.cufiy.net/library/?q=AllManga+Manga",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "override: search (26) + 1222 chapters verified live; image step is gated by the documented aaReq keygen limitation (NEED_CAPTCHA with bundled keys), not by upstream death — module is known-good in-app",
+        "ms": 7000,
+        "retry": true
+      }
+    },
+    {
+      "name": "Aniclipse",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://aniclipse.com/logo/aniclipse-icon-192.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=Aniclipse",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 5426,
+        "retry": false
+      }
+    },
+    {
+      "name": "AniDB",
+      "type": "anime",
+      "language": "English (SUB/DUB)",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "xdfkenny",
+      "iconUrl": "https://anidb.app/images/fav-192.png",
+      "authorIcon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+      "authorUrl": "https://github.com/xdfkenny",
+      "version": "1.6.0",
+      "redirect": "https://library.cufiy.net/library/?q=AniDB",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 11134,
+        "retry": false
+      }
+    },
+    {
+      "name": "Anikura",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://www.anikura.club/anikura-mark.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=Anikura",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 18889,
+        "retry": false
+      }
+    },
+    {
+      "name": "Anikuro",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.1.8",
+      "redirect": "https://library.cufiy.net/library/?q=Anikuro",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 14631,
+        "retry": false
+      }
+    },
+    {
+      "name": "Anime-Sama",
+      "type": "anime",
+      "language": "French",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://anime-sama.pw/logo_icon.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.1.3",
+      "redirect": "https://library.cufiy.net/library/?q=Anime-Sama",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 21582,
+        "retry": false
+      }
+    },
+    {
+      "name": "AnimeCloud",
+      "type": "anime",
+      "language": "Arabic",
+      "quality": "HD",
+      "status": "active",
+      "note": "",
+      "author": "Cheikh Hachem",
+      "iconUrl": "https://raw.githubusercontent.com/cheikhhachem/media-extentions/master/sora/animecloud/icon.png",
+      "authorIcon": "https://avatars.githubusercontent.com/u/255023163?v=4",
+      "authorUrl": "https://github.com/cheikhhachem",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=AnimeCloud",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 7018,
+        "retry": false
+      }
+    },
+    {
+      "name": "AnimeSalt",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://animesalt.cx/wp-content/uploads/cropped-AnimeSalticon-32x32.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=AnimeSalt",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 14589,
+        "retry": false
+      }
+    },
+    {
+      "name": "AnimeUnity",
+      "type": "anime",
+      "language": "Italian",
+      "quality": "720p",
+      "status": "active",
+      "note": "",
+      "author": "sobet",
+      "iconUrl": "https://raw.githubusercontent.com/cranci1/Ryu/2f10226aa087154974a70c1ec78aa83a47daced9/Ryu/Assets.xcassets/Sources/AnimeUnity.imageset/apple-touch-icon.jpg",
+      "authorIcon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQPQ1qIiALbM3xDWGsuJzu6ItaQGwb9ICRRw&s",
+      "authorUrl": "",
+      "version": "1.1.1",
+      "redirect": "https://library.cufiy.net/library/?q=AnimeUnity",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 8000,
+        "retry": true
+      }
+    },
+    {
+      "name": "AnimeWorld",
+      "type": "anime",
+      "language": "Italian",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "sobet",
+      "iconUrl": "https://raw.githubusercontent.com/cranci1/Ryu/d48d716ec6c5ef9ae7b3711c117f920b0c7eb1ce/Ryu/Assets.xcassets/Sources/AnimeWorld.imageset/animeworld.png",
+      "authorIcon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQPQ1qIiALbM3xDWGsuJzu6ItaQGwb9ICRRw&s",
+      "authorUrl": "",
+      "version": "1.1.1",
+      "redirect": "https://library.cufiy.net/library/?q=AnimeWorld",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4000,
+        "retry": true
+      }
+    },
+    {
+      "name": "Animex",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animex/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.1.26",
+      "redirect": "https://library.cufiy.net/library/?q=Animex",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 9420,
+        "retry": false
+      }
+    },
+    {
+      "name": "Animex (DUB)",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animex/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=Animex+(DUB)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 25676,
+        "retry": false
+      }
+    },
+    {
+      "name": "Animex (SUB)",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animex/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=Animex+(SUB)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 30444,
+        "retry": false
+      }
+    },
+    {
+      "name": "Aniwave",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "2.0.27",
+      "redirect": "https://library.cufiy.net/library/?q=Aniwave",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 6381,
+        "retry": false
+      }
+    },
+    {
+      "name": "AniWorld (ENG SUB)",
+      "type": "anime",
+      "language": "English (SUB)",
+      "quality": "720p",
+      "status": "active",
+      "note": "",
+      "author": "Cufiy & Hamzo",
+      "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
+      "authorIcon": "https://files.catbox.moe/ttj4fc.gif",
+      "authorUrl": "https://github.com/JMcrafter26",
+      "version": "0.3.5",
+      "redirect": "https://library.cufiy.net/library/?q=AniWorld+(ENG+SUB)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 22000,
+        "retry": true
+      }
+    },
+    {
+      "name": "AniWorld (GER DUB)",
+      "type": "anime",
+      "language": "German (DUB)",
+      "quality": "720p",
+      "status": "active",
+      "note": "",
+      "author": "Cufiy & Hamzo",
+      "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
+      "authorIcon": "https://files.catbox.moe/ttj4fc.gif",
+      "authorUrl": "https://github.com/JMcrafter26",
+      "version": "0.3.5",
+      "redirect": "https://library.cufiy.net/library/?q=AniWorld+(GER+DUB)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 25000,
+        "retry": true
+      }
+    },
+    {
+      "name": "AniWorld (GER SUB)",
+      "type": "anime",
+      "language": "German (SUB)",
+      "quality": "720p",
+      "status": "active",
+      "note": "",
+      "author": "Cufiy & Hamzo",
+      "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
+      "authorIcon": "https://files.catbox.moe/ttj4fc.gif",
+      "authorUrl": "https://github.com/JMcrafter26",
+      "version": "0.3.5",
+      "redirect": "https://library.cufiy.net/library/?q=AniWorld+(GER+SUB)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 24000,
+        "retry": true
+      }
+    },
+    {
+      "name": "Bingebox",
+      "type": "movies/shows/anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/bingebox/favicon.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.5",
+      "redirect": "https://library.cufiy.net/library/?q=Bingebox",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4820,
+        "retry": false
+      }
+    },
+    {
+      "name": "Black Clover Pace",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.1",
+      "redirect": "https://library.cufiy.net/library/?q=Black+Clover+Pace",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2000,
+        "retry": true
+      }
+    },
+    {
+      "name": "Borucut",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/borucut/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=Borucut",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 3000,
+        "retry": true
+      }
+    },
+    {
+      "name": "DBZ Recut",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/dbzRecut/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=DBZ+Recut",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2000,
+        "retry": true
+      }
+    },
+    {
+      "name": "dessin-anime",
+      "type": "anime",
+      "language": "French",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/dessin-anime/icon.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.1",
+      "redirect": "https://library.cufiy.net/library/?q=dessin-anime",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4141,
+        "retry": false
+      }
+    },
+    {
+      "name": "Dragon Ball Recut",
+      "type": "anime",
+      "language": "Japanese",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/dragonballrecut/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=Dragon+Ball+Recut",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4924,
+        "retry": false
+      }
+    },
+    {
+      "name": "FireAnime DUB",
+      "type": "anime",
+      "language": "German (DUB)",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "Cufiy & 50/50",
+      "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
+      "authorIcon": "https://files.catbox.moe/ttj4fc.gif",
+      "authorUrl": "",
+      "version": "1.1.7",
+      "redirect": "https://library.cufiy.net/library/?q=FireAnime+DUB",
+      "tested": {
+        "keyword": "naruto",
+        "evidence": "harness PASS",
+        "ms": 8154,
+        "retry": true
+      }
+    },
+    {
+      "name": "FireAnime English (SUB)",
+      "type": "anime",
+      "language": "English (SUB)",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "Cufiy & 50/50",
+      "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
+      "authorIcon": "https://files.catbox.moe/ttj4fc.gif",
+      "authorUrl": "",
+      "version": "1.1.7",
+      "redirect": "https://library.cufiy.net/library/?q=FireAnime+English+(SUB)",
+      "tested": {
+        "keyword": "naruto",
+        "evidence": "harness PASS",
+        "ms": 7926,
+        "retry": true
+      }
+    },
+    {
+      "name": "FireAnime SUB",
+      "type": "anime",
+      "language": "German (SUB)",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "Cufiy & 50/50",
+      "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
+      "authorIcon": "https://files.catbox.moe/ttj4fc.gif",
+      "authorUrl": "",
+      "version": "1.1.7",
+      "redirect": "https://library.cufiy.net/library/?q=FireAnime+SUB",
+      "tested": {
+        "keyword": "naruto",
+        "evidence": "harness PASS",
+        "ms": 9290,
+        "retry": true
+      }
+    },
+    {
+      "name": "FlixLatam",
+      "type": "movies/shows/anime",
+      "language": "Spanish (DUB/SUB)",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "xdfkenny",
+      "iconUrl": "https://flixlatam.com/themes/dooplay/assets/img/favicon.png",
+      "authorIcon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+      "authorUrl": "https://github.com/xdfkenny",
+      "version": "1.1.13",
+      "redirect": "https://library.cufiy.net/library/?q=FlixLatam",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4638,
+        "retry": false
+      }
+    },
+    {
+      "name": "HydraHD",
+      "type": "movies/shows/anime",
+      "language": "English (SUB/DUB)",
+      "quality": "Up to 4K",
+      "status": "active",
+      "note": "",
+      "author": "xdfkenny",
+      "iconUrl": "https://hydrahd.ws/fav-192.png",
+      "authorIcon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+      "authorUrl": "https://github.com/xdfkenny",
+      "version": "2.3.1",
+      "redirect": "https://library.cufiy.net/library/?q=HydraHD",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 6000,
+        "retry": true
+      }
+    },
+    {
+      "name": "JKanime",
+      "type": "anime",
+      "language": "Spanish (SUB)",
+      "quality": "720p",
+      "status": "active",
+      "note": "",
+      "author": "alexrica",
+      "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain_url=jkanime.net",
+      "authorIcon": "https://github.com/alexrica.png",
+      "authorUrl": "https://github.com/alexrica",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=JKanime",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4895,
+        "retry": false
+      }
+    },
+    {
+      "name": "Kawaiianime",
+      "type": "anime",
+      "language": "Arabic",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "3Froto",
+      "iconUrl": "https://icons.duckduckgo.com/ip3/kawaiianime.cc.ico",
+      "authorIcon": "https://raw.githubusercontent.com/3FrotoDev/kawaiianime/refs/heads/main/icon.jpg",
+      "authorUrl": "https://discord.com/users/867513730770272296",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=Kawaiianime",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2714,
+        "retry": false
+      }
+    },
+    {
+      "name": "KissAsian",
+      "type": "movies/shows/anime",
+      "language": "Asian (SUB) - Korean, Chinese, Japanese, Thai",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "xdfkenny",
+      "iconUrl": "https://kissasian.su/assets/img/favicon.png",
+      "authorIcon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+      "authorUrl": "https://github.com/xdfkenny",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=KissAsian",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 5421,
+        "retry": false
+      }
+    },
+    {
+      "name": "LiveWatch",
+      "type": "live/tv",
+      "language": "Multi",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://i.imgur.com/ovX7j6R.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=LiveWatch",
+      "tested": {
+        "keyword": null,
+        "evidence": "harness PASS",
+        "ms": 6000,
+        "retry": true
+      }
+    },
+    {
+      "name": "MangaWorld Novels",
+      "type": "novels",
+      "language": "Italian",
+      "quality": "Alta",
+      "status": "active",
+      "note": "",
+      "author": "Soony5",
+      "iconUrl": "https://raw.githubusercontent.com/Soony5/MangaWorld/refs/heads/main/android-icon-192x192.png",
+      "authorIcon": "https://files.catbox.moe/8r9nye.png",
+      "authorUrl": "https://github.com/Soony5",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=MangaWorld+Novels",
+      "tested": {
+        "keyword": "solo leveling",
+        "evidence": "harness PASS",
+        "ms": 2990,
+        "retry": false
+      }
+    },
+    {
+      "name": "Movie2k",
+      "type": "shows/movies",
+      "language": "German",
+      "quality": "1080p - 720p - DVD - CAM",
+      "status": "active",
+      "note": "",
+      "author": "shadowbroker",
+      "iconUrl": "https://favicon.im/movie2k.cx?larger=true",
+      "authorIcon": "https://favicon.im/movie2k.cx?larger=true",
+      "authorUrl": "",
+      "version": "0.1.2",
+      "redirect": "https://library.cufiy.net/library/?q=Movie2k",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 6000,
+        "retry": true
+      }
+    },
+    {
+      "name": "Movix",
+      "type": "anime/shows/movies",
+      "language": "French",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://movix.online/movix.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "2.0.18",
+      "redirect": "https://library.cufiy.net/library/?q=Movix",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 12207,
+        "retry": false
+      }
+    },
+    {
+      "name": "Narucannon",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "Use external player to watch the streams (e.g. VLC).",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "2.0.9",
+      "redirect": "https://library.cufiy.net/library/?q=Narucannon",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 3183,
+        "retry": true
+      }
+    },
+    {
+      "name": "NovelFire",
+      "type": "novels",
+      "language": "English",
+      "quality": "N/A",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/novelfire/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.6",
+      "redirect": "https://library.cufiy.net/library/?q=NovelFire",
+      "tested": {
+        "keyword": "solo leveling",
+        "evidence": "harness PASS",
+        "ms": 16950,
+        "retry": false
+      }
+    },
+    {
+      "name": "Okanime",
+      "type": "anime",
+      "language": "Arabic",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "Cheikh Hachem",
+      "iconUrl": "https://ww3.okanime.xyz/assets/img/logos/okanime-128.png",
+      "authorIcon": "https://avatars.githubusercontent.com/u/255023163?v=4",
+      "authorUrl": "https://github.com/cheikhhachem",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=Okanime",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 7572,
+        "retry": false
+      }
+    },
+    {
+      "name": "One Pace",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "2.0.9",
+      "redirect": "https://library.cufiy.net/library/?q=One+Pace",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 5310,
+        "retry": true
+      }
+    },
+    {
+      "name": "One Pace (French)",
+      "type": "anime",
+      "language": "French",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "2.0.4",
+      "redirect": "https://library.cufiy.net/library/?q=One+Pace+(French)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4671,
+        "retry": true
+      }
+    },
+    {
+      "name": "One Pace (Spanish)",
+      "type": "anime",
+      "language": "Spanish",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "2.0.5",
+      "redirect": "https://library.cufiy.net/library/?q=One+Pace+(Spanish)",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 3286,
+        "retry": true
+      }
+    },
+    {
+      "name": "One Piece Film Red: AmaLee Score",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onePieceFilmRedAmaLeeScore/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=One+Piece+Film+Red%3A+AmaLee+Score",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 1211,
+        "retry": true
+      }
+    },
+    {
+      "name": "One Piece Treasure Edition",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onePieceTreasureEdition/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.1",
+      "redirect": "https://library.cufiy.net/library/?q=One+Piece+Treasure+Edition",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2076,
+        "retry": true
+      }
+    },
+    {
+      "name": "Onigashima Paced",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/onigashima/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.1",
+      "redirect": "https://library.cufiy.net/library/?q=Onigashima+Paced",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 3000,
+        "retry": true
+      }
+    },
+    {
+      "name": "Purstream",
+      "type": "anime/shows/movies",
+      "language": "French",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://purstream.wiki/assets/icones/favicon.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.3",
+      "redirect": "https://library.cufiy.net/library/?q=Purstream",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 9323,
+        "retry": false
+      }
+    },
+    {
+      "name": "Rebuild of Naruto",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "Use external player to watch the streams (e.g. VLC).",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/rebuildOfNaruto/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.2",
+      "redirect": "https://library.cufiy.net/library/?q=Rebuild+of+Naruto",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2094,
+        "retry": true
+      }
+    },
+    {
+      "name": "Risto Anime",
+      "type": "anime",
+      "language": "Arabic",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "Cheikh Hachem",
+      "iconUrl": "https://ristoanime.me/favicon.ico",
+      "authorIcon": "https://avatars.githubusercontent.com/u/255023163?v=4",
+      "authorUrl": "https://github.com/cheikhhachem",
+      "version": "1.0.1",
+      "redirect": "https://library.cufiy.net/library/?q=Risto+Anime",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 4010,
+        "retry": false
+      }
+    },
+    {
+      "name": "Scan Sama",
+      "type": "manga",
+      "language": "French",
+      "quality": "N/A",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://raw.githubusercontent.com/Anime-Sama/IMG/img/autres/logo.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "",
+      "version": "1.2.3",
+      "redirect": "https://library.cufiy.net/library/?q=Scan+Sama",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 10187,
+        "retry": false
+      }
+    },
+    {
+      "name": "SpacePowerFans",
+      "type": "anime",
+      "language": "Arabic",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/spacepowerfans/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=SpacePowerFans",
+      "tested": {
+        "keyword": "dragon ball",
+        "evidence": "harness PASS",
+        "ms": 14696,
+        "retry": false
+      }
+    },
+    {
+      "name": "StreamCloud",
+      "type": "shows/movies",
+      "language": "German",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "ibro & Cufiy",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/streamcloud/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "2.0.6",
+      "redirect": "https://library.cufiy.net/library/?q=StreamCloud",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 63000,
+        "retry": true
+      }
+    },
+    {
+      "name": "StreamingUnity",
+      "type": "shows/movies",
+      "language": "Italian",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "sobet & alessio",
+      "iconUrl": "https://play-lh.googleusercontent.com/-BHc2mPj6oRWk0cjwMn5oYSd7rYl5RW1xn8BWdizIHBuh4cBQ6ev_EsxmA4Trt0o2jQ",
+      "authorIcon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQPQ1qIiALbM3xDWGsuJzu6ItaQGwb9ICRRw&s",
+      "authorUrl": "",
+      "version": "10000000",
+      "redirect": "https://library.cufiy.net/library/?q=StreamingUnity",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 9563,
+        "retry": false
+      }
+    },
+    {
+      "name": "UAchan",
+      "type": "anime",
+      "language": "Ukrainian",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "plodesu",
+      "iconUrl": "https://uachan.top/apple-touch-icon.png",
+      "authorIcon": "",
+      "authorUrl": "",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=UAchan",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 7632,
+        "retry": false
+      }
+    },
+    {
+      "name": "VidHawk",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://vidhawk.buzz/vidhawk-logo.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.0",
+      "redirect": "https://library.cufiy.net/library/?q=VidHawk",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 3210,
+        "retry": false
+      }
+    },
+    {
+      "name": "VidRift",
+      "type": "movies/shows",
+      "language": "English",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://raw.githubusercontent.com/MXFia19/module-sora/refs/heads/main/vidrift/3126b0287c3c9669e8a8f137b7201960.png",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.1.0",
+      "redirect": "https://library.cufiy.net/library/?q=VidRift",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 8944,
+        "retry": false
+      }
+    },
+    {
+      "name": "VoirAnime",
+      "type": "anime",
+      "language": "French",
+      "quality": "1080p",
+      "status": "active",
+      "note": "",
+      "author": "MXFia19",
+      "iconUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/voir-anime/IMG_9709.jpg",
+      "authorIcon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+      "authorUrl": "https://github.com/MXFia19",
+      "version": "1.0.7",
+      "redirect": "https://library.cufiy.net/library/?q=VoirAnime",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 9476,
+        "retry": false
+      }
+    },
+    {
+      "name": "YFSP",
+      "type": "movies/shows/anime",
+      "language": "Chinese (SUB)",
+      "quality": "576p",
+      "status": "active",
+      "note": "",
+      "author": "xdfkenny",
+      "iconUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yfsp/icon.png",
+      "authorIcon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+      "authorUrl": "https://github.com/xdfkenny",
+      "version": "1.0.6",
+      "redirect": "https://library.cufiy.net/library/?q=YFSP",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2722,
+        "retry": false
+      }
+    },
+    {
+      "name": "Yu Yu Hakusho Pace",
+      "type": "anime",
+      "language": "English",
+      "quality": "1080p - 720p - 480p",
+      "status": "active",
+      "note": "",
+      "author": "ibro",
+      "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/icon.png",
+      "authorIcon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+      "authorUrl": "https://github.com/xibrox",
+      "version": "1.0.1",
+      "redirect": "https://library.cufiy.net/library/?q=Yu+Yu+Hakusho+Pace",
+      "tested": {
+        "keyword": "one piece",
+        "evidence": "harness PASS",
+        "ms": 2279,
+        "retry": true
+      }
+    }
+  ]
+}

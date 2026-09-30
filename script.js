@@ -152,7 +152,9 @@ var I18N = {
     'sort.label': 'Sort', 'sort.recent': 'Recently Updated',
     'card.updated': 'Updated {d}',
     'empty.t': 'No modules found', 'empty.d': 'Try a different search or filter.',
-    'state.loading': 'Loading module index…', 'state.fail': 'Could not load modules.json. Serve over HTTP or check GitHub Pages.'
+    'state.loading': 'Loading module index…', 'state.fail': 'Could not load modules.json. Serve over HTTP or check GitHub Pages.',
+    'cufiy.badge': 'Cufiy',
+    'cufiy.open': 'Open in Cufiy'
   },
   es: {
     'nav.home': 'Inicio', 'nav.library': 'Librería',
@@ -176,7 +178,9 @@ var I18N = {
     'sort.label': 'Ordenar', 'sort.recent': 'Actualizado recientemente',
     'card.updated': 'Actualizado {d}',
     'empty.t': 'Sin resultados', 'empty.d': 'Prueba con otra búsqueda o filtro.',
-    'state.loading': 'Cargando índice…', 'state.fail': 'No se pudo cargar modules.json. Sirve por HTTP o revisa GitHub Pages.'
+    'state.loading': 'Cargando índice…', 'state.fail': 'No se pudo cargar modules.json. Sirve por HTTP o revisa GitHub Pages.',
+    'cufiy.badge': 'Cufiy',
+    'cufiy.open': 'Abrir en Cufiy'
   }
 };
 var LANG_LABELS = { en: 'EN', es: 'ES' };
@@ -203,12 +207,12 @@ function renderLangSwitch() {
     b.type = 'button';
     b.dataset.lang = l;
     b.setAttribute('aria-pressed', l === lang ? 'true' : 'false');
-    b.addEventListener('click', function () {
-      lang = l;
-      try { localStorage.setItem('lang', lang); } catch (e) { /* ignore */ }
-      applyI18n();
-      renderGrid();
-    });
+      b.addEventListener('click', function () {
+        lang = l;
+        try { localStorage.setItem('lang', lang); } catch (e) { /* ignore */ }
+        applyI18n();
+        renderGrid();
+      });
     w.appendChild(b);
   });
 }
@@ -463,8 +467,12 @@ function filtered() {
 function updateResultCount() {
   var n = $('resultCount');
   if (!n) return;
-  var list = entries.length ? filtered() : [];
-  n.textContent = list.length === 1 ? t('results.one') : t('results', { n: list.length });
+  var ours = entries.length ? filtered().length : 0;
+  var cufiy = cufiyMods.filter(function (m) {
+    return cufiyMatchCat(m, state.cat) && cufiyMatchSearch(m, state.q);
+  }).length;
+  var total = ours + cufiy;
+  n.textContent = total === 1 ? t('results.one') : t('results', { n: total });
 }
 
 /* ---------------- cards ---------------- */
@@ -571,6 +579,8 @@ function showState(kind) {
 function showFail() {
   if (!grid) return;
   grid.innerHTML = '<div class="state-box">' + esc(t('state.fail')) + '</div>';
+  // Keep cufiy cards even if our own index failed to load.
+  renderCufiyCards();
 }
 
 /* Render shells immediately (fast first paint), then hydrate per manifest. */
@@ -657,7 +667,8 @@ function hydrate(entry, m) {
 }
 
 function renderGrid() {
-  if (!grid || !entries.length) return;
+  if (!grid) return;
+  if (!entries.length && !Object.keys(cufiyCards).length) return;
   var visible = 0;
   if (state.sort) {
     // Float the visible cards to the front of the DOM in sort order;
@@ -665,6 +676,11 @@ function renderGrid() {
     filtered().forEach(function (e) {
       var ref = cards[e.id];
       if (ref && ref.card.parentNode === grid) grid.appendChild(ref.card);
+    });
+    // Cufiy cards carry no update date — pin them after our own, alphabetical.
+    Object.keys(cufiyCards).sort(function (a, b) { return a.localeCompare(b); }).forEach(function (name) {
+      var c = cufiyCards[name];
+      if (c && c.card.parentNode === grid) grid.appendChild(c.card);
     });
   }
   entries.forEach(function (e) {
@@ -675,9 +691,17 @@ function renderGrid() {
     if (ref.updated) ref.updated.textContent = t('card.updated', { d: e.updated });
     if (show) visible++;
   });
+  // Cufiy cards participate in the same search + category filters.
+  for (var name in cufiyCards) {
+    var c = cufiyCards[name];
+    var cshow = cufiyMatchCat(c.mod, state.cat) && cufiyMatchSearch(c.mod, state.q);
+    c.card.style.display = cshow ? '' : 'none';
+    if (cshow) visible++;
+  }
   // Refresh labels baked at hydrate time so the lang switch applies to cards.
   grid.querySelectorAll('[data-role="addlabel"]').forEach(function (n) { n.textContent = t('card.add'); });
   grid.querySelectorAll('[data-role="by"]').forEach(function (n) { n.textContent = t('card.by'); });
+  grid.querySelectorAll('[data-role="cufiy-open"]').forEach(function (n) { n.textContent = t('cufiy.open'); });
   grid.querySelectorAll('.split .copy').forEach(function (b) { b.title = t('card.copy'); });
   // Empty state (reference pattern).
   var empty = grid.querySelector('.empty');
@@ -840,6 +864,7 @@ function bootLibrary() {
   loadIndex().then(function (mods) {
     entries = mods;
     renderShells();
+    renderCufiyCards();
     renderGrid();
     updateStats();
     // Hydrate manifests with bounded concurrency; refresh UI as each lands.
@@ -885,6 +910,98 @@ function preloadOne(entry) {
     cacheWrite(entry.id, m);
     return m;
   }).catch(function () { return null; });
+}
+
+/* ---------------- cufiy modules (verified external sources as cards) -------
+ *
+ * cufiy-bridge.json lists modules from the original cufiy library that the
+ * test harness verified as working (live search → content pipeline). They are
+ * not bundled with this Sora package and are NOT in modules.json. They are
+ * rendered INTO the main library grid as regular cards with a "Cufiy" badge;
+ * the card action opens cufiy's library pre-filtered to that module:
+ * /library/?q=<sourceName>. They participate in the standard search /
+ * category / sort filters like any other card. */
+
+var cufiyMods = [];   // cufiy-bridge.json rows
+var cufiyCards = {};  // name -> {card, mod}
+
+/* Category chips (mirror matchCat semantics against the cufiy type string). */
+function cufiyMatchCat(m, cat) {
+  if (cat === 'all') return true;
+  var s = String(m.type || '').toLowerCase();
+  if (cat === 'anime') return s.indexOf('anime') !== -1;
+  if (cat === 'movie') return s.indexOf('movie') !== -1 || s.indexOf('show') !== -1 || s.indexOf('film') !== -1;
+  if (cat === 'manga') return s.indexOf('manga') !== -1;
+  if (cat === 'novel') return s.indexOf('novel') !== -1;
+  if (cat === 'torrent') return s.indexOf('torrent') !== -1 || s.indexOf('debrid') !== -1;
+  return true;
+}
+
+function cufiyMatchSearch(m, q) {
+  if (!q) return true;
+  var hay = [m.name, m.type, m.language, m.quality, m.author].filter(Boolean).join(' ').toLowerCase();
+  return hay.indexOf(q) !== -1;
+}
+
+function cufiyCardHtml(m, i) {
+  var lang = parseLanguage(m.language || '');
+  var icons = typeIcons(String(m.type || '')).map(function (ic) {
+    return '<span class="card-types"><iconify-icon icon="' + esc(ic) + '" aria-hidden="true"></iconify-icon></span>';
+  }).join('');
+  var quality = (m.quality && m.quality !== 'N/A') ? '<span class="chip">' + esc(m.quality) + '</span>' : '';
+  var iconImg = m.iconUrl
+    ? '<img src="' + esc(m.iconUrl) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">'
+    : '<span class="card-icon-fallback" aria-hidden="true"></span>';
+  var authorImg = m.authorIcon ? '<img src="' + esc(m.authorIcon) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '';
+  var authorName = m.author
+    ? (m.authorUrl
+      ? '<a href="' + esc(m.authorUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(m.author) + '</a>'
+      : '<span>' + esc(m.author) + '</span>')
+    : '';
+  return '<article class="card card-cufiy" data-cufiy="' + esc(m.name) + '" style="animation-delay:' + Math.min(i, 10) * 30 + 'ms">' +
+    '<div class="card-head"><div class="card-icon">' + iconImg + '</div>' +
+    '<div class="cufiy-head-info"><div class="card-title-row">' +
+    '<div class="card-title">' + esc(m.name) + '</div>' +
+    (m.version ? '<span class="ver">v' + esc(m.version) + '</span>' : '') +
+    '</div><div class="card-branch">original library</div></div>' +
+    '<span class="cufiy-card-badge" title="Verified module from the original cufiy library"><span class="material-symbols-outlined icon-sm">public</span> ' + esc(t('cufiy.badge')) + '</span>' +
+    '</div>' +
+    '<div class="card-body"><div class="meta"><span class="cufiy-flag" role="img" aria-label="' + esc(lang.label) + '">' + flagImgs(lang) + '</span>' +
+    '<span class="cufiy-lang">' + esc(lang.label) + '</span>' + icons + quality + '</div>' +
+    '<div class="links">' +
+    '<div class="card-bottom"><div class="author">' + authorImg +
+    '<span style="color:var(--fg-muted);font-weight:500" data-role="by">' + esc(t('card.by')) + '</span>' +
+    authorName + '</div></div>' +
+    '<div class="split"><a class="add" href="' + esc(m.redirect) + '" target="_blank" rel="noopener noreferrer">' +
+    '<span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">open_in_new</span>' +
+    '<span data-role="cufiy-open">' + esc(t('cufiy.open')) + '</span></a></div>' +
+    '</div></div></article>';
+}
+
+/* Idempotent: rebuilds all cufiy cards at the end of the main grid. */
+function renderCufiyCards() {
+  if (!grid) return;
+  grid.querySelectorAll('.card-cufiy').forEach(function (el) { el.remove(); });
+  cufiyCards = {};
+  cufiyMods.forEach(function (m, i) {
+    var wrap = document.createElement('div');
+    wrap.innerHTML = cufiyCardHtml(m, i);
+    var el = wrap.firstElementChild;
+    grid.appendChild(el);
+    cufiyCards[m.name] = { card: el, mod: m };
+  });
+}
+
+function loadCufiyBridge() {
+  fetchJson('cufiy-bridge.json').catch(function () {
+    return fetchJson(RAW_REPO + '/main/cufiy-bridge.json');
+  }).then(function (data) {
+    if (!data || !Array.isArray(data.modules)) return;
+    cufiyMods = data.modules;
+    renderCufiyCards();
+    renderGrid();
+    updateResultCount();
+  }).catch(function () { /* cufiy list unavailable — our own library is unaffected */ });
 }
 
 /* ---------------- init ---------------- */
@@ -953,3 +1070,4 @@ applyI18n();
 route();
 initDonateModal();
 preloadForLanding();
+loadCufiyBridge();

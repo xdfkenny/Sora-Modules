@@ -16,6 +16,8 @@ server.js           # status/test harness (Node)
 index.html + script.js     # home page — topbar/hero landing ('/')
 modules/index.html + modules.js  # full module library ('/modules')
 styles.css                  # shared design system (both pages)
+cufiy-bridge.json           # cufiy modules we verified working → bridge buttons (see "Cufiy bridge")
+cufiy-test/               # gitignored scratch harness that produces cufiy-bridge.json
 documentation/      # Howtotest.md, NovelModules.md, SUBTITLES.md, etc.
 test/               # harness snapshots: hydrahd-copy/, stremio-subs-test/
 *.patch             # Luna/Kanzen reader fixes (reference only)
@@ -93,6 +95,41 @@ const src = require('fs').readFileSync('allmanga-novels/allmanga-novels.js','utf
 - **Episode trust filter**: `test/stremio-subs-test/README.md:2` — polluted s:e mapping requires parsing `SubFileName` and class-ranking verified > unknown > blocked before size.
 - **Persisted-query cache**: GraphQL `PersistedQueryNotFound` → re-send query text once (`documentation/HowtotestNovels.md:131`).
 - **GitHub raw lag**: after push, wait before testing live URL; edit cached file in `~/Library/Containers/me.cranci.sulfur/Data/Documents/` for fast iteration (`documentation/Howtotest.md:28`).
+
+## Cufiy bridge (verified external modules as cards)
+
+The original Sora library at `library.cufiy.net` is larger than our curated
+`modules.json`. We surface its verified-working modules **inside the main
+library grid** (`#/library`, rendered by `script.js` `loadCufiyBridge()` /
+`renderCufiyCards()`): each becomes a regular `.card` (same format as ours,
+with a mint **"Cufiy" origin badge** top-right, an "original library" branch
+line, and an **"Open in Cufify" action** that links to
+`https://library.cufiy.net/library/?q=<sourceName>` (space as `+`)).
+They are **links only** — NOT in `modules.json`, not part of the Sora install,
+and they obey the same search / category / sort filters + result count as
+our own cards.
+
+- **Existing link (already shipped):** the `lib.sub-note` i18n key (EN/ES in
+  `script.js`) already says "You can also browse the original library at
+  cufiy.net/library". The cufiy cards are that same reference, made clickable
+  per module.
+- **Data file:** `cufiy-bridge.json` (committed) = `{modules:[{name,type,language,
+  quality,iconUrl,version,author,authorIcon,authorUrl,redirect,tested{...}}]}`.
+  Only modules **verified working** by the harness are included; broken/dead
+  ones are discarded. NOTE: cufiy's index HTML-escapes some string fields
+  (`&amp;`), so `make-bridge.js` unescapes them once before writing — the UI's
+  `esc()` must not double-escape.
+- **How it's produced:** the gitignored `cufiy-test/` harness downloads every
+  module from cufiy's `/api/modules.json`, runs the full Sora contract pipeline
+  (search → details → episodes → stream / chapters → text / chapters → images),
+  and `cufiy-test/make-bridge.js` merges the passes into `cufiy-bridge.json` +
+  `cufiy-test/bridge-report.txt` (included + discarded with reasons).
+- **Retest after cufiy changes:** re-run the passes in `cufiy-test/`, then
+  `node cufiy-test/make-bridge.js` to regenerate the data file. Re-verify with
+  `node server.js` (bridge JSON served at `/cufiy-bridge.json`).
+- `AllManga Manga` is included via a curated override (search + 1222 chapters
+  verified live; only the image step is gated by the documented aaReq keygen
+  limitation, not upstream death) — see `cufiy-test/make-bridge.js` `OVERRIDES`.
 
 ## Known dead ends (don't re-investigate)
 
