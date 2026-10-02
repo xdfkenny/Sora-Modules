@@ -128,7 +128,11 @@ async function extractStreamUrl(url) {
         if (!hashM) return JSON.stringify({ streams: [], subtitle: "" });
         const hash = hashM[1];
 
-        const apiUrl = "https://michealcdn.com/player/index.php?data=" + hash + "&do=getVideo";
+        const hostM = String(playing.body.url).match(/https?:\/\/([^\/]+)/);
+        if (!hostM) return JSON.stringify({ streams: [], subtitle: "" });
+        const host = hostM[1];
+
+        const apiUrl = "https://" + host + "/player/index.php?data=" + hash + "&do=getVideo";
         const postData = "hash=" + encodeURIComponent(hash) + "&r=" + encodeURIComponent("https://aniweek.com/");
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
