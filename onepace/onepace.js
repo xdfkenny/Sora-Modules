@@ -3,103 +3,54 @@ async function searchResults(keyword) {
     const response = await soraFetch(`https://onepace.net/en/watch`);
     const html = await response.text();
 
-    // First, extract all images in order
-    const allImages = [...html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/g)].map(m => m[1])
-                      .concat([...html.matchAll(/background-image:\s*url\(['"]([^'"]+)['"]\)/g)].map(m => m[1]));
-    
-    const arcSections = html.split('<h2');
-    
-    
-    // Process each arc section starting from index 1 (skip the first split result)
-    for (let i = 1; i < arcSections.length; i++) {
-        const currentSection = arcSections[i];
-        
-        // Extract title from current section
-        const titleMatch = currentSection.match(/<a href="#[^"]*"[^>]*>([\s\S]*?)<\/a>/);
-        if (!titleMatch) continue;
-        let arcTitle = titleMatch[1]
+    // Parse the "watch options" segments: each <div class="relative"> block is one
+    // arc (title + poster), and the <li aria-labelledby=…> lists inside it carry
+    // the Sub/Dub/CC type labels and per-quality pixeldrain links.
+    let fallbackImage = '';
+    const segs = html.split('<div class="relative">');
+    for (let i = 1; i < segs.length; i++) {
+        const seg = segs[i];
+
+        const h2Match = seg.match(/<h2[\s\S]*?<a href="#[^"]*" class="group">[\s\S]*?<\/a>/);
+        if (!h2Match) continue;
+        const arcTitle = h2Match[0]
             .replace(/<!--[\s\S]*?-->/g, '')
             .replace(/<[^>]+>/g, '')
-            .trim()
             .replace(/&#x27;/g, "'")
             .replace(/&amp;/g, '&')
-            .replace(/&quot;/g, '"');
-        
-        // Get image for this arc - shifted by 1 to align correctly
+            .replace(/&quot;/g, '"')
+            .trim();
+
+        const imgMatch = seg.match(/<img[^>]+src="([^"]+)"/);
         let arcImage = '';
-        if (allImages[i]) {  // Using i instead of i-1 to shift image index forward
-            arcImage = allImages[i].replace(/&amp;/g, '&');
+        if (imgMatch) {
+            arcImage = imgMatch[1].replace(/&amp;/g, '&');
             if (arcImage.startsWith('/_next')) {
                 arcImage = 'https://onepace.net' + arcImage;
             }
-        }
-        
-        // For the last arc, use the last image from the array
-        if (i === arcSections.length - 1 && allImages[0]) {
-            arcImage = allImages[0].replace(/&amp;/g, '&');
-            if (arcImage.startsWith('/_next')) {
-                arcImage = 'https://onepace.net' + arcImage;
-            }
+            // first poster found so far becomes the fallback for imageless arcs
+            if (!fallbackImage) fallbackImage = arcImage;
+        } else {
+            arcImage = fallbackImage;
         }
 
-        const episodeBlocks = currentSection.split('<span class="flex-1">');
-        for (let j = 1; j < episodeBlocks.length; j++) {
-            const block = episodeBlocks[j];
-            
-            let type = '';
-            if (block.includes('English Subtitles')) {
-                type = 'English Subtitles';
-                if (block.includes('Extended')) {
-                    type += ', Extended';
-                }
-                if (block.includes('Alternate')) {
-                    type += ', Alternate';
-                }
-            } else if (block.includes('English Dub with Closed Captions')) {
-                type = 'English Dub with Closed Captions';
-                if (block.includes('Extended')) {
-                    type += ', Extended';
-                }
-                if (block.includes('Alternate')) {
-                    type += ', Alternate';
-                }
-            } else if (block.includes('English Dub')) {
-                type = 'English Dub';
-                if (block.includes('Extended')) {
-                    type += ', Extended';
-                }
-                if (block.includes('Alternate')) {
-                    type += ', Alternate';
-                }
-            } else {
-                continue;
-            }
+        const liParts = seg.split('<li aria-labelledby=').slice(1);
+        for (const li of liParts) {
+            if (li.indexOf('pixeldrain') === -1) continue;
 
-            // Get quality-specific links
-            let qualityLinks = new Map();
-            const qualityMatches = [...block.matchAll(/>\s*(480p|720p|1080p)\s*</g)];
-            const linkMatches = [...block.matchAll(/href="(https:\/\/pixeldrain\.net\/l\/[^"]+)"/g)];
-            
-            // Match links with qualities in order
-            if (qualityMatches.length > 0 && linkMatches.length > 0) {
-                // Make sure we have at most one link per quality
-                const uniqueQualities = [...new Set(qualityMatches.map(m => m[1]))];
-                uniqueQualities.forEach((quality, index) => {
-                    if (index < linkMatches.length) {
-                        qualityLinks.set(quality, linkMatches[index][1]);
-                    }
-                });
-            }
-            
-            // Add entries for all found qualities
-            for (const [quality, href] of qualityLinks) {
-                const title = `${arcTitle}, ${type}, ${quality.trim()}`;
-                if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || 
-                    keyword.toLowerCase() === 'all' || 
+            const typeMatch = li.match(/class="text-lg\/6 font-semibold">([^<]+)</);
+            const type = typeMatch ? typeMatch[1].trim() : '';
+
+            const linkRe = /href="(https:\/\/pixeldrain\.net\/l\/[^"]+)"[\s\S]*?<span class="font-semibold underline[^>]*>(\d+p)<\/span>/g;
+            let lm;
+            while ((lm = linkRe.exec(li)) !== null) {
+                const title = `${arcTitle}, ${type}, ${lm[2]}`;
+                if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) ||
+                    keyword.toLowerCase() === 'all' ||
                     keyword.toLowerCase() === 'everything') {
                     results.push({
                         title: title,
-                        href: href,
+                        href: lm[1],
                         image: arcImage
                     });
                 }

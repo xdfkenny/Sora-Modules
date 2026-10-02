@@ -234,7 +234,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lncrawler/lncrawler.json",
       "sampleQuery": "solo leveling",
-      "updated": "2026-09-25"
+      "updated": "2026-09-25",
+      "discontinued": true,
+      "note": "upstream lncrawler.monster unreachable - connection timeout from both site and API hosts (checked 2026-10)"
     },
     {
       "id": "mangadex",
@@ -255,7 +257,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nimegami/nimegami.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream nimegami.id returns 522 (Cloudflare origin down, checked 2026-09)",
+      "note": "upstream nimegami.id unreachable - Cloudflare origin down (checked 2026-10)",
       "updated": "2026-09-25"
     },
     {
@@ -459,7 +461,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anineko/anineko.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream anineko.to unreachable (connection timeout, checked 2026-09)",
+      "note": "upstream anineko.to /browser returns a PHP database-connection error (backend down, checked 2026-10)",
       "updated": "2026-09-25"
     },
     {
@@ -611,7 +613,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/nakanime/nakanime.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "site is client-side SPA, search API returns 404 (checked 2026-09)",
+      "note": "upstream nakanime.tv returns 404 to the module endpoints (checked 2026-10)",
       "updated": "2026-09-25"
     },
     {
@@ -763,7 +765,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/Nakastream/Nakastream.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "site is client-side SPA, module cannot parse listings (checked 2026-09)",
+      "note": "site redirects to a client-side SPA the module cannot parse (checked 2026-10)",
       "updated": "2026-09-25"
     },
     {
@@ -824,7 +826,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeweek/animeweek.json",
       "sampleQuery": "원피스",
-      "updated": "2026-09-25"
+      "updated": "2026-10-02"
     },
     {
       "id": "animexin",
@@ -949,7 +951,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangafire/mangafire.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-09)",
+      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-10)",
       "updated": "2026-09-25"
     },
     {
@@ -980,7 +982,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/miruro/miruro.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-09-25",
+      "needs_review": true,
+      "note": "upstream miruro.to returns Cloudflare 403 to scripts (checked 2026-10)"
     },
     {
       "id": "moflix",
@@ -1051,8 +1055,8 @@
       "category": "anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepace/onepace.json",
-      "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "sampleQuery": "romance dawn",
+      "updated": "2026-10-02"
     },
     {
       "id": "otakutsu",
@@ -1062,7 +1066,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-09-25",
+      "needs_review": true,
+      "note": "site otakutsu.cc unreachable, search API returns no results (checked 2026-10)"
     },
     {
       "id": "purstream",
@@ -1114,7 +1120,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "review_reason": "fetch failed",
-      "note": "upstream rumanhua1.com serves empty replies to scripts (checked 2026-09)",
+      "note": "upstream rumanhua1.com unreachable (checked 2026-10)",
       "updated": "2026-09-25"
     },
     {
@@ -1185,7 +1191,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xiaoxintv/xiaoxintv.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-09-25",
+      "needs_review": true,
+      "note": "upstream xiaoxintv.cc 301-redirects to xiaoheimi.cc which is unreachable (checked 2026-10)"
     },
     {
       "id": "yuYuHakushoPace",
@@ -1716,7 +1724,8 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "review_reason": "Failed to parse URL from undefined",
-      "updated": null
+      "updated": null,
+      "note": "upstream batcave.bz no longer resolves in DNS (checked 2026-10)"
     },
     {
       "id": "mlbwebcast",
@@ -1738,7 +1747,8 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "review_reason": "Failed to parse URL from undefined",
-      "updated": null
+      "updated": null,
+      "note": "upstream moved to mangaball.com; external search API no longer exists, script cannot find listings (checked 2026-10)"
     },
     {
       "id": "mangadot",
@@ -1806,7 +1816,8 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "review_reason": "Failed to parse URL from undefined",
-      "updated": null
+      "updated": null,
+      "note": "external script no longer exposes the searchResults contract function (checked 2026-10)"
     },
     {
       "id": "anibd",
@@ -1816,7 +1827,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/anibd/anibd.json",
       "sampleQuery": "one piece",
-      "updated": null
+      "updated": null,
+      "needs_review": true,
+      "note": "upstream anibd.app no longer resolves / site stopped (checked 2026-10)"
     },
     {
       "id": "emby",
@@ -1901,7 +1914,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/lncrawler/lncrawler.json",
       "sampleQuery": "solo leveling",
-      "updated": "2026-09-28"
+      "updated": "2026-09-28",
+      "discontinued": true,
+      "note": "upstream lncrawler.monster unreachable - connection timeout (checked 2026-10)"
     },
     {
       "id": "mangabuddy-eclipse",
@@ -1932,7 +1947,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangafire/mangafire.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-09)",
+      "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-10)",
       "updated": "2026-09-28"
     },
     {
@@ -2036,7 +2051,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "note": "upstream rumanhua1.com serves empty replies to scripts (checked 2026-09)",
+      "note": "upstream rumanhua1.com unreachable (checked 2026-10)",
       "review_reason": "fetch failed",
       "updated": "2026-09-28"
     },
