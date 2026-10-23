@@ -58,8 +58,8 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anikoto/anikoto.json",
       "sampleQuery": "one piece",
-      "note": "Revived 2026-10-20 (v1.0.20): megaplay.buzz / vidwish.live getSources now answer an encrypted `enc` blob instead of a plain `sources` object. Ported the 123anime AES-256-CBC decryptor (shared fixed key/IV) into the module so both resolver paths decrypt it and emit the nexabloom master.m3u8 (needs the megaplay.buzz Referer, already emitted). Full pipeline + variants verified 200.",
-      "updated": "2026-10-20"
+      "note": "Rebuilt 2026-10-22 (v2.0.0): upstream moved animepahetv.to → anikototv.to with a new ajax API (episode list / server list / server resolve). Embeds are megaplay.buzz (+ vidwish/vidtube variants); getSources answers an AES-256-CBC `enc` blob and the decrypted master.m3u8 needs a fresh HMAC-SHA256 CDN token (90s TTL, minted per call). CDN 403s bare requests — streams/subs ship User-Agent + megaplay.buzz Referer headers. All 6 lanes (sub/dub × HD-1/Vidstream) + full HLS ladder verified 200.",
+      "updated": "2026-10-22"
     },
     {
       "id": "anikotodub",
