@@ -6,32 +6,13 @@
 // 🗄️ TRACKER SUPABASE (Base de données)
 // ==========================================
 
-const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
-
+// 🔐 Le tracker Supabase a été désactivé : une clé publiable intégrée dans du
+// code client ne peut pas rester confidentielle, et cette clé autorisait la
+// lecture/écriture/suppression de "app_logs". Tant que l'accès n'est pas
+// restreint côté backend (policies RLS), aucun identifiant ne doit être
+// embarqué ici, donc la fonction devient un no-op.
 async function sendSupabaseLog(moduleName, actionType, dataPayload) {
-    try {
-        const payload = {
-            module: moduleName,
-            action: actionType,
-            data: dataPayload
-        };
-
-        const headers = { 
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-            "Prefer": "return=minimal" 
-        };
-        
-        if (typeof fetchv2 !== 'undefined') {
-            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-        } else {
-            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
-        }
-    } catch (e) { 
-        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
-    }
+    return;
 }
 
 // ==========================================
