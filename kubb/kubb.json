@@ -1,59 +1,17 @@
 {
-  "id": "kubb-tv",
-  "name": "酷播TV",
+  "sourceName": "酷播TV (Kubb)",
+  "iconUrl": "https://m.kubb.tv/favicon.ico",
+  "author": {
+    "name": "xdfkenny",
+    "icon": "https://avatars.githubusercontent.com/u/1?v=4"
+  },
   "version": "1.0.0",
-  "author": "xdfkenny",
-  "host": "https://m.kubb.tv",
+  "language": "Chinese",
+  "streamType": "HLS",
+  "quality": "1080p",
   "baseUrl": "https://m.kubb.tv",
-  "webUrl": "https://m.kubb.tv",
-  "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-  "headers": {
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
-    "Referer": "https://m.kubb.tv/"
-  },
-  "search": {
-    "url": "https://m.kubb.tv/vodsearch/-------------.html?wd={keyword}",
-    "method": "GET",
-    "list": ".module-card-item, .module-search-item, .search-list .item, .hl-list-item",
-    "title": ".module-card-item-title strong, .module-card-item-title, .title, .hl-item-title a",
-    "url": "a@href",
-    "cover": "img@data-original || img@data-src || img@src",
-    "desc": ".module-item-note, .module-card-item-info, .remarks, .hl-item-sub"
-  },
-  "categories": [
-    { "name": "电影", "url": "https://m.kubb.tv/vodshow/1-----------.html" },
-    { "name": "连续剧", "url": "https://m.kubb.tv/vodshow/2-----------.html" },
-    { "name": "综艺", "url": "https://m.kubb.tv/vodshow/3-----------.html" },
-    { "name": "动漫", "url": "https://m.kubb.tv/vodshow/4-----------.html" }
-  ],
-  "detail": {
-    "title": "h1.module-info-heading, .hl-dc-title, .detail-title",
-    "cover": ".module-item-pic img@data-original || .module-item-pic img@src || .hl-item-thumb@data-original",
-    "desc": ".module-info-introduction-content, .hl-full-content, .detail-desc",
-    "director": ".module-info-item:contains('导演') .module-info-item-content",
-    "actor": ".module-info-item:contains('主演') .module-info-item-content",
-    "tabs": ".module-tab-item, .hl-tabs-item, .play-tab li",
-    "playlists": ".module-play-list, .hl-plays-list, .play-list",
-    "episode": {
-      "list": "a",
-      "name": "text || span",
-      "url": "@href"
-    }
-  },
-  "player": {
-    "type": "webview",
-    "script": "var player = player_aaaa || {}; player.url || ''",
-    "sniff": [
-      "https?:\\/\\/.*\\.m3u8.*",
-      "https?:\\/\\/.*\\.mp4.*",
-      "https?:\\/\\/.*\\/video\\/.*"
-    ],
-    "filter": [
-      ".*\\.png.*",
-      ".*\\.jpg.*",
-      ".*\\.gif.*",
-      ".*\\.css.*",
-      ".*\\.js.*"
-    ]
-  }
+  "searchBaseUrl": "https://m.kubb.tv/vodsearch/-------------.html?wd=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/enzol5210/Sora-Modules/main/kubb/kubb.js",
+  "asyncJS": true,
+  "softsub": false
 }
