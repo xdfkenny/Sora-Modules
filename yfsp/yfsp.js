@@ -1,8 +1,8 @@
-const YFSP_BASE = 'https://www.yfsp.tv';
-const YFSP_API_DETAIL = 'https://m10.yfsp.tv/v3/video/detail';
-const YFSP_API_EPISODES = 'https://m10.yfsp.tv/v3/video/languagesplaylist';
-const YFSP_API_PLAY = 'https://m10.yfsp.tv/v3/video/play';
-const YFSP_API_SEARCH = 'https://rankv21.yfsp.tv/v3/list/briefsearch';
+const YFSP_BASE = 'https://www.kubb.tv';
+const YFSP_API_DETAIL = 'https://m10.kubb.tv/v3/video/detail';
+const YFSP_API_EPISODES = 'https://m10.kubb.tv/v3/video/languagesplaylist';
+const YFSP_API_PLAY = 'https://m10.kubb.tv/v3/video/play';
+const YFSP_API_SEARCH = 'https://rankv21.kubb.tv/v3/list/briefsearch';
 const YFSP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36';
 const YFSP_BUILD = '1.0.7';
 
@@ -22,7 +22,7 @@ function timerSafe(ms) {
 /* MAIN FUNCTIONS */
 
 /**
- * Searches yfsp.tv for movies/shows matching the keyword.
+ * Searches kubb.tv for movies/shows matching the keyword.
  * The briefsearch endpoint answers without a signature.
  * Returns a JSON string array of {title, image, href} objects.
  */
@@ -70,8 +70,8 @@ async function searchResults(keyword) {
 }
 
 /**
- * Fetches the yfsp.tv play page API and extracts description, year and category metadata.
- * @param {string} url - The yfsp.tv play page URL (e.g. https://www.yfsp.tv/play/<key>).
+ * Fetches the kubb.tv play page API and extracts description, year and category metadata.
+ * @param {string} url - The kubb.tv play page URL (e.g. https://www.kubb.tv/play/<key>).
  * @returns {string} JSON array with a single {description, airdate, aliases} object.
  */
 async function extractDetails(url) {
@@ -110,9 +110,9 @@ async function extractDetails(url) {
 }
 
 /**
- * Lists the episodes of a yfsp.tv title using the signed languagesplaylist API.
+ * Lists the episodes of a kubb.tv title using the signed languagesplaylist API.
  * The video's category id (cid) is pulled from the detail endpoint first.
- * @param {string} url - The yfsp.tv play page URL.
+ * @param {string} url - The kubb.tv play page URL.
  * @returns {string} JSON string array of {href, number} objects.
  */
 async function extractEpisodes(url) {
@@ -155,7 +155,7 @@ async function extractEpisodes(url) {
 }
 
 /**
- * Resolves a yfsp.tv episode to its playable HLS/MP4 stream(s) via the signed play API.
+ * Resolves a kubb.tv episode to its playable HLS/MP4 stream(s) via the signed play API.
  * The play API answers with id=<episodeKey>&a=0 for specific episodes and
  * id=<movieKey>&a=1 when only the title key is known.
  *
@@ -351,7 +351,7 @@ async function fetchCid(movieKey, cfg) {
     }
 }
 
-/* SIGNING — yfsp.tv URI signature */
+/* SIGNING — kubb.tv URI signature */
 // Each page render embeds a fresh key pair in its pConfig JSON. The API
 // rejects unsigned requests, so we scrape the current keys and compute:
 //   vv = MD5(publicKey + "&" + lowercasedQuery + "&" + privateKey)
