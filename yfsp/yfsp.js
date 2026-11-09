@@ -1,17 +1,13 @@
-const YFSP_BASE = 'https://www.yfsp.tv';
-const YFSP_API_DETAIL = 'https://m10.yfsp.tv/v3/video/detail';
-const YFSP_API_EPISODES = 'https://m10.yfsp.tv/v3/video/languagesplaylist';
-const YFSP_API_PLAY = 'https://m10.yfsp.tv/v3/video/play';
-const YFSP_API_SEARCH = 'https://rankv21.yfsp.tv/v3/list/briefsearch';
+const YFSP_BASE = 'https://www.kubb.tv';
+const YFSP_API_DETAIL = 'https://m10.kubb.tv/v3/video/detail';
+const YFSP_API_EPISODES = 'https://m10.kubb.tv/v3/video/languagesplaylist';
+const YFSP_API_PLAY = 'https://m10.kubb.tv/v3/video/play';
+const YFSP_API_SEARCH = 'https://rankv21.kubb.tv/v3/list/briefsearch';
 const YFSP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36';
-const YFSP_BUILD = '1.0.7';
+const YFSP_BUILD = '1.0.8';
 
-console.log('[YFSP] script build: v' + YFSP_BUILD + ' (sign=' + (typeof signStreamUrl === 'function' ? 'yes' : 'no') + ')');
+console.log('[YFSP] Script build: v' + YFSP_BUILD + ' (sign=' + (typeof signStreamUrl === 'function' ? 'yes' : 'no') + ')');
 
-// The Sora app's JavaScriptCore exposes NO setTimeout/setInterval, so a bare
-// call throws "Can't find variable: setTimeout" in-app. timerSafe keeps the
-// rate-limit backoff working in the test harness (which has real timers) and
-// no-ops instantly in-app instead of crashing.
 function timerSafe(ms) {
     if (typeof setTimeout === 'function') {
         return new Promise(function(resolve) { setTimeout(resolve, ms || 0); });
@@ -19,18 +15,12 @@ function timerSafe(ms) {
     return Promise.resolve();
 }
 
-/* MAIN FUNCTIONS */
+/* Main functions */
 
-/**
- * Searches yfsp.tv for movies/shows matching the keyword.
- * The briefsearch endpoint answers without a signature.
- * Returns a JSON string array of {title, image, href} objects.
- */
 async function searchResults(keyword) {
     try {
         const query = (keyword || '').trim();
         if (!query) return JSON.stringify([]);
-
         const enc = encodeURIComponent(query);
         const url = `${YFSP_API_SEARCH}?tags=${enc}&orderby=4&page=1&size=36&desc=1&isserial=-1`;
         const response = await soraFetch(url, {
@@ -46,10 +36,8 @@ async function searchResults(keyword) {
         });
         if (!response) return JSON.stringify([]);
         const data = await response.json();
-
         const info = (data && data.data && Array.isArray(data.data.info) && data.data.info[0]) || null;
         const list = (info && Array.isArray(info.result)) ? info.result : [];
-
         const results = [];
         const seen = new Set();
         for (const item of list) {
@@ -69,19 +57,12 @@ async function searchResults(keyword) {
     }
 }
 
-/**
- * Fetches the yfsp.tv play page API and extracts description, year and category metadata.
- * @param {string} url - The yfsp.tv play page URL (e.g. https://www.yfsp.tv/play/<key>).
- * @returns {string} JSON array with a single {description, airdate, aliases} object.
- */
 async function extractDetails(url) {
     try {
         const movieKey = extractMovieKey(url);
         if (!movieKey) return JSON.stringify([detailsFallback()]);
-
         const cfg = await getConfig();
         if (!cfg) return JSON.stringify([detailsFallback()]);
-
         const signed = buildSignedUrl(YFSP_API_DETAIL, {
             cinema: 1, device: 1, player: 'CkPlayer', tech: 'HLS',
             country: 'HU', lang: 'cns', v: 1, id: movieKey, region: 'GL.'
@@ -89,15 +70,12 @@ async function extractDetails(url) {
         const response = await soraFetch(signed, { headers: jsonApiHeaders(movieKey) });
         if (!response) return JSON.stringify([detailsFallback()]);
         const data = await response.json();
-
         const info = (data && data.data && Array.isArray(data.data.info) && data.data.info[0]) || {};
-
-        const description = info.contxt || 'No description available';
+        const description = info.contxt || '暂无描述';
         const aliases = [info.channel, info.videoType, info.language, info.regional]
             .filter(Boolean).join(' · ') || 'N/A';
         let airdate = info.post_Year || '';
         if (!airdate && info.addTime) airdate = String(info.addTime).slice(0, 4);
-
         return JSON.stringify([{
             description: cleanText(description),
             aliases: cleanText(aliases),
@@ -109,44 +87,31 @@ async function extractDetails(url) {
     }
 }
 
-/**
- * Lists the episodes of a yfsp.tv title using the signed languagesplaylist API.
- * The video's category id (cid) is pulled from the detail endpoint first.
- * @param {string} url - The yfsp.tv play page URL.
- * @returns {string} JSON string array of {href, number} objects.
- */
 async function extractEpisodes(url) {
     try {
         const movieKey = extractMovieKey(url);
         if (!movieKey) return JSON.stringify([]);
-
         const cfg = await getConfig();
         if (!cfg) return JSON.stringify([]);
-
         const cid = await fetchCid(movieKey, cfg);
         if (!cid) return JSON.stringify([]);
-
         const signed = buildSignedUrl(YFSP_API_EPISODES, {
-            cinema: 1, vid: movieKey, lsk: 1, taxis: 0, cid: cid
+            cinema: 1, vid: movieKey, lsk: 1, t: 0, cid: cid
         });
         const response = await soraFetch(signed, { headers: jsonApiHeaders(movieKey) });
         if (!response) return JSON.stringify([]);
         const data = await response.json();
-
         const info = (data && data.data && Array.isArray(data.data.info) && data.data.info[0]) || {};
         const playList = (info && Array.isArray(info.playList)) ? info.playList : [];
-
         const episodes = playList
             .filter((ep) => ep && ep.key)
             .map((ep, index) => ({
                 href: `${YFSP_BASE}/play/${movieKey}?id=${ep.key}`,
                 number: episodeNumber(ep.name, index)
             }));
-
         if (episodes.length === 0) {
             episodes.push({ href: `${YFSP_BASE}/play/${movieKey}`, number: 1 });
         }
-
         return JSON.stringify(episodes);
     } catch (error) {
         console.log('Episodes error: ' + error);
@@ -154,18 +119,6 @@ async function extractEpisodes(url) {
     }
 }
 
-/**
- * Resolves a yfsp.tv episode to its playable HLS/MP4 stream(s) via the signed play API.
- * The play API answers with id=<episodeKey>&a=0 for specific episodes and
- * id=<movieKey>&a=1 when only the title key is known.
- *
- * The endpoint rate-limits aggressively ("访问过量" = code 5) and occasionally
- * answers with an HTML error page from an edge, so each key shape is retried a
- * few times before falling back from the episode key (a=0) to the movie key
- * (a=1). Every dead end is logged so failures are diagnosable in-app.
- * @param {string} url - The episode href emitted by extractEpisodes.
- * @returns {string} JSON object {streams:[{title, streamUrl, headers}], subtitle}.
- */
 async function extractStreamUrl(url) {
     const fallback = JSON.stringify({ streams: [], subtitle: '' });
     try {
@@ -174,19 +127,12 @@ async function extractStreamUrl(url) {
         const episodeKey = epMatch ? decodeURIComponent(epMatch[1]) : '';
         const movieKey = extractMovieKey(urlStr);
         if (!episodeKey && !movieKey) return fallback;
-
         const cfg = await getConfig();
         if (!cfg) return fallback;
-
         const modes = [];
         if (episodeKey) modes.push({ label: 'episode', key: episodeKey, a: 0 });
         modes.push({ label: 'movie', key: movieKey, a: 1 });
 
-        // Persistent upstream rate-limiting (code 5) must not loop forever:
-        // resetting the attempt counter on every code 5 kept the loop alive
-        // indefinitely and blew past the harness's 40s stream cap. Bound the
-        // total backoff time (shared across both modes) so the step degrades
-        // gracefully instead of hanging.
         let code5Backoffs = 0;
         const MAX_CODE5_BACKOFFS = 2;
         let lastDiag = 'unknown';
@@ -200,7 +146,7 @@ async function extractStreamUrl(url) {
                 const result = await playApiCall(signed, jsonApiHeaders(mode.key));
                 if (!result.ok) {
                     lastDiag = mode.label + ': ' + result.error;
-                    console.log('[YFSP] play attempt ' + attempt + '/3 (' + mode.label + ') failed: ' + result.error);
+                    console.log('[YFSP] Play attempt ' + attempt + '/3 (' + mode.label + ') failed: ' + result.error);
                     continue;
                 }
                 const parsed = parsePlayData(result.data, mode.key);
@@ -208,23 +154,23 @@ async function extractStreamUrl(url) {
                     return JSON.stringify(parsed);
                 }
                 lastDiag = mode.label + ': no usable sources in play response';
-                console.log('[YFSP] play answered without sources (' + mode.label + '), body code: ' +
+                console.log('[YFSP] Play response has no sources (' + mode.label + '), body code: ' +
                     JSON.stringify(result.data && result.data.data && result.data.data.code));
                 if (result.ok && result.data && result.data.data && result.data.data.code === 5) {
                     if (code5Backoffs < MAX_CODE5_BACKOFFS) {
                         code5Backoffs++;
-                        console.log('[YFSP] rate-limit code 5 on ' + mode.label + '; 8s backoff (' + code5Backoffs + '/' + MAX_CODE5_BACKOFFS + ')');
+                        console.log('[YFSP] Rate limit code 5 on ' + mode.label + '; 8s backoff (' + code5Backoffs + '/' + MAX_CODE5_BACKOFFS + ')');
                         await timerSafe(8000);
                         continue;
                     }
-                    lastDiag = mode.label + ': rate-limited (code 5), backoff budget exhausted';
-                    console.log('[YFSP] rate-limit code 5 on ' + mode.label + '; backoff budget exhausted, giving up');
+                    lastDiag = mode.label + ': rate limit (code 5), backoff budget exhausted';
+                    console.log('[YFSP] Rate limit code 5 on ' + mode.label + '; backoff budget exhausted, giving up');
                     break;
                 }
                 break;
             }
         }
-        console.log('[YFSP] stream extraction gave up: ' + lastDiag);
+        console.log('[YFSP] Stream extraction gave up: ' + lastDiag);
         return fallback;
     } catch (error) {
         console.log('Stream error: ' + error);
@@ -232,14 +178,12 @@ async function extractStreamUrl(url) {
     }
 }
 
-// GET the play endpoint and parse JSON defensively; HTML/edge error pages are
-// reported as transient errors instead of throwing or silently yielding [].
 async function playApiCall(signed, headers) {
     let resp = null;
     try {
-        resp = await soraFetch(signed, headers);
+        resp = await soraFetch(signed, { headers: headers });
     } catch (e) {
-        return { ok: false, error: 'fetch threw: ' + e };
+        return { ok: false, error: 'fetch failed: ' + e };
     }
     if (!resp) return { ok: false, error: 'no response' };
     let text = '';
@@ -258,31 +202,22 @@ async function playApiCall(signed, headers) {
     return { ok: true, data: data };
 }
 
-// Turn a play response body into the streams contract (HLS preferred).
 function parsePlayData(data, useKey) {
     const info = (data && data.data && Array.isArray(data.data.info) && data.data.info[0]) || {};
     const flvList = (info && Array.isArray(info.flvPathList)) ? info.flvPathList : [];
-
-    // The play response exposes the quality tiers in `clarity`; the active
-    // one carries the stream path (e.g. "576P"). Use its memo as the stream
-    // title so the app's server picker shows the real resolution.
     const clarityList = (info && Array.isArray(info.clarity)) ? info.clarity : [];
     const activeClarity = clarityList.filter((c) => c && c.path && c.path.result);
     const activeMemo = (activeClarity[0] && activeClarity[0].memo) || '';
 
-    // The non-HLS flvPathList entry is a shared placeholder; the real
-    // playback is always the HLS chunklist, so prefer HLS sources.
     let sources = flvList.filter((f) => f && f.isHls && f.result);
     if (sources.length === 0) sources = flvList.filter((f) => f && f.result);
 
-    // Some play responses carry the playable chunklist only inside the
-    // quality tiers (clarity[].path.result); use those when flvPathList is empty.
     if (sources.length === 0 && clarityList.length > 0) {
         const claritySources = clarityList
             .filter((c) => c && c.path && c.path.result)
             .map((c) => ({ isHls: /\.m3u8(\?|#|$)/i.test(c.path.result), result: c.path.result, memo: c.memo }));
         if (claritySources.length > 0) {
-            console.log('[YFSP] flvPathList empty; using ' + claritySources.length + ' clarity source(s)');
+            console.log('[YFSP] flvPathList empty; using ' + claritySources.length + ' clarity sources');
             return {
                 streams: claritySources.map((f) => ({
                     title: (f.memo ? f.memo + ' · ' : '') + (f.isHls ? 'HLS' : 'MP4'),
@@ -293,7 +228,6 @@ function parsePlayData(data, useKey) {
             };
         }
     }
-
     const streams = [];
     const seen = new Set();
     for (const f of sources) {
@@ -306,34 +240,29 @@ function parsePlayData(data, useKey) {
             headers: makeStreamHeaders()
         });
     }
-
     return { streams: streams, subtitle: '' };
 }
 
-/* HELPERS */
+/* Helper functions */
 
 function detailsFallback() {
     return {
-        description: 'No description available',
+        description: '暂无描述',
         airdate: 'Unknown',
         aliases: 'N/A'
     };
 }
 
-// Pull the title key out of a /play/<key> or /play/<key>?id=... URL.
 function extractMovieKey(url) {
     const m = String(url || '').match(/\/play\/([^/?#]+)/i);
     return m ? m[1] : '';
 }
 
-// Series playList names are plain numbers ("01", "10") while movies carry the
-// quality label ("720P"); fall back to the list position in that case.
 function episodeNumber(name, index) {
     const raw = String(name || '').trim();
     return /^\d+$/.test(raw) ? parseInt(raw, 10) : index + 1;
 }
 
-// Fetch the video's category id (cid) needed by the languagesplaylist API.
 async function fetchCid(movieKey, cfg) {
     try {
         const signed = buildSignedUrl(YFSP_API_DETAIL, {
@@ -351,13 +280,9 @@ async function fetchCid(movieKey, cfg) {
     }
 }
 
-/* SIGNING — yfsp.tv URI signature */
-// Each page render embeds a fresh key pair in its pConfig JSON. The API
-// rejects unsigned requests, so we scrape the current keys and compute:
-//   vv = MD5(publicKey + "&" + lowercasedQuery + "&" + privateKey)
+/* Signing — kubb.tv URI signature */
 
 let yfspConfig = null;
-
 async function getConfig() {
     if (yfspConfig && Date.now() - yfspConfig.ts < 5 * 60 * 1000) return yfspConfig;
     try {
@@ -389,11 +314,6 @@ function buildSignedUrl(base, params) {
     return `${base}?${query}&vv=${vv}&pub=${pub}`;
 }
 
-// The CDN serves segment URLs signed with the same vv scheme only when the
-// master playlist request carries a valid vv/pub pair; without it the segment
-// host drops the connection. Sign the stream URL over its own query string.
-// Pre-signed URLs are left untouched (double-signing would invalidate them)
-// and any #fragment is kept separate from the appended query.
 function signStreamUrl(url) {
     if (!url || !yfspConfig) return url;
     const fragIndex = url.indexOf('#');
@@ -407,14 +327,13 @@ function signStreamUrl(url) {
     return `${base}&vv=${vv}&pub=${yfspConfig.pub}${frag}`;
 }
 
-/* NETWORK */
+/* Network */
 
 async function soraFetch(url, options) {
     const opts = options || {};
     const mergedHeaders = mergeHeaders(url, opts);
     const method = opts.method || 'GET';
     const body = typeof opts.body === 'undefined' ? null : opts.body;
-
     try {
         return await fetchv2(url, mergedHeaders, method, body);
     } catch (e) {
@@ -442,12 +361,12 @@ async function soraFetch(url, options) {
 }
 
 function mergeHeaders(url, opts) {
-    const base = opts.headers || {};
+    const base = (opts && opts.headers) ? opts.headers : (opts || {});
     const defaults = {
         'User-Agent': YFSP_UA
     };
     const host = String(url || '').replace(/^https?:\/\//, '').split('/')[0] || '';
-    if (/(m10|rankv21)\.yfsp\.tv/i.test(host)) {
+    if (/(m10|rankv21)\.(yfsp|kubb)\.tv/i.test(host)) {
         defaults['Accept'] = 'application/json, text/plain, */*';
         defaults['Referer'] = YFSP_BASE + '/';
     }
@@ -510,8 +429,7 @@ function utf8Encode(str) {
     return out;
 }
 
-/* MD5 (RFC 1321) — compact public-domain implementation */
-
+/* MD5 (RFC 1321) — compact public domain implementation */
 function md5(input) {
     const bytes = utf8Encode(String(input));
     const state = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476];
@@ -539,7 +457,6 @@ function md5(input) {
         4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
         6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
     ];
-
     const bitLen = bytes.length * 8;
     const paddedLen = (((bytes.length + 8) >> 6) + 1) << 6;
     const buf = new Uint8Array(paddedLen);
@@ -548,22 +465,17 @@ function md5(input) {
     const dv = new DataView(buf.buffer);
     dv.setUint32(paddedLen - 8, bitLen >>> 0, true);
     dv.setUint32(paddedLen - 4, Math.floor(bitLen / 0x100000000), true);
-
     let a0 = state[0], b0 = state[1], c0 = state[2], d0 = state[3];
-
     for (let off = 0; off < paddedLen; off += 64) {
         const M = new Array(16);
         for (let i = 0; i < 16; i++) M[i] = dv.getUint32(off + i * 4, true);
-
         let A = a0, B = b0, C = c0, D = d0;
-
         for (let i = 0; i < 64; i++) {
             let F, g;
             if (i < 16) { F = (B & C) | (~B & D); g = i; }
             else if (i < 32) { F = (D & B) | (~D & C); g = (5 * i + 1) % 16; }
             else if (i < 48) { F = B ^ C ^ D; g = (3 * i + 5) % 16; }
             else { F = C ^ (B | ~D); g = (7 * i) % 16; }
-
             F = (F + A + K[i] + M[g]) >>> 0;
             const oldD = D;
             D = C;
@@ -571,20 +483,17 @@ function md5(input) {
             B = (B + rotateLeft(F, S[i])) >>> 0;
             A = oldD;
         }
-
         a0 = (a0 + A) >>> 0;
         b0 = (b0 + B) >>> 0;
         c0 = (c0 + C) >>> 0;
         d0 = (d0 + D) >>> 0;
     }
-
     const out = new Uint8Array(16);
     const odv = new DataView(out.buffer);
     odv.setUint32(0, a0, true);
     odv.setUint32(4, b0, true);
     odv.setUint32(8, c0, true);
     odv.setUint32(12, d0, true);
-
     let hex = '';
     for (let i = 0; i < 16; i++) hex += (out[i] < 16 ? '0' : '') + out[i].toString(16);
     return hex;
