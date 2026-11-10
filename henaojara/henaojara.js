@@ -176,11 +176,13 @@ async function extractEpisodes(url) {
             });
         }
 
-        // Movie fallback: movies have no TEMPORADAS_DATA, just a movieLinks array.
+        // Movie fallback: movies have no TEMPORADAS_DATA, just a trembed player
+        // iframe on the page itself (e.g. /?trembed=0&trid=345&trtype=1).
         // Return a single "episode" pointing to the movie page itself.
         if (episodes.length === 0) {
             const movieLinksMatch = html.match(/(?:const|var|let)?\s*movieLinks\s*=\s*\[[\s\S]*?\]/);
-            if (movieLinksMatch) {
+            const trembedMatch = html.match(/<iframe[^>]+src="https?:\/\/(?:henaojara\.com|animejara\.com)\/\?trembed=\d+/i);
+            if (movieLinksMatch || trembedMatch) {
                 episodes.push({
                     href: url,
                     number: 1
@@ -212,10 +214,10 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        // DooPlay branch (henaojara.com): episode pages embed players through
-        // /?trembed=N&trid=X&trtype=2 iframes whose inner iframe is the actual
-        // server embed (e.g. multiplayer.streamhj.top).
-        if (/\/view\/episode\//i.test(url)) {
+        // DooPlay branch (henaojara.com): episode AND movie pages embed players
+        // through /?trembed=N&trid=X&trtype=N iframes whose inner iframe is the
+        // actual server embed (e.g. multiplayer.streamhj.top).
+        {
             const dpResponse = await soraFetch(url);
             if (dpResponse) {
                 const dpHtml = await dpResponse.text();

@@ -9,7 +9,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga/allmanga.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-22",
+      "updated": "2026-10-21",
       "needs_review": true,
       "note": "2026-10-22: keygen rotated to build 181 (the live mkissa.to site moved 179→181, so the module's build-179 aaReq tokens stopped decrypting and the stream step returned 0). New constants (mask/salt/frag/boot-prefix/boot-message) verified byte-for-byte against the site's live x-aa-boot token; k7 self-bootstrap OK; the episode API again returns sub+dub source URLs. The 2026-10-15 'upstream edge NEED_CAPTCHA' was actually stale keygen, not a hard edge wall. wixmp HLS URLs 400 under a bare curl (CDN fingerprinting) — in-player playability not yet confirmed. If a future build rotates keygen again, re-extract from the mkissa.to crypto chunk (see .tmp-keygen/ harness)."
     },
@@ -111,7 +111,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yfsp/yfsp.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
+      "updated": "2026-11-10",
       "needs_review": true,
       "note": "Stream API rate-limits intermittently (code 5 访问过量, observed 2026-10-15 ~1h+, re-confirmed 2026-10-20): v1.0.7 bounds the code-5 backoff (shared 2x8s budget, no counter re-arm) so extractStreamUrl degrades gracefully instead of looping past the 40s harness cap. 2026-10-20 sweep: search/details/episodes healthy (1182 eps) but the stream step hit the rate-limit wall again → empty. Module recovers automatically when the upstream throttle clears; no in-module action."
     },
@@ -165,7 +165,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/henaojara/henaojara.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-11",
+      "updated": "2026-11-10",
       "note": "animejara.com is Cloudflare-challenged for scripts (Oct 2026); module moved back to the original henaojara.com (same DooPlay app, script-accessible). Stream: episode pages -> trembed iframes -> multiplayer.streamhj.top resolver."
     },
     {
@@ -176,7 +176,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/flixlatam/flixlatam.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-11-10"
     },
     {
       "id": "allmanga-shirox",
@@ -186,7 +186,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-shirox/allmanga-shirox.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-22",
+      "updated": "2026-10-21",
       "note": "Shirox build of the AllAnime module (fetchv2 impersonate:chrome). 2026-10-22: keygen rotated to build 181 (same constants as the classic build); extractStreamUrl returns sub+dub sources again. Use the classic AllAnime module on Sora/Luna; this build for Shirox.",
       "needs_review": true
     },
@@ -200,7 +200,7 @@
       "sampleQuery": "angel next door",
       "needs_review": true,
       "note": "search/details/chapters OK. 2026-10-22: keygen rotated to build 181 — the chapterPages (k9) image API now returns page images again (e.g. 57 imgs/chapter); the earlier NEED_CAPTCHA was stale keygen, not an edge wall. The image CDN (youtube-anime.com) still 403s without a Referer (documented Sora-ReaderView app-side limitation). Keygen details in the allmanga entry.",
-      "updated": "2026-10-22"
+      "updated": "2026-10-21"
     },
     {
       "id": "allmanga-novels-shirox",
@@ -210,7 +210,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-novels-shirox/allmanga-novels-shirox.json",
       "sampleQuery": "one punch man",
-      "updated": "2026-10-22",
+      "updated": "2026-10-21",
       "note": "Shirox build of the AllManga manga module (kanzen contract). 2026-10-22: keygen rotated to build 181 (same constants as the classic manga build) — the chapterPages k9 image API works again. Image CDN still 403s without a Referer (documented Sora-ReaderView app-side limitation). See the allmanga-novels entry.",
       "needs_review": true
     },
@@ -244,10 +244,10 @@
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kissasian/kissasian.json",
-      "sampleQuery": "lovely runner",
+      "sampleQuery": "wonder coach",
       "needs_review": true,
-      "note": "2026-10-20 audit: upstream gone. kissasian.su now answers a 43-byte JSON stub (\"peakaboo\", no content, /ajax/search + /ajax/filter are 404); .com is a for-sale parking page, .cc/.tv/.net time out or TLS-drop. No live successor domain found. Not fixable in-module — record only.",
-      "updated": "2026-09-25"
+      "note": "2026-11-10 rebuild v2.0.0: ported to live mirror kissasian.ng (WordPress ?s= search, Madara episodes, dramavideo.se player chain with AES-128-CBC decrypt). Verified end-to-end: search → 5 eps → decrypted HLS HTTP 200.",
+      "updated": "2026-11-10"
     },
     {
       "id": "aniliberty",
@@ -329,7 +329,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangadex/mangadex.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "nimegami",
@@ -341,7 +341,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "upstream nimegami.id unreachable - Cloudflare origin down (checked 2026-10)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "nivod",
@@ -392,7 +392,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/AnimeUnity/AnimeUnity.json",
       "sampleQuery": "one piece",
       "note": "Revived 2026-10-20: upstream moved animeunity.so → animeunity.to (old domain NXDOMAIN) and the vixcloud.co embeds moved to vixcloud.cc, where the master playlist answers 200 only with the extra `h=1` unlock param. Script hardened (null-response guards, no load-time side effects); full pipeline + playlist verified 200 without Referer.",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "AnimeWorld",
@@ -413,7 +413,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/StreamingUnity/StreamingUnity.json",
       "sampleQuery": "one piece",
       "note": "Revived 2026-10-20: streamingcommunityz.us/.jetzt/.plus are NXDOMAIN; the site now lives on streamingcommunityz.build (same vixcloud.cc master-playlist backend, `h=1` unlock param). Removed a load-time debug fetch, hardened null-response paths; full pipeline + playlist verified 200 without Referer.",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "aether",
@@ -445,7 +445,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "upstream ak.sv unreachable (redirect loop/timeouts, checked 2026-09)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "an1me",
@@ -552,7 +552,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aniwave/aniwave.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "blackCloverPace",
@@ -883,7 +883,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesrbija/animesrbija.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
+      "updated": "2026-11-10",
       "needs_review": true,
       "note": "Recorded 2026-10-21: Next.js App Router site. searchResults works via the RSC dehydrated query; anime detail + episode data ARE present in the RSC flight payload ([\"episodes\",<animeId>] React-Query state: {id,number,filler,...}), but episode objects carry no playable href and the site's play/watch route is unknown. The detail page embeds only an ad playerBridge (zone 11316538...) - no m3u8/source in RSC, and the client JS chunks that would reveal the route are unfetchable (Cloudflare). Stream layer is gated - in-module revival not feasible until the play route + source are identified. needs_review; re-probe after the site ships a stable client build."
     },
@@ -905,7 +905,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animexin/animexin.json",
       "sampleQuery": "renegade",
-      "updated": "2026-10-20",
+      "updated": "2026-11-10",
       "needs_review": true,
       "note": "Repaired 2026-10-21 (v1.0.3): the Dailymotion option-label filter was an exact list that no longer matched the live labels (which gained an \" AX\" engine suffix + an \"All Sub Player\" variant), so every option was skipped and extractStreamUrl returned []. Now matches on the \"Dailymotion\" substring and emits {title,streamUrl,headers:{Referer}} per option - verified to produce 3 cdndirector.dailymotion m3u8 objects on episode pages. Still needs_review because Dailymotion's cdndirector manifest answers 403 from this host (geo-restricted to the content's region); playable in reachable regions, not certifiable here."
     },
@@ -998,7 +998,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "upstream latanime.org returns 403 Cloudflare-block to scripts (checked 2026-09)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "lightnovelworld",
@@ -1010,7 +1010,7 @@
       "sampleQuery": "solo leveling",
       "needs_review": true,
       "note": "upstream serves Cloudflare challenge to scripts (checked 2026-09)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "luciferdonghua",
@@ -1032,7 +1032,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-10)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "mangakatana",
@@ -1148,7 +1148,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
+      "updated": "2026-11-10",
       "needs_review": true,
       "note": "site otakutsu.cc unreachable, search API returns no results (checked 2026-10)"
     },
@@ -1160,7 +1160,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/purstream/purstream.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-11-10"
     },
     {
       "id": "readnovelfull",
@@ -1234,7 +1234,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/spacepowerfans/spacepowerfans.json",
       "sampleQuery": "dragon",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "topcinema",
@@ -1244,7 +1244,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/topcinema/topcinema.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
+      "updated": "2026-11-10",
       "note": "Revived 2026-10-20 (v1.1.2): the Server.php AJAX endpoint had moved off the hardcoded topcinema.io (now 301) — the base is now derived from the watch page's own origin (topcinema.film). The live resolvers (updown.cam/streamwish.fun/vidtube) ship an Unobtrusive while(c--) packer the classic unpacker mis-decoded, so a pure-JS Unobtrusive decoder was added and the updown branch now emits the playable mp4 (200 with the updown Referer). Full pipeline verified."
     },
     {
@@ -1918,7 +1918,7 @@
       "sampleQuery": "angel next door",
       "needs_review": true,
       "note": "Eclipse-ported copy of allmanga-novels. 2026-10-22: keygen rotated to build 181 (same as the classic manga build); the chapterPages k9 image API works again. search/details/chapters OK; image CDN 403s without a Referer (documented app-side limitation). Keygen details in the allmanga entry.",
-      "updated": "2026-10-22"
+      "updated": "2026-10-21"
     },
     {
       "id": "chireads-eclipse",
@@ -1963,7 +1963,7 @@
       "sampleQuery": "solo leveling",
       "needs_review": true,
       "note": "upstream serves Cloudflare challenge to scripts (checked 2026-09)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "lncrawler-eclipse",
@@ -1996,7 +1996,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/mangadex/mangadex.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "mangafire-eclipse",
@@ -2008,7 +2008,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "upstream serves Cloudflare challenge shell to scripts (checked 2026-10)",
-      "updated": "2026-10-20"
+      "updated": "2026-11-10"
     },
     {
       "id": "mangafreak-eclipse",

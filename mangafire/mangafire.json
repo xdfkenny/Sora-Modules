@@ -1,7 +1,7 @@
 {
   "sourceName": "MangaFire",
   "iconURL": "https://s.mfcdn.cc/assets/sites/mangafire/favicon.png?v3",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "language": "English",
   "languageType": [
     "Translated"
@@ -19,8 +19,8 @@
   "supportsAnymex": true,
   "supportsEclipse": true,
   "supportsShirox": true,
-  "baseUrl": "https://mangafire.to/",
-  "searchBaseUrl": "https://mangafire.to/",
+  "baseUrl": "https://mangafire.cc/",
+  "searchBaseUrl": "https://mangafire.cc/search?q=%s",
   "streamType": "mangas",
   "quality": "N/A",
   "asyncJS": true,

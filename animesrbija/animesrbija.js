@@ -55,93 +55,129 @@ async function searchResults(keyword) {
     return JSON.stringify(results);
 }
 
-async function extractDetails(url) {
-    const details = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-    const descriptionMatch = html.match(/<div class="anime-description">([\s\S]*?)<\/div>/);
-    let description = descriptionMatch ? descriptionMatch[1]
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/<br \/>\n/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim() : '';
+// --- Rewritten 2026-11: site moved to Next.js + JSON API. Old server-side
+// markup (anime-description, anime-episode-item, "player1" m3u8 in HTML) is
+// gone. New endpoints:
+//   details:  GET /api/anime/<slug>          -> JSON (description, aired, ...)
+//   episodes: GET /api/anime/<slug> -> id, GET /api/episodes/<id> -> [{number}]
+//   watch:    /epizoda?animeId=<id>&ep=<n>   -> page embeds Filemoon-style
+//             embed URL https://<host>/e/<code>/<file> (players "custom" modes
+//             are token-locked; Filemoon embed is the extractable one)
 
+const SRB_BASE = "https://www.animesrbija.com";
 
-    const nameMatch = html.match(/<h2 class="anime-name[^>]*>([^<]+)<\/h2>/);
-    const engNameMatch = html.match(/<h3 class="anime-eng-name">([^<]+)<\/h3>/);
-
-    const airdateMatch = html.match(/<span class="bt">Datum:<\/span>([^<]+)/);
-    let airdate = airdateMatch ? airdateMatch[1].trim() : '';
-
-    let name = nameMatch ? nameMatch[1].trim() : '';
-    let engName = engNameMatch ? engNameMatch[1].trim() : '';
-    let aliases = name === engName ? 'N/A' : engName;
-
-    if (description || airdate) {
-        details.push({
-            description: description,
-            aliases: aliases,
-            airdate: airdate
-        });
-    }
-
-    console.log(details);
-    return JSON.stringify(details);
-}
-
-async function extractEpisodes(url) {
-    const episodes = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-    const baseUrl = 'https://www.animesrbija.com';
-    
-    const episodeRegex = /<li\s+class="anime-episode-item">\s*<span\s+class="anime-episode-num">([^<]+)<\/span>\s*<a\s+class="anime-episode-link"\s+href="([^"]+)"/g;
-    
-    let match;
-    while ((match = episodeRegex.exec(html)) !== null) {
-        const episodeText = match[1].trim();
-        const href = baseUrl + match[2];
-        let number;
-        
-        if (episodeText.toLowerCase() === 'film') {
-            number = 1;
-        } else {
-            const numberMatch = episodeText.match(/\d+/);
-            number = numberMatch ? parseInt(numberMatch[0], 10) : null;
-                }
-        
-        episodes.push({
-            href: href,
-            number: number
-        });
-    }
-    
-    episodes.reverse();
-    console.log(JSON.stringify(episodes));
-    return JSON.stringify(episodes);
-}
-
-async function extractStreamUrl(url) {
-    const response = await fetchv2(url);
-    const html = await response.text();
-
-    const playerRegex = /"player1":\s*"?(!?https?:\/\/[^"\n]+\.m3u8)"/i;
-
-    const match = html.match(playerRegex);
-    if (match) {
-        let playerUrl = match[1].trim();
-        if (playerUrl.startsWith('!')) {
-            playerUrl = playerUrl.substring(1);
-        }
-        console.log("URL", playerUrl);
-        return playerUrl;
-    } else {
-        console.log("Link not found");
+async function srbGet(url) {
+    try {
+        return await fetchv2(url, { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" }, "GET", null);
+    } catch (e) {
         return null;
     }
 }
 
+function srbSlugFromUrl(url) {
+    const m = String(url).match(/\/anime\/([^\/?#]+)/i);
+    return m ? m[1] : "";
+}
 
+async function srbAnimeId(slug) {
+    const resp = await srbGet(SRB_BASE + "/api/anime/" + slug);
+    if (!resp) return null;
+    try {
+        const json = await resp.json();
+        return json && json.id ? json.id : null;
+    } catch (e) {
+        return null;
+    }
+}
 
+async function extractDetails(url) {
+    try {
+        const slug = srbSlugFromUrl(url);
+        if (!slug) throw new Error("no slug in url: " + url);
+        const resp = await srbGet(SRB_BASE + "/api/anime/" + slug);
+        if (!resp) throw new Error("no response");
+        const json = await resp.json();
+
+        let description = String(json.description || json.plot || "").trim();
+        if (!description) {
+            // fall back to the anime page's meta description
+            const pageResp = await srbGet(SRB_BASE + "/anime/" + slug);
+            if (pageResp) {
+                const pageHtml = await pageResp.text();
+                const m = pageHtml.match(/<meta name="description" content="([^"]+)"/);
+                if (m) description = m[1].replace(/ online sa prevodom.*$/i, "").trim();
+            }
+        }
+        if (!description) description = "No description available";
+        const aliases = String(json.japaneseTitle || "N/A");
+        const airdate = [json.aired, json.status].filter(Boolean).join(" · ") || "N/A";
+
+        return JSON.stringify([{
+            description: description.replace(/\s+/g, ' ').trim(),
+            aliases: aliases,
+            airdate: airdate
+        }]);
+    } catch (error) {
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'N/A',
+            airdate: 'N/A'
+        }]);
+    }
+}
+
+async function extractEpisodes(url) {
+    try {
+        const slug = srbSlugFromUrl(url);
+        if (!slug) throw new Error("no slug in url: " + url);
+        const animeId = await srbAnimeId(slug);
+        if (!animeId) throw new Error("could not resolve anime id");
+
+        const resp = await srbGet(SRB_BASE + "/api/episodes/" + animeId);
+        if (!resp) throw new Error("no response from episodes api");
+        const json = await resp.json();
+        const items = Array.isArray(json) ? json : (json.items || []);
+
+        const episodes = [];
+        for (const item of items) {
+            if (!item || typeof item.number === "undefined") continue;
+            episodes.push({
+                href: SRB_BASE + "/epizoda?animeId=" + animeId + "&ep=" + item.number,
+                number: Number(item.number)
+            });
+        }
+        episodes.sort((a, b) => a.number - b.number);
+        return JSON.stringify(episodes);
+    } catch (error) {
+        return JSON.stringify([]);
+    }
+}
+
+async function extractStreamUrl(url) {
+    try {
+        const resp = await srbGet(url);
+        if (!resp) return JSON.stringify({ streams: [], subtitle: "" });
+        const html = await resp.text();
+
+        // The episode page embeds the player source(s), e.g.
+        // https://bysezejataos.com/e/x64pco9b5ho2/xsaBRT_-_01 (Filemoon-like)
+        const embedRegex = /https?:\/\/[a-z0-9.-]+\/e\/[a-z0-9]+\/[a-zA-Z0-9_.-]+/g;
+        const seen = {};
+        const streams = [];
+        let match;
+        while ((match = embedRegex.exec(html)) !== null) {
+            const embedUrl = match[0];
+            if (seen[embedUrl]) continue;
+            seen[embedUrl] = true;
+            streams.push({
+                title: "Server " + (streams.length + 1),
+                streamUrl: embedUrl,
+                headers: {}
+            });
+        }
+
+        return JSON.stringify({ streams: streams, subtitle: "" });
+    } catch (error) {
+        return JSON.stringify({ streams: [], subtitle: "" });
+    }
+}

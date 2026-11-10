@@ -1,8 +1,8 @@
-const YFSP_BASE = 'https://www.yfsp.tv';
-const YFSP_API_DETAIL = 'https://m10.yfsp.tv/v3/video/detail';
-const YFSP_API_EPISODES = 'https://m10.yfsp.tv/v3/video/languagesplaylist';
-const YFSP_API_PLAY = 'https://m10.yfsp.tv/v3/video/play';
-const YFSP_API_SEARCH = 'https://rankv21.yfsp.tv/v3/list/briefsearch';
+const YFSP_BASE = 'https://www.iyf.tv';
+const YFSP_API_DETAIL = 'https://m10.iyf.tv/v3/video/detail';
+const YFSP_API_EPISODES = 'https://m10.iyf.tv/v3/video/languagesplaylist';
+const YFSP_API_PLAY = 'https://m10.iyf.tv/v3/video/play';
+const YFSP_API_SEARCH = 'https://rankv21.iyf.tv/v3/list/briefsearch';
 const YFSP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36';
 const YFSP_BUILD = '1.0.7';
 
@@ -71,7 +71,7 @@ async function searchResults(keyword) {
 
 /**
  * Fetches the yfsp.tv play page API and extracts description, year and category metadata.
- * @param {string} url - The yfsp.tv play page URL (e.g. https://www.yfsp.tv/play/<key>).
+ * @param {string} url - The yfsp.tv play page URL (e.g. https://www.iyf.tv/play/<key>).
  * @returns {string} JSON array with a single {description, airdate, aliases} object.
  */
 async function extractDetails(url) {
@@ -447,7 +447,7 @@ function mergeHeaders(url, opts) {
         'User-Agent': YFSP_UA
     };
     const host = String(url || '').replace(/^https?:\/\//, '').split('/')[0] || '';
-    if (/(m10|rankv21)\.yfsp\.tv/i.test(host)) {
+    if (/(m10|rankv21)\.(iyf|yfsp)\.tv/i.test(host)) {
         defaults['Accept'] = 'application/json, text/plain, */*';
         defaults['Referer'] = YFSP_BASE + '/';
     }

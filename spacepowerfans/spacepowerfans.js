@@ -1,225 +1,162 @@
+/* SpacePowerFans — rewritten for the madar theme (kiranime REST is gone).
+   Search: GET /wp-json/madar/v1/search?q= (same API the site's live search uses)
+   Details/Episodes: scrape the /anime/<slug>/ page
+   Streams: parse the data-player-sources JSON on the /watch/... page */
+
+const SPF_REST = "https://spacepowerfans.com/wp-json/madar/v1/search?q=";
+
 async function searchResults(keyword) {
-    // The /search/?s_keyword= page renders results client-side; the kiranime
-    // REST endpoint returns the same card HTML server-side, so POST to it.
-    const headers = {
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
-        "Referer": "https://spacepowerfans.com/search/",
-    };
-    const body = JSON.stringify({ keyword, query: keyword, tax: [] });
-    const response = await soraFetch(
-        "https://spacepowerfans.com/wp-json/kiranime/v1/anime/advancedsearch?_locale=user",
-        { method: "POST", headers, body }
-    );
-    const data = await response.json();
-    const html = typeof data?.data === "string" ? data.data : "";
+    try {
+        const url = SPF_REST + encodeURIComponent((keyword || "").trim());
+        const response = await soraFetch(url, {
+            headers: { "Accept": "application/json", "Referer": "https://spacepowerfans.com/" }
+        });
+        if (!response) return JSON.stringify([]);
+        const text = typeof response.text === "function" ? await response.text() : String(response);
+        const data = JSON.parse(text);
+        if (!Array.isArray(data)) return JSON.stringify([]);
 
-    const blockRegex = /<div class="w-full bg-gradient-to-t[\s\S]*?<\/div>\s*<\/div>/g;
-    const blocks = html.match(blockRegex) || [];
-
-    const results = [];
-
-    for (const block of blocks) {
-        const imageMatch = block.match(/<img[^>]+src=['"]([^'"]+)['"]/);
-        const titleMatch = block.match(/<span\s+data-en-title>(.*?)<\/span>/);
-        const linkMatch = block.match(/<a\s+href="(https:\/\/spacepowerfans\.com\/anime\/[^"]+)"/);
-
-        if (linkMatch && titleMatch) {
+        const results = [];
+        for (const item of data) {
+            if (!item || !item.url) continue;
             results.push({
-                href: linkMatch[1],
-                title: titleMatch[1],
-                image: imageMatch ? imageMatch[1] : null,
+                title: item.title || item.title_en || "Unknown",
+                image: item.poster || "",
+                href: item.url
             });
         }
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log("[searchResults] error: " + error);
+        return JSON.stringify([]);
     }
-
-    console.log(results);
-    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    const results = [];
-    const response = await soraFetch(url);
-    const html = await response.text();
+    try {
+        const response = await soraFetch(url, {
+            headers: { "Referer": "https://spacepowerfans.com/" }
+        });
+        const html = await response.text();
 
-    const descriptionMatch = html.match(/<div[^>]*>\s*<span[^>]*>نظرة عامة:<\/span>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/);
-    const description = descriptionMatch ? descriptionMatch[1].trim() : 'N/A';
+        let description = "N/A";
+        const descMatch = html.match(/property="og:description" content="([^"]*)"/) ||
+                          html.match(/<meta name="description" content="([^"]*)"/);
+        if (descMatch) description = descMatch[1].trim();
 
-    const seasonMatch = html.match(/موسم:\s*<\/span>\s*<span[^>]*>([^<]+)/);
-    const season = seasonMatch ? seasonMatch[1].trim() : 'N/A';
+        let image = "";
+        const imgMatch = html.match(/property="og:image" content="([^"]*)"/);
+        if (imgMatch) image = imgMatch[1];
 
-    const originalTitleMatch = html.match(/أصلي:\s*<\/span>\s*<span[^>]*>([^<]+)/);
-    const originalTitle = originalTitleMatch ? originalTitleMatch[1].trim() : 'N/A';
+        let airdate = "N/A";
+        const yearMatch = html.match(/data-year="(\d{4})"/) ||
+                          html.match(/(\d{4})<\/span>\s*<span[^>]*>/);
+        if (yearMatch) airdate = yearMatch[1];
 
-    const englishTitleMatch = html.match(/English:\s*<\/span>\s*<span[^>]*>([^<]+)/);
-    const englishTitle = englishTitleMatch ? englishTitleMatch[1].trim() : 'N/A';
-
-    const durationMatch = html.match(/المدة الزمنية:\s*<\/span>\s*<span[^>]*>([^<]+)/);
-    const duration = durationMatch ? durationMatch[1].trim() : 'N/A';
-
-    const episodesMatch = html.match(/الحلقات:\s*<\/span>\s*<span[^>]*>([^<]+)/);
-    const episodes = episodesMatch ? episodesMatch[1].trim() : 'N/A';
-
-    const ratingMatch = html.match(/التقييم:\s*<\/span>\s*<span[^>]*>([^<]+)/);
-    const rating = ratingMatch ? ratingMatch[1].trim() : 'N/A';
-
-    const statusMatch = html.match(/الحالة:\s*<\/span>\s*<a[^>]*>([^<]+)/);
-    const status = statusMatch ? statusMatch[1].trim() : 'N/A';
-
-    const genresBlockMatch = html.match(/النوع:\s*<\/span>([\s\S]*?)<\/li>/);
-    let genres = 'N/A';
-    if (genresBlockMatch) {
-        const genreLinks = [...genresBlockMatch[1].matchAll(/<a[^>]*>([^<]+)<\/a>/g)];
-        const genreNames = genreLinks.map(m => m[1].trim());
-        if (genreNames.length) genres = genreNames.join(', ');
+        const results = [{
+            description: description,
+            aliases: "N/A",
+            airdate: airdate
+        }];
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log("[extractDetails] error: " + error);
+        return JSON.stringify([{ description: "N/A", aliases: "N/A", airdate: "N/A" }]);
     }
-
-    const aliasesString = 
-`Season: ${season}
-Original title: ${originalTitle}
-English title: ${englishTitle}
-Duration: ${duration}
-Episodes: ${episodes}
-Rating: ${rating}
-Status: ${status}
-Genres: ${genres}`;
-
-    results.push({
-        description,
-        aliases: aliasesString,
-        airdate: ''
-    });
-
-    console.log(JSON.stringify(results));
-    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
     try {
-        const response = await soraFetch(url);
+        const response = await soraFetch(url, {
+            headers: { "Referer": "https://spacepowerfans.com/" }
+        });
         const html = await response.text();
 
         const episodes = [];
-
-        // --- 1️⃣ Normal episodes: titles containing "الحلقة 123"
-        const normalRegex = /<a\s+href="([^"]+)"[^>]*title="[^"]*الحلقة\s*(\d+)[^"]*"[^>]*>/g;
+        // New madar theme: <a class="ep__link" href="WATCH_URL"> ... <span class="ep__num">55</span>
+        const blockRegex = /<a[^>]+class="[^"]*ep__link[^"]*"[^>]+href="([^"]+)"[\s\S]*?<span class="ep__num">([^<]*)<\/span>/g;
         let match;
-        while ((match = normalRegex.exec(html)) !== null) {
+        while ((match = blockRegex.exec(html)) !== null) {
             const href = match[1].trim();
-            const number = Number(match[2]);
-            episodes.push({ number, href });
-        }
-
-        // --- 2️⃣ Movie/special layout: with "الفيلم" instead of numbered episode
-        const movieRegex = /<a\s+href="([^"]+)"[^>]*title="([^"]*فيلم[^"]*)"[^>]*>[\s\S]*?<img[^>]+src=['"]([^'"]+)['"]/g;
-        let movieMatch;
-        while ((movieMatch = movieRegex.exec(html)) !== null) {
-            const href = movieMatch[1].trim();
+            const numText = match[2].trim();
+            const num = parseInt(numText, 10);
             episodes.push({
-                number: 1,
-                href,
+                href: href,
+                number: isNaN(num) ? episodes.length + 1 : num
             });
         }
 
-        episodes.sort((a, b) => {
-            if (typeof a.number === "number" && typeof b.number === "number") return a.number - b.number;
-            return 0;
-        });
+        if (episodes.length === 0) {
+            // Fallback: any /watch/ link counts as a single-episode (movie) page
+            const watchRegex = /href="(https:\/\/spacepowerfans\.com\/watch\/[^"]+)"/g;
+            const seen = new Set();
+            let wm;
+            while ((wm = watchRegex.exec(html)) !== null) {
+                if (seen.has(wm[1])) continue;
+                seen.add(wm[1]);
+                episodes.push({ href: wm[1], number: episodes.length + 1 });
+            }
+        }
 
-        console.log(JSON.stringify(episodes));
+        episodes.sort((a, b) => a.number - b.number);
         return JSON.stringify(episodes);
     } catch (error) {
-        console.log("Fetch error in extractEpisodes: " + error);
-        return "";
+        console.log("[extractEpisodes] error: " + error);
+        return JSON.stringify([]);
     }
 }
 
 async function extractStreamUrl(url) {
-    const response = await soraFetch(url);
-    const html = await response.text();
+    try {
+        const response = await soraFetch(url, {
+            headers: { "Referer": "https://spacepowerfans.com/" }
+        });
+        const html = await response.text();
 
-    const allMatches = [...html.matchAll(/<div class="player-selection player-(dub|sub)[^>]*">([\s\S]*?)<\/div>/g)];
-    const streams = [];
+        // data-player-sources JSON: [{"id":1,"name":"Mega","links":[{"q":"720p","url":"..."}]}, ...]
+        const jsonMatch = html.match(/data-player-sources>([\s\S]*?)<\/script>/);
+        if (!jsonMatch) return JSON.stringify({ streams: [], subtitles: "" });
 
-    for (const [, type, sectionHtml] of allMatches) {
-        const embedRegex = /<span[^>]*data-embed-id="([^"]+)"[^>]*>([^<]+)<\/span>/g;
+        let servers;
+        try { servers = JSON.parse(jsonMatch[1]); } catch (e) { return JSON.stringify({ streams: [], subtitles: "" }); }
 
-        let match;
-        while ((match = embedRegex.exec(sectionHtml)) !== null) {
-            const fullValue = match[1];
-            const label = match[2].trim();
-
-            const afterColon = fullValue.split(":")[1];
-            if (!afterColon) continue;
-
-            let decodedUrl;
-            try {
-                decodedUrl = atob(afterColon);
-            } catch {
-                continue;
-            }
-
-            // iframe containing mp4
-            if (decodedUrl.startsWith("<iframe")) {
-                const mp4Match = decodedUrl.match(/video_url=([^&#"]+\.mp4)/);
-                if (mp4Match) {
-                    const decodedMp4 = decodeURIComponent(mp4Match[1]);
-                    if (decodedMp4.startsWith("http")) {
-                        streams.push({
-                            title: label,
-                            streamUrl: decodedMp4,
-                            headers: {}
-                        });
-                    }
-                }
-            }
-
-            // 4shared embed
-            else if (decodedUrl.includes("4shared.com")) {
-                try {
-                const embedRes = await soraFetch(decodedUrl);
-                const embedHtml = await embedRes.text();
-                if (/This file is not available/.test(embedHtml)) continue;
-
-                const srcMatch = embedHtml.match(/<source[^>]+src="([^"]+\.mp4)"/i);
-                if (srcMatch && srcMatch[1].startsWith("http")) {
-                    streams.push({
-                        title: label,
-                        streamUrl: srcMatch[1],
-                        headers: {
-                            "Referer": "https://4shared.com/"
-                        }
-                    });
-                }
-                } catch {
-                    continue;
-                }
+        const streams = [];
+        const direct = [];
+        const embeds = [];
+        for (const server of Array.isArray(servers) ? servers : []) {
+            const name = server && server.name ? server.name : "Server";
+            for (const link of Array.isArray(server.links) ? server.links : []) {
+                if (!link || !link.url) continue;
+                const quality = link.q ? ` ${link.q}` : "";
+                const entry = {
+                    title: `${name}${quality}`,
+                    streamUrl: link.url,
+                    headers: { "Referer": "https://spacepowerfans.com/" }
+                };
+                // Direct files are playable; iframe embeds (mega.nz etc.) are not
+                if (/\.(mp4|m3u8|mkv|webm)(\?|$)/i.test(link.url)) direct.push(entry);
+                else embeds.push(entry);
             }
         }
+
+        // Direct links first; embed fallbacks last (player may still handle them)
+        for (const e of direct) streams.push(e);
+        for (const e of embeds) streams.push(e);
+
+        return JSON.stringify({ streams: streams, subtitles: "" });
+    } catch (error) {
+        console.log("[extractStreamUrl] error: " + error);
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
-
-    const results = {
-        streams,
-        subtitles: ""
-    };
-
-    console.log(results);
-    return JSON.stringify(results);
 }
-
-// searchResults("المحقق");
-// extractDetails("https://spacepowerfans.com/anime/%d9%85%d8%b4%d8%a7%d9%87%d8%af%d8%a9-%d8%a7%d9%84%d9%85%d8%ad%d9%82%d9%82-%d9%83%d9%88%d9%86%d8%a7%d9%86-%d8%a7%d9%84%d8%ac%d8%b2%d8%a1-%d8%a7%d9%84%d8%ad%d8%a7%d8%af%d9%8a-%d8%b9%d8%b4%d8%b1-%d9%85/");
-// extractEpisodes("https://spacepowerfans.com/anime/%d9%81%d9%8a%d9%84%d9%85-%d8%a7%d9%84%d9%85%d8%ad%d9%82%d9%82-%d9%83%d9%88%d9%86%d8%a7%d9%86-26-%d8%a7%d9%84%d8%ba%d9%88%d8%a7%d8%b5%d8%a9-%d8%a7%d9%84%d8%ad%d8%af%d9%8a%d8%af%d9%8a%d8%a9-%d8%a7/");
-// extractStreamUrl("https://spacepowerfans.com/watch/%d8%a7%d9%84%d9%85%d8%ad%d9%82%d9%82-%d9%83%d9%88%d9%86%d8%a7%d9%86-%d8%a7%d9%84%d8%ac%d8%b2%d8%a1-%d8%a7%d9%84%d8%ad%d8%a7%d8%af%d9%8a-%d8%b9%d8%b4%d8%b1-%d9%85%d8%af%d8%a8%d9%84%d8%ac-%d8%a7%d9%84/");
-// extractStreamUrl("https://spacepowerfans.com/watch/%d8%a7%d9%84%d9%85%d8%ad%d9%82%d9%82-%d9%83%d9%88%d9%86%d8%a7%d9%86-%d8%a7%d9%84%d8%ac%d8%b2%d8%a1-%d8%a7%d9%84%d8%ae%d8%a7%d9%85%d8%b3-%d9%88%d8%a7%d9%84%d8%b9%d8%b4%d8%b1%d9%88%d9%86-%d9%85%d8%af-62/");
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
         return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
+    } catch (e) {
         try {
             return await fetch(url, options);
-        } catch(error) {
+        } catch (error) {
             return null;
         }
     }

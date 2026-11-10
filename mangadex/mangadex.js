@@ -181,9 +181,9 @@ async function extractImages(chapterUrlOrId) {
 
 async function soraFetch(url, options = {}) {
     const headers = options.headers || {};
-    if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-    }
+    // v1.4: api.mangadex.org now serves "Bot challenge not passed" (403) to
+    // browser-like UA strings coming from non-browser TLS fingerprints; no UA
+    // (or a plain curl UA) passes. Do not inject a Chrome UA here.
     try {
         if (typeof fetchv2 === 'function') {
             return await fetchv2(url, headers, options.method || 'GET', options.body || null);

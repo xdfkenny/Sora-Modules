@@ -84,8 +84,9 @@ async function extractEpisodes(url) {
         if (!response) return JSON.stringify([]);
         const html = await response.text();
 
-        const idMatch = url.match(/\/anime\/([a-f0-9]{24})/);
-        const animeId = idMatch ? idMatch[1] : '';
+        // IDs are anilist-mapped slugs ("al-21"), not mongo hex ids
+        const idMatch = url.match(/\/anime\/([^\/?#]+)/);
+        const animeId = idMatch ? decodeURIComponent(idMatch[1]) : '';
         if (!animeId) return JSON.stringify([]);
 
         const episodes = [];
@@ -127,27 +128,62 @@ async function extractStreamUrl(url) {
     try {
         const epMatch = url.match(/ep=(\d+)/);
         const epNum = epMatch ? parseInt(epMatch[1], 10) : 1;
-        const idMatch = url.match(/\/watch\/([a-f0-9]{24})/);
-        const animeId = idMatch ? idMatch[1] : '';
+        // IDs are anilist-mapped slugs ("al-21"), not mongo hex ids
+        const idMatch = url.match(/\/watch\/([^\/?#]+)/);
+        const animeId = idMatch ? decodeURIComponent(idMatch[1]) : '';
         if (!animeId) return JSON.stringify({ streams: [], subtitles: "" });
 
-        const response = await soraFetch(url);
-        if (!response) return JSON.stringify({ streams: [], subtitles: "" });
-        const html = await response.text();
+        const OT_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
+        const watchUrl = `https://otakutsu.cc/watch/${animeId}?ep=${epNum}`;
 
-        const tokenMatch = html.match(/streamToken[\\]*":[\\]*"(eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+)[\\]*"/);
-        const token = tokenMatch ? tokenMatch[1] : '';
+        // 1) Warm up the session cookie jar (the API endpoints 404 without it).
+        const warm = await soraFetch(watchUrl, { headers: { "User-Agent": OT_UA, "Referer": "https://otakutsu.cc/" } });
+        if (warm && typeof warm.text === 'function') { try { await warm.text(); } catch (e) { } }
+
+        // 2) Bootstrap: get a signed streamToken for this anime/episode.
+        const bootHeaders = {
+            "Content-Type": "application/json",
+            "Referer": watchUrl,
+            "Origin": "https://otakutsu.cc",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Dest": "empty",
+            "User-Agent": OT_UA
+        };
+        let token = '';
+        const bootResponse = await soraFetch("https://otakutsu.cc/api/media/bootstrap", {
+            method: 'POST', headers: bootHeaders,
+            body: JSON.stringify({ animeId: animeId, ep: epNum })
+        });
+        if (bootResponse) {
+            const bootText = typeof bootResponse.text === 'function' ? await bootResponse.text() : String(bootResponse);
+            try {
+                const boot = JSON.parse(bootText);
+                if (boot && boot.streamToken) token = boot.streamToken;
+            } catch (e) { }
+        }
         if (!token) return JSON.stringify({ streams: [], subtitles: "" });
 
+        // 3) Open a playback session with the token.
+        await soraFetch("https://otakutsu.cc/api/media/session", {
+            method: 'POST', headers: bootHeaders,
+            body: JSON.stringify({ streamToken: token })
+        });
+
+        // 4) Server action loadStreamSourcesAction -> flight payload with sources.
         const body = JSON.stringify([animeId, epNum, token, "$undefined"]);
         const headers = {
             "Content-Type": "text/plain;charset=UTF-8",
-            "Next-Action": "788a4052bfc475e3604643a8c4ab5dbe28b1cc7926",
-            "Referer": url,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            "Next-Action": "7895d31e05b0cdd44515d78146c966ad9a753576e3",
+            "Referer": watchUrl,
+            "Origin": "https://otakutsu.cc",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Dest": "empty",
+            "User-Agent": OT_UA
         };
 
-        const postResponse = await soraFetch(`https://otakutsu.cc/watch/${animeId}?ep=${epNum}`, {
+        const postResponse = await soraFetch(watchUrl, {
             method: 'POST',
             headers,
             body
@@ -175,6 +211,8 @@ async function extractStreamUrl(url) {
         if (data && data.sources) {
             for (const source of data.sources) {
                 if (source.url) {
+                    // some servers return a site-relative playlist path
+                    if (source.url.charAt(0) === '/') source.url = 'https://otakutsu.cc' + source.url;
                     const subTypeLabel = source.subType === 'sub' ? 'Sub' : 'Dub';
                     const title = `${source.quality || 'auto'} • ${subTypeLabel} (${source.server || 'kiwi'})`;
                     streamObjects.push({
@@ -182,7 +220,7 @@ async function extractStreamUrl(url) {
                         streamUrl: source.url,
                         headers: {
                             "Referer": "https://otakutsu.cc/",
-                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
                         }
                     });
                 }
@@ -194,6 +232,9 @@ async function extractStreamUrl(url) {
                 }
             }
         }
+
+        // subtitle track can also come back site-relative
+        if (subtitleUrl && subtitleUrl.charAt(0) === '/') subtitleUrl = 'https://otakutsu.cc' + subtitleUrl;
 
         if (streamObjects.length === 0) {
             streamObjects.push({
@@ -219,7 +260,7 @@ async function extractStreamUrl(url) {
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     const headers = options.headers || {};
     if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
     }
     try {
         return await fetchv2(url, headers, options.method || 'GET', options.body || null);

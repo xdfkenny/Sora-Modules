@@ -1,5 +1,5 @@
 // Settings start
-const baseUrl = "streamingcommunityz.build"; // Non aggiungere 'https://' all'inizio o "/" alla fine
+const baseUrl = "streamingcommunityz.nexus"; // Non aggiungere 'https://' all'inizio o "/" alla fine
 const patcher = true; // Attiva/Disattiva questo se le stream non funzionano
 // Settings end
 
@@ -154,10 +154,15 @@ async function extractStreamUrl(url) {
             modifiedUrl = url.replace("/iframe", "/it/iframe");
         }
  
-        const response1 = await soraFetch(modifiedUrl);
+        const response1 = await soraFetch(modifiedUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                "Referer": getFullDomain() + "/",
+            },
+        });
         if (!response1) return JSON.stringify({ streams: [] });
         const html1 = await response1.text();
- 
+
         const iframeMatch = html1.match(/<iframe[^>]*src=["']([^"']+)["']/i);
         if (!iframeMatch) {
             console.log("No iframe found in the HTML.");
@@ -167,7 +172,13 @@ async function extractStreamUrl(url) {
         const embedUrl = iframeMatch[1].replace(/&amp;/g, "&");
         console.log("Embed URL:", embedUrl);
 
-        const response2 = await soraFetch(embedUrl);
+        // vixcloud 403s/410s without a same-site Referer.
+        const response2 = await soraFetch(embedUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+                "Referer": modifiedUrl,
+            },
+        });
         if (!response2) return JSON.stringify({ streams: [], subtitle: "" });
         const html2 = await response2.text();
  

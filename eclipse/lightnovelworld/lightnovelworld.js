@@ -133,30 +133,40 @@
     }
 })();
 
+// LightNovelWorld module — lightnovelworld.org SHUT DOWN (landing page says
+// "This site has shut down" and points at chikari.moe/novels as successor).
+// Rewritten 2026-11 against the chikari.moe JSON API:
+//   search:   GET /api/novels/search?q=<kw>
+//   details:  GET /api/novels/<slug>
+//   chapters: GET /api/novels/<slug>/chapters?limit=1000  -> {items:[{number,title}]}
+//   chapter:  GET /api/novels/<slug>/chapters/<number>/read -> {body: "plain text"}
+
+const LNW_BASE = "https://chikari.moe";
+const LNW_API = "https://chikari.moe/api";
+
+function lnwSlugFromUrl(url) {
+    const m = String(url).match(/\/novels?\/([^\/?#]+)/i);
+    return m ? m[1] : "";
+}
+
 async function searchResults(keyword) {
     try {
-        const encodedKeyword = encodeURIComponent(keyword);
-        const url = `https://lightnovelworld.org/api/search/?q=${encodedKeyword}&search_type=title`;
+        const url = LNW_API + "/novels/search?q=" + encodeURIComponent(keyword);
         const response = await soraFetch(url);
         if (!response) {
             throw new Error("No response received from search API");
         }
         const json = await response.json();
+        const list = Array.isArray(json) ? json : (json && json.items) || [];
 
         const results = [];
-        if (json && json.novels) {
-            for (const novel of json.novels) {
-                let image = novel.cover_path || "";
-                if (image && !image.startsWith("http")) {
-                    image = "https://lightnovelworld.org" + image;
-                }
-
-                results.push({
-                    title: decodeHtmlEntities(novel.title || ""),
-                    href: `https://lightnovelworld.org/novel/${novel.slug}/`,
-                    image: image
-                });
-            }
+        for (const novel of list) {
+            if (!novel || !novel.slug) continue;
+            results.push({
+                title: String(novel.title || "").trim(),
+                href: LNW_BASE + "/novels/" + novel.slug + "/",
+                image: novel.cover_url || ""
+            });
         }
 
         console.log(JSON.stringify(results));
@@ -173,49 +183,25 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const response = await soraFetch(url);
+        const slug = lnwSlugFromUrl(url);
+        if (!slug) throw new Error("Could not parse novel slug from url: " + url);
+        const response = await soraFetch(LNW_API + "/novels/" + slug);
         if (!response) {
-            throw new Error("No response received from details page");
+            throw new Error("No response received from details API");
         }
-        const htmlText = await response.text();
+        const json = await response.json();
 
-        let description = "";
-        const jsonLdRegex = /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi;
-        let match;
-        while ((match = jsonLdRegex.exec(htmlText)) !== null) {
-            try {
-                const data = JSON.parse(match[1]);
-                if (data && data["@type"] === "Book" && data.description) {
-                    description = data.description;
-                    break;
-                } else if (Array.isArray(data)) {
-                    const book = data.find(item => item && item["@type"] === "Book");
-                    if (book && book.description) {
-                        description = book.description;
-                        break;
-                    }
-                }
-            } catch (e) {
-            }
-        }
+        let description = String(json && json.description || "").trim();
+        if (!description) description = "No description available";
 
-        if (!description || description.trim() === "") {
-            const descMatch = htmlText.match(/class="description-text"[^>]*>([\s\S]*?)<\/p>/i)
-                || htmlText.match(/class="novel-description"[^>]*>([\s\S]*?)<\/div>/i);
-            if (descMatch) {
-                description = descMatch[1].replace(/<[^>]+>/g, '').trim();
-            } else {
-                description = "No description available";
-            }
-        }
-
-        const aliases = 'N/A';
-        const airdate = 'N/A';
+        const status = json && json.status ? String(json.status) : "";
+        const year = json && json.year ? String(json.year) : "";
+        const airdate = [status, year].filter(Boolean).join(" · ") || "N/A";
 
         const transformedResults = [{
             description: decodeHtmlEntities(description).replace(/\s+/g, ' ').trim(),
-            aliases,
-            airdate
+            aliases: 'N/A',
+            airdate: airdate
         }];
 
         console.log(JSON.stringify(transformedResults));
@@ -232,81 +218,28 @@ async function extractDetails(url) {
 
 async function extractChapters(url) {
     try {
-        let chaptersUrl = url;
-        const urlObj = url.split('?');
-        let basePath = urlObj[0];
-        const queryParams = urlObj[1] ? '?' + urlObj[1] : '';
-        if (!basePath.endsWith('/chapters') && !basePath.endsWith('/chapters/')) {
-            basePath = basePath.replace(/\/$/, '') + '/chapters/';
-        }
-        chaptersUrl = basePath + queryParams;
+        const slug = lnwSlugFromUrl(url);
+        if (!slug) throw new Error("Could not parse novel slug from url: " + url);
 
-        const response = await soraFetch(chaptersUrl);
+        const response = await soraFetch(LNW_API + "/novels/" + slug + "/chapters?limit=1000");
         if (!response) {
-            throw new Error("No response received from chapters page");
+            throw new Error("No response received from chapters API");
         }
-        const htmlText = await response.text();
+        const json = await response.json();
+        const items = (json && Array.isArray(json.items)) ? json.items : [];
 
-        const allChapters = parseChaptersFromHtml(htmlText);
-
-        let totalPages = 1;
-        const selectMatch = htmlText.match(/<select[^>]*id="pageSelect"[^>]*>([\s\S]*?)<\/select>/i);
-        if (selectMatch) {
-            const optRegex = /value="(\d+)"/gi;
-            let optMatch;
-            while ((optMatch = optRegex.exec(selectMatch[1])) !== null) {
-                const pNum = parseInt(optMatch[1], 10);
-                if (pNum > totalPages) {
-                    totalPages = pNum;
-                }
-            }
-        } else {
-            const fallbackMatch = htmlText.match(/<span>\s*of\s*(\d+)\s*<\/span>/i);
-            if (fallbackMatch) {
-                totalPages = parseInt(fallbackMatch[1], 10);
-            }
+        const allChapters = [];
+        for (const item of items) {
+            if (!item || typeof item.number === "undefined") continue;
+            const num = Number(item.number);
+            allChapters.push({
+                title: String(item.title || ("Chapter " + num)).replace(/\s+/g, ' ').trim(),
+                href: LNW_BASE + "/novels/" + slug + "/" + num,
+                number: num
+            });
         }
 
-        if (totalPages > 1) {
-            const baseUrlClean = chaptersUrl.split('?')[0].replace(/\/$/, '');
-            const promises = [];
-
-            for (let i = 2; i <= totalPages; i++) {
-                const pageUrl = `${baseUrlClean}/?page=${i}`;
-                promises.push((async (pUrl) => {
-                    try {
-                        const pResp = await soraFetch(pUrl);
-                        if (pResp) {
-                            const pHtml = await pResp.text();
-                            return parseChaptersFromHtml(pHtml);
-                        }
-                    } catch (err) {
-                        console.error(`Error fetching chapters page ${pUrl}:`, err);
-                    }
-                    return [];
-                })(pageUrl));
-            }
-
-            const nestedResults = await Promise.all(promises);
-            for (const pageCaps of nestedResults) {
-                allChapters.push(...pageCaps);
-            }
-        }
-
-        allChapters.sort((a, b) => {
-            const getNum = (item) => {
-                const urlMatch = item.href.match(/chapter[-/](\d+)/i);
-                if (urlMatch) return parseFloat(urlMatch[1]);
-                const titleMatch = item.title.match(/(?:Chapter|Ch\.)\s*(\d+(\.\d+)?)/i);
-                if (titleMatch) return parseFloat(titleMatch[1]);
-                return 0;
-            };
-            return getNum(a) - getNum(b);
-        });
-
-        allChapters.forEach((chapter, index) => {
-            chapter.number = index + 1;
-        });
+        allChapters.sort((a, b) => a.number - b.number);
 
         console.log(JSON.stringify(allChapters));
         return JSON.stringify(allChapters);
@@ -322,42 +255,25 @@ async function extractChapters(url) {
 
 async function extractText(url) {
     try {
-        const response = await soraFetch(url);
+        const slug = lnwSlugFromUrl(url);
+        const numMatch = String(url).match(/\/novels?\/[^\/?#]+\/(\d+(?:\.\d+)?)/i);
+        if (!slug || !numMatch) throw new Error("Could not parse novel slug/chapter from url: " + url);
+        const num = numMatch[1];
+
+        const response = await soraFetch(LNW_API + "/novels/" + slug + "/chapters/" + num + "/read");
         if (!response) {
-            throw new Error("No response received from chapter text page");
+            throw new Error("No response received from chapter API");
         }
-        const htmlText = await response.text();
+        const json = await response.json();
+        const body = String(json && json.body || "").trim();
+        if (!body) throw new Error("Chapter body empty");
 
-        const startIdx = htmlText.indexOf('id="chapterText"');
-        if (startIdx === -1) {
-            throw new Error("Chapter content container (id='chapterText') not found");
-        }
+        const paragraphs = body
+            .split(/\n\s*\n/)
+            .map(p => p.replace(/\s+/g, ' ').trim())
+            .filter(p => p.length > 0);
 
-        const targets = ['data-ad-position="2"', 'class="chapter-nav"', 'chapterSelectBottom', 'id="commentContent"'];
-        let endIdx = -1;
-        for (const target of targets) {
-            const idx = htmlText.indexOf(target, startIdx);
-            if (idx !== -1 && (endIdx === -1 || idx < endIdx)) {
-                endIdx = idx;
-            }
-        }
-
-        if (endIdx === -1) {
-            endIdx = htmlText.length;
-        }
-
-        const chunk = htmlText.substring(startIdx, endIdx);
-
-        const paragraphs = [];
-        const pRegex = /<p\b[^>]*>([\s\S]*?)<\/p>/gi;
-        let match;
-        while ((match = pRegex.exec(chunk)) !== null) {
-            paragraphs.push(match[1].trim());
-        }
-
-        if (paragraphs.length === 0) {
-            throw new Error("No paragraph tags found inside the content area");
-        }
+        if (paragraphs.length === 0) throw new Error("No paragraphs extracted");
 
         const content = paragraphs.map(p => `<p>${decodeHtmlEntities(p)}</p>`).join('\n');
 
@@ -367,24 +283,6 @@ async function extractText(url) {
         console.error("Fetch error in extractText: " + error);
         return '<p>Error extracting text</p>';
     }
-}
-
-function parseChaptersFromHtml(htmlPage) {
-    const pageChapters = [];
-    const regex = /<div\s+class="chapter-card"[^>]*onclick="location\.href='([^']+)'"[^>]*>[\s\S]*?<h3\s+class="chapter-title"[^>]*>\s*([\s\S]*?)\s*<\/h3>/gi;
-    let match;
-    while ((match = regex.exec(htmlPage)) !== null) {
-        let href = match[1].trim();
-        if (!href.startsWith('http')) {
-            href = "https://lightnovelworld.org" + href;
-        }
-        let title = match[2].replace(/\s+/g, ' ').trim();
-        pageChapters.push({
-            title: decodeHtmlEntities(title),
-            href: href
-        });
-    }
-    return pageChapters;
 }
 
 async function soraFetch(url, options = {
@@ -422,7 +320,7 @@ function decodeHtmlEntities(text) {
         '&nbsp;': ' '
     };
 
-    return text.replace(/&#x[\dA-Fa-f]+;|&\w+;/g, (match) => {
+    return String(text).replace(/&#x[\dA-Fa-f]+;|&\w+;/g, (match) => {
         return entities[match] || match;
     });
 }

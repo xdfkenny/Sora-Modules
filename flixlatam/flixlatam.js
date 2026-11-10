@@ -25,7 +25,8 @@ async function searchResults(keyword) {
         let match;
         while ((match = itemRe.exec(html)) !== null) {
             const block = match[1];
-            const a = block.match(/<h3>\s*<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>\s*<\/h3>/);
+            const a = block.match(/<h[23]>\s*<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>\s*<\/h[23]>/)
+                || block.match(/<a href="([^"]+)"/);
             const img = block.match(/<img[^>]+src="([^"]+)"/);
             if (!a || !a[1]) continue;
             const title = cleanText(a[2]);
@@ -121,6 +122,26 @@ async function extractEpisodes(url) {
             if (a.season !== b.season) return a.season - b.season;
             return a.number - b.number;
         });
+        // 2026-11 markup: the detail page now lists episodes as anchors
+        // (<a href="/anime/<slug>#s1-e1" class="episode-link">); the capitulo
+        // player page lives at <pagePath>/temporada/<s>/capitulo/<e>.
+        if (episodes.length === 0) {
+            const pagePath = fullUrl.replace(/^https?:\/\/[^\/]+/, '').replace(/\/$/, '');
+            const anchorRe = /href="[^"]*#s(\d+)-e(\d+(?:\.\d+)?)"[^>]*class="[^"]*episode-link/g;
+            let aMatch;
+            while ((aMatch = anchorRe.exec(html)) !== null) {
+                const season = parseInt(aMatch[1], 10);
+                const number = parseFloat(aMatch[2]);
+                const href = BASE_URL + pagePath + '/temporada/' + season + '/capitulo/' + aMatch[2] + '/';
+                if (seen.has(href)) continue;
+                seen.add(href);
+                episodes.push({ href: href, season: season, number: number });
+            }
+            episodes.sort(function (a, b) {
+                if (a.season !== b.season) return a.season - b.season;
+                return a.number - b.number;
+            });
+        }
         if (episodes.length === 0) episodes.push({ href: fullUrl, number: 1 });
         return JSON.stringify(episodes);
     } catch (error) {

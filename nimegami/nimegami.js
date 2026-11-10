@@ -1,17 +1,58 @@
+// Nimegami module — site was rebuilt as a Next.js app (release 20261108),
+// old WordPress markup (?s= search, <h4>Episode, download_div) is gone.
+// Rewritten 2026-11:
+//   search:   GET /anime/?q=<kw>  — results are server-rendered in the
+//             Next.js flight payload (escaped JSON inside the HTML)
+//   details:  GET /<slug>/        — <div class="synopsis-block"><p>…</p>
+//   episodes: per-episode download blocks id="download_episode_N", links
+//             /<slug>/download/<N>/<quality>/<hash>/  (302 -> file host)
+
+const NIMEGAMI_BASE = "https://nimegami.id";
+const NIMEGAMI_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+async function nimegamiFetch(url) {
+    try {
+        return await fetchv2(url, { "User-Agent": NIMEGAMI_UA }, "GET", null);
+    } catch (e) {
+        try {
+            return await fetch(url, { headers: { "User-Agent": NIMEGAMI_UA } });
+        } catch (e2) {
+            return null;
+        }
+    }
+}
+
+function qualityToNumber(q) {
+    const m = String(q).match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 0;
+}
+
 async function searchResults(keyword) {
     const results = [];
     try {
-        const response = await fetchv2("https://nimegami.id/?s=" + encodeURIComponent(keyword) + "&post_type=post");
+        const url = NIMEGAMI_BASE + "/anime/?q=" + encodeURIComponent(keyword);
+        const response = await nimegamiFetch(url);
+        if (!response) throw new Error("no response");
         const html = await response.text();
 
-        const regex = /<article>[\s\S]*?<a href="([^"]+)"[^>]*>\s*<img[^>]+src="([^"]+)"[\s\S]*?<h2[^>]*>\s*<a[^>]+>([^<]+)<\/a>/g;
+        // Next.js flight payload, escaped JSON inside <script> strings:
+        // \"href\":\"/slug/\",\"prefetch\":false,\"className\":\"poster-link\",\"aria-label\":\"Lihat TITLE\"
+        const cardRegex = /\\"href\\":\\"(\/[^"\\]+)\\",\\"prefetch\\":false,\\"className\\":\\"poster-link\\",\\"aria-label\\":\\"Lihat ([^"\\]+)\\"/g;
+        const srcRegex = /\\"src\\":\\"([^"\\]+)\\"/;
 
         let match;
-        while ((match = regex.exec(html)) !== null) {
+        while ((match = cardRegex.exec(html)) !== null) {
+            let image = "";
+            const rest = html.substring(match.index + match[0].length, match.index + match[0].length + 600);
+            const srcMatch = rest.match(srcRegex);
+            if (srcMatch) {
+                image = srcMatch[1];
+                if (image && !image.startsWith("http")) image = NIMEGAMI_BASE + image;
+            }
             results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: match[1].trim()
+                title: match[2].trim(),
+                image: image,
+                href: NIMEGAMI_BASE + match[1]
             });
         }
 
@@ -25,30 +66,30 @@ async function searchResults(keyword) {
     }
 }
 
-
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
+        const response = await nimegamiFetch(url);
+        if (!response) throw new Error("no response");
         const html = await response.text();
 
         let description = "N/A";
-        let aliases = "N/A";
-        let airdate = "N/A";
-
-        // Extract synopsis/description
-        const synopsisMatch = html.match(/<div class="content" itemprop="text"[^>]*>[\s\S]*?<\/div>/);
+        const synopsisMatch = html.match(/<div class="synopsis-block">[\s\S]*?<p>([\s\S]*?)<\/p>/i);
         if (synopsisMatch) {
-            // Remove HTML tags and clean up the text
-            description = synopsisMatch[0]
+            description = synopsisMatch[1]
                 .replace(/<[^>]+>/g, ' ')
                 .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
                 .replace(/\s+/g, ' ')
                 .trim();
         }
 
+        let airdate = "N/A";
+        const yearMatch = html.match(/\\"year\\":\\"?(\d{4})/);
+        if (yearMatch) airdate = yearMatch[1];
+
         return JSON.stringify([{
             description: description,
-            aliases: aliases,
+            aliases: "N/A",
             airdate: airdate
         }]);
     } catch (err) {
@@ -63,64 +104,30 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const results = [];
     try {
-        const response = await fetchv2(url);
+        const response = await nimegamiFetch(url);
+        if (!response) throw new Error("no response");
         const html = await response.text();
 
-        // First try to extract individual episodes (excluding batch)
-        const htmlWithoutBatch = html.replace(/<div class="batch-dlcuy">[\s\S]*?<\/div>/g, '');
-        const episodeRegex = /<h4>([^<]*Episode\s+(\d+)[^<]*)<\/h4>\s*<ul>([\s\S]*?)<\/ul>/gi;
-        
-        let episodeMatch;
-        while ((episodeMatch = episodeRegex.exec(htmlWithoutBatch)) !== null) {
-            const episodeTitle = episodeMatch[1];
-            const episodeNumber = parseInt(episodeMatch[2], 10);
-            const linksHtml = episodeMatch[3];
-
-            const qualityRegex = /<strong>(\d+p)<\/strong>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/g;
-            let qualityMatch;
-            let highestQualityLink = null;
-            let highestQuality = 0;
-
-            while ((qualityMatch = qualityRegex.exec(linksHtml)) !== null) {
-                const quality = parseInt(qualityMatch[1], 10);
-                const link = qualityMatch[2].trim();
-
-                if (quality > highestQuality) {
-                    highestQuality = quality;
-                    highestQualityLink = link;
-                }
-            }
-
-            if (highestQualityLink) {
-                results.push({
-                    number: episodeNumber,
-                    href: highestQualityLink,
-                });
+        // Per-episode download links: /<slug>/download/<ep>/<quality>/<hash>/
+        // (batch links use /download/batch/ and are excluded by the \d+ group)
+        const linkRegex = /href="\/[^"]+\/download\/(\d+)\/(\d+p)\/[0-9a-f]+\/"/g;
+        const best = {};
+        let match;
+        while ((match = linkRegex.exec(html)) !== null) {
+            const epNum = parseInt(match[1], 10);
+            const quality = qualityToNumber(match[2]);
+            if (!best[epNum] || quality > best[epNum].quality) {
+                best[epNum] = {
+                    number: epNum,
+                    href: NIMEGAMI_BASE + match[0].slice('href="'.length, -1),
+                    quality: quality
+                };
             }
         }
 
-        if (results.length === 0) {
-            const movieRegex = /<strong>(\d+p)<\/strong>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/g;
-            let movieMatch;
-            let highestQuality = 0;
-            let movieLink = null;
-
-            while ((movieMatch = movieRegex.exec(html)) !== null) {
-                const quality = parseInt(movieMatch[1], 10);
-                const link = movieMatch[2].trim();
-
-                if (quality > highestQuality) {
-                    highestQuality = quality;
-                    movieLink = link;
-                }
-            }
-
-            if (movieLink) {
-                results.push({
-                    number: 1,
-                    href: movieLink,
-                });
-            }
+        const numbers = Object.keys(best).map(Number).sort((a, b) => a - b);
+        for (const n of numbers) {
+            results.push({ number: n, href: best[n].href });
         }
 
         return JSON.stringify(results);
@@ -136,40 +143,29 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        // url is a nimegami download interstitial that 302s to the file host
+        // (files.im / berkasdrive). Verify it resolves, then hand the app the
+        // interstitial URL — players follow the redirect to the mp4.
+        const response = await nimegamiFetch(url);
+        const status = response && response.status ? response.status : 0;
 
         const streams = [];
-        
-        const downloadDivMatch = html.match(/<div id="download_div"[\s\S]*?<\/div>/);
-        if (downloadDivMatch) {
-            const downloadDiv = downloadDivMatch[0];
-            
-            const linkRegex = /<a[^>]*href="([^"]+)"[^>]*id="ini_download_[^"]*"[^>]*>/g;
-            let linkMatch;
-            let serverCount = 1;
-            
-            while ((linkMatch = linkRegex.exec(downloadDiv)) !== null) {
-                const streamUrl = linkMatch[1].trim();
-                
-                streams.push({
-                    title: `Server ${serverCount}`,
-                    streamUrl: streamUrl,
-                    headers: {}
-                });
-                
-                serverCount++;
-            }
+        if (status >= 200 && status < 400) {
+            streams.push({
+                title: "Nimegami Download",
+                streamUrl: url,
+                headers: {}
+            });
         }
 
         return JSON.stringify({
             streams: streams,
-            subtitle: "https://placeholder.com/subtitles.vtt"
+            subtitle: ""
         });
     } catch (err) {
         return JSON.stringify({
             streams: [],
-            subtitle: "https://placeholder.com/subtitles.vtt"
+            subtitle: ""
         });
     }
 }

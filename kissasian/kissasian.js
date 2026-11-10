@@ -1,23 +1,32 @@
-const KISS_BASE = 'https://kissasian.su';
-const KISS_AJAX_SEARCH = KISS_BASE + '/ajax/search';
-const KISS_AJAX_FILTER = KISS_BASE + '/ajax/filter';
-const KISS_AJAX_INFO = KISS_BASE + '/ajax/info';
-const KISS_AJAX_EPLIST = KISS_BASE + '/ajax/ep-list';
-const KISS_PLAYER_BASE = 'https://player.dramavideo.se/kr';
-const KISS_BUILD = '1.0.1';
-console.log('[KissAsian] module loaded v' + KISS_BUILD);
+const KISS_BASE = 'https://kissasian.ng';
+const KISS_WATCH = 'https://dramavideo.se/watch?v=';
+const KISS_PLAYER = 'https://player.dramavideo.se/';
+const KISS_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36';
+const KISS_BUILD = '2.0.0';
+console.log('[KissAsian] module loaded v' + KISS_BUILD + ' (kissasian.ng)');
 
 /* MAIN FUNCTIONS */
 
+// Search uses the WordPress ?s= endpoint (the site runs a Madara-like theme)
 async function searchResults(keyword) {
     try {
         const query = (keyword || '').trim();
         if (!query) return JSON.stringify([]);
-        // Primary: ajax/search with query param (lighter, autocomplete style)
-        let results = await searchViaSearchAjax(query);
-        if (results.length > 0) return JSON.stringify(results);
-        // Fallback: ajax/filter with keyword (needs proper referer/origin)
-        results = await searchViaFilterAjax(query);
+        const res = await soraFetch(KISS_BASE + '/?s=' + encodeURIComponent(query), {
+            headers: { 'Referer': KISS_BASE + '/', 'User-Agent': KISS_UA }
+        });
+        if (!res) return JSON.stringify([]);
+        const html = await res.text();
+        const results = [];
+        const seen = new Set();
+        const regex = /href="(https:\/\/kissasian\.ng\/(?:series|movie|drama)\/[^"]+)"[^>]*title="([^"]*)"[\s\S]*?<img[^>]+src="([^"]+)"/g;
+        let m;
+        while ((m = regex.exec(html)) !== null) {
+            const href = m[1];
+            if (seen.has(href)) continue;
+            seen.add(href);
+            results.push({ title: m[2].trim(), image: m[3].trim(), href: href });
+        }
         return JSON.stringify(results);
     } catch (e) {
         console.log('[KissAsian] search error: ' + e);
@@ -27,98 +36,39 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const slug = getSlugFromUrl(url);
-        if (!slug) return JSON.stringify([detailsFallback()]);
-        const infoUrl = KISS_AJAX_INFO + '?slug=' + encodeURIComponent(slug);
-        const res = await soraFetch(infoUrl, {
-            headers: {
-                'Referer': KISS_BASE + '/',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
+        const res = await soraFetch(url, { headers: { 'Referer': KISS_BASE + '/', 'User-Agent': KISS_UA } });
         if (!res) return JSON.stringify([detailsFallback()]);
         const html = await res.text();
-        if (!html || html.indexOf('poster') === -1) return JSON.stringify([detailsFallback()]);
-        // description: prefer full block
-        let description = extractFirst(html, /<div class="full[^"]*"[^>]*>[\s\S]*?<div>([\s\S]*?)<\/div>/i);
-        if (!description) description = extractFirst(html, /<div class="short[^"]*"[^>]*>[\s\S]*?<div>([\s\S]*?)<\/div>/i);
-        if (!description) description = extractFirst(html, /<div class="description[\s\S]*?<div>([\s\S]*?)<\/div>/i);
-        // aliases: alternative title (native) + genres
-        let aliases = '';
-        const altTitle = extractFirst(html, /<div class="maindata"[\s\S]*?<div><span>([^<]+)<\/span><\/div>/i);
-        const genres = [];
-        const genreRe = /<a href="\/genre\/[^"]+"[^>]*>([^<]+)<\/a>/gi;
-        let gm;
-        while ((gm = genreRe.exec(html)) !== null) genres.push(gm[1].trim());
-        const country = extractFirst(html, /<a href="\/country\/[^"]+"[^>]*>([^<]+)<\/a>/i);
-        const cast = extractFirst(html, /<div>\s*<div>Cast:<\/div>\s*<span>([^<]+)<\/span>/i);
-        const parts = [];
-        if (altTitle) parts.push(altTitle.trim());
-        if (genres.length) parts.push(genres.join(', '));
-        if (country) parts.push(country.trim());
-        if (cast) parts.push(cast.trim());
-        aliases = parts.join(' · ');
-        // airdate: Released
-        let airdate = extractFirst(html, /<div><div>Released:<\/div><span>([^<]+)<\/span>/i);
-        if (!airdate) airdate = extractFirst(html, /<span class="release-date">([^<]+)<\/span>/i);
-        if (!airdate) airdate = extractFirst(html, /<span class="type">(\d{4})<\/span>/i);
-        return JSON.stringify([{
-            description: cleanText(description || 'No description available'),
-            aliases: cleanText(aliases || 'N/A'),
-            airdate: cleanText(airdate || 'Unknown')
-        }]);
+        let description = 'No description available';
+        const dm = html.match(/property="og:description" content="([^"]*)"/) ||
+                   html.match(/<meta name="description" content="([^"]*)"/);
+        if (dm) description = dm[1].replace(/&amp;/g, '&').trim();
+        return JSON.stringify([{ description: description, aliases: 'N/A', airdate: 'Unknown' }]);
     } catch (e) {
         console.log('[KissAsian] details error: ' + e);
         return JSON.stringify([detailsFallback()]);
     }
 }
 
+// Series pages use the Madara epl-num episode list (numbers or labels like "Movie")
 async function extractEpisodes(url) {
     try {
-        const slug = getSlugFromUrl(url);
-        if (!slug) return JSON.stringify([]);
-        // Need a starting episode number — default 1
-        const startEp = extractEpisodeNumberFromUrl(url) || 1;
-        const epUrl = KISS_AJAX_EPLIST + '?slug=' + encodeURIComponent(slug) + '&currentEpisode=' + startEp + '&type=all';
-        const res = await soraFetch(epUrl, {
-            headers: {
-                'Referer': KISS_BASE + '/' + slug + '-episode-' + startEp,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
+        const res = await soraFetch(url, { headers: { 'Referer': KISS_BASE + '/', 'User-Agent': KISS_UA } });
         if (!res) return JSON.stringify([]);
-        const data = await res.json();
-        // ep-list returns {html: "...", totalEpisodes: N}
-        let html = '';
-        if (data && typeof data === 'object' && data.html) html = data.html;
-        else if (typeof data === 'string') html = data;
-        else {
-            // fallback: maybe returned as text/html not json
-            try { html = await res.text(); } catch (_) {}
-            const parsed = tryParseJson(html);
-            if (parsed && parsed.html) html = parsed.html;
-        }
-        if (!html) return JSON.stringify([]);
+        const html = await res.text();
         const episodes = [];
-        const seen = new Set();
-        const re = /<a[^>]+href="([^"]+)"[^>]*data-num="(\d+)"[^>]*>/gi;
+        const regex = /<a href="([^"]+)">\s*<div class="epl-num">([^<]+)<\/div>/g;
         let m;
-        while ((m = re.exec(html)) !== null) {
-            let href = m[1].trim();
+        while ((m = regex.exec(html)) !== null) {
             const num = parseInt(m[2], 10);
-            if (!href) continue;
-            if (href.charAt(0) === '/') href = KISS_BASE + href;
-            else if (!/^https?:\/\//i.test(href)) href = KISS_BASE + '/' + href;
-            if (seen.has(href)) continue;
-            seen.add(href);
-            episodes.push({ href: href, number: isNaN(num) ? episodes.length + 1 : num });
+            const label = m[2].trim();
+            episodes.push({
+                href: m[1].trim(),
+                number: isNaN(num) ? episodes.length + 1 : num,
+                title: isNaN(num) ? label : ('Episode ' + label)
+            });
         }
-        // sort by number ascending
-        episodes.sort(function(a,b){ return a.number - b.number; });
-        // if nothing but totalEpisodes known, synthesize single entry for movies
-        if (episodes.length === 0 && data && data.totalEpisodes === 1) {
-            episodes.push({ href: KISS_BASE + '/' + slug + '-episode-1', number: 1 });
-        }
+        episodes.sort(function(a, b) { return a.number - b.number; });
         return JSON.stringify(episodes);
     } catch (e) {
         console.log('[KissAsian] episodes error: ' + e);
@@ -126,89 +76,90 @@ async function extractEpisodes(url) {
     }
 }
 
+// Episode page -> base64 option iframes (dramavideo.se/watch?v=ID)
+// -> watch page exposes li.linkserver data-video/data-provider
+// -> player.dramavideo.se/?id=..&sv=.. embeds AES-encrypted sources (keyHex/ivHex)
 async function extractStreamUrl(url) {
     try {
-        const epUrl = String(url || '').trim();
-        if (!epUrl) return JSON.stringify({ streams: [], subtitles: '' });
-        // 1. Fetch episode page to get data-ep / data-server
-        const res = await soraFetch(epUrl, { headers: { 'Referer': KISS_BASE + '/' } });
+        const res = await soraFetch(url, { headers: { 'Referer': KISS_BASE + '/', 'User-Agent': KISS_UA } });
         if (!res) return JSON.stringify({ streams: [], subtitles: '' });
         const html = await res.text();
-        const servers = collectServers(html);
-        if (!servers || servers.length === 0) {
-            console.log('[KissAsian] no servers found on episode page');
+
+        // collect dramavideo watch links from the base64-encoded server options
+        const embedUrls = [];
+        const optRegex = /<option value="([^"]{30,})"[^>]*>/g;
+        let om;
+        while ((om = optRegex.exec(html)) !== null) {
+            let decoded = '';
+            try { decoded = base64UrlDecode(om[1]); } catch (e) { continue; }
+            const vm = decoded.match(/dramavideo\.se\/watch\?v=([0-9]+)/);
+            if (vm) embedUrls.push(vm[1]);
+        }
+        // fallback: plain iframe on the episode page
+        if (embedUrls.length === 0) {
+            const fm = html.match(/dramavideo\.se\/watch\?v=([0-9]+)/);
+            if (fm) embedUrls.push(fm[1]);
+        }
+        if (embedUrls.length === 0) {
+            console.log('[KissAsian] no dramavideo embed found');
             return JSON.stringify({ streams: [], subtitles: '' });
         }
+
         const streams = [];
-        for (let i = 0; i < servers.length; i++) {
-            const s = servers[i];
-            const playerUrl = KISS_PLAYER_BASE + '?ep=' + encodeURIComponent(s.ep) + '&sv=' + encodeURIComponent(s.sv);
-            let playerHtml = '';
-            try {
-                const pr = await soraFetch(playerUrl, { headers: { 'Referer': KISS_BASE + '/', 'Origin': KISS_BASE } });
-                if (!pr) continue;
-                playerHtml = await pr.text();
-            } catch (e) { continue; }
-            const encData = extractFirst(playerHtml, /encData\s*=\s*"([^"]+)"/i);
-            const keyHex = extractFirst(playerHtml, /keyHex\s*=\s*"([^"]+)"/i);
-            const ivHex = extractFirst(playerHtml, /ivHex\s*=\s*"([^"]+)"/i);
-            if (!encData || !keyHex || !ivHex) {
-                console.log('[KissAsian] missing enc/key/iv for server ' + s.sv);
-                continue;
+        for (let i = 0; i < embedUrls.length && streams.length === 0; i++) {
+            // 1. watch page -> server links
+            const wRes = await soraFetch(KISS_WATCH + embedUrls[i], {
+                headers: { 'Referer': KISS_BASE + '/', 'User-Agent': KISS_UA }
+            });
+            if (!wRes) continue;
+            const watchHtml = await wRes.text();
+            const servers = [];
+            const svRegex = /linkserver[^>]*data-provider="([^"]+)"[^>]*data-video="([^"]+)"/g;
+            let sm;
+            while ((sm = svRegex.exec(watchHtml)) !== null) {
+                servers.push({ sv: sm[1], code: sm[2] });
             }
-            let decrypted = '';
-            try {
-                decrypted = kissDecrypt(encData, keyHex, ivHex);
-            } catch (e) {
-                console.log('[KissAsian] decrypt failed: ' + e);
-                continue;
-            }
-            if (!decrypted) continue;
-            // sources JSON inside decrypted html
-            const srcMatch = decrypted.match(/sources\s*=\s*JSON\.parse\(`([^`]+)`\)/);
-            let srcJson = '';
-            if (srcMatch) srcJson = srcMatch[1];
-            else {
-                // fallback: look for file URL directly in decrypted
-                const direct = decrypted.match(/"file"\s*:\s*"([^"]+\.m3u8[^"]*)"/i);
-                if (direct) srcJson = '[{"file":"' + direct[1] + '","type":"hls"}]';
-            }
-            if (!srcJson) continue;
-            let srcArr = [];
-            try { srcArr = JSON.parse(srcJson); } catch (e) { continue; }
-            for (let j = 0; j < srcArr.length; j++) {
-                const entry = srcArr[j];
-                if (!entry || !entry.file) continue;
-                const title = 'KissAsian • ' + (entry.label || entry.type || 'HLS') + (servers.length > 1 ? ' • ' + s.sv : '');
-                // Avoid duplicates
-                let dup = false;
-                for (let k = 0; k < streams.length; k++) if (streams[k].streamUrl === entry.file) { dup = true; break; }
-                if (dup) continue;
-                streams.push({
-                    title: title,
-                    streamUrl: entry.file,
-                    headers: {
-                        'Referer': 'https://player.dramavideo.se/',
-                        'Origin': 'https://player.dramavideo.se',
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                    }
-                });
-            }
-            // tracks for subtitles
-            const trackMatch = decrypted.match(/tracks\s*=\s*JSON\.parse\(`([^`]+)`\)/);
-            if (trackMatch) {
+            if (servers.length === 0) continue;
+
+            // 2. player iframe -> encrypted payload -> decrypt -> m3u8
+            for (let j = 0; j < servers.length && streams.length === 0; j++) {
                 try {
-                    const tracks = JSON.parse(trackMatch[1]);
-                    if (tracks && tracks.length) {
-                        // Could attach first vtt as subtitle field later
+                    const pRes = await soraFetch(KISS_PLAYER + '?id=' + encodeURIComponent(servers[j].code) + '&sv=' + encodeURIComponent(servers[j].sv), {
+                        headers: { 'Referer': KISS_WATCH + embedUrls[i], 'User-Agent': KISS_UA }
+                    });
+                    if (!pRes) continue;
+                    const playerHtml = await pRes.text();
+                    const encData = extractFirst(playerHtml, /encData\s*=\s*"([^"]+)"/i);
+                    const keyHex = extractFirst(playerHtml, /keyHex\s*=\s*"([^"]+)"/i);
+                    const ivHex = extractFirst(playerHtml, /ivHex\s*=\s*"([^"]+)"/i);
+                    if (!encData || !keyHex || !ivHex) continue;
+                    const decrypted = kissDecrypt(encData, keyHex, ivHex);
+                    if (!decrypted) continue;
+                    let srcArr = [];
+                    const srcMatch = decrypted.match(/sources\s*=\s*JSON\.parse\(`([^`]+)`\)/);
+                    if (srcMatch) {
+                        try { srcArr = JSON.parse(srcMatch[1]); } catch (e) { srcArr = []; }
+                    } else {
+                        const direct = decrypted.match(/"file"\s*:\s*"([^"]+\.m3u8[^"]*)"/i);
+                        if (direct) srcArr = [{ file: direct[1], label: 'auto' }];
                     }
-                } catch (_) {}
+                    for (let k = 0; k < srcArr.length; k++) {
+                        const entry = srcArr[k];
+                        if (!entry || !entry.file) continue;
+                        streams.push({
+                            title: 'KissAsian HLS' + (servers.length > 1 ? ' (' + servers[j].sv + ')' : ''),
+                            streamUrl: entry.file,
+                            headers: {
+                                'Referer': 'https://dramavideo.se/',
+                                'User-Agent': KISS_UA
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.log('[KissAsian] server error: ' + e);
+                }
             }
-            // If we got at least one stream from first server, we can return early
-            if (streams.length > 0) break;
         }
-        if (streams.length === 0) return JSON.stringify({ streams: [], subtitles: '' });
-        // subtitles currently not extracted from player; return empty
         return JSON.stringify({ streams: streams, subtitles: '' });
     } catch (e) {
         console.log('[KissAsian] stream error: ' + e);
@@ -216,210 +167,59 @@ async function extractStreamUrl(url) {
     }
 }
 
-/* HELPERS */
-
 function detailsFallback() {
     return { description: 'No description available', aliases: 'N/A', airdate: 'Unknown' };
 }
 
-function getSlugFromUrl(url) {
-    try {
-        const str = String(url || '');
-        const m = str.match(/\/([a-z0-9\-]+)(?:-episode-\d+)?\/?(?:\?.*)?$/i);
-        if (!m) return '';
-        let slug = m[1];
-        // If url contains -episode-, strip that suffix to get base slug
-        const epIdx = str.lastIndexOf('-episode-');
-        if (epIdx !== -1) {
-            const slashIdx = str.lastIndexOf('/', epIdx);
-            const base = str.substring(slashIdx + 1, epIdx);
-            if (base) slug = base;
+function base64UrlDecode(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let s = String(input || '').replace(/-/g, '+').replace(/_/g, '/');
+    let out = '';
+    let buffer = 0, bits = 0;
+    for (let i = 0; i < s.length; i++) {
+        const ch = s.charAt(i);
+        if (ch === '=') break;
+        const v = chars.indexOf(ch);
+        if (v === -1) continue;
+        buffer = (buffer << 6) | v;
+        bits += 6;
+        if (bits >= 8) {
+            bits -= 8;
+            out += String.fromCharCode((buffer >> bits) & 0xff);
         }
-        // For slug already without episode, ensure it's not empty
-        // Also handle case where href is like /lovely-runner-2024-episode-16
-        if (slug.indexOf('-episode-') !== -1) slug = slug.split('-episode-')[0];
-        return slug;
-    } catch (_) { return ''; }
-}
-
-function extractEpisodeNumberFromUrl(url) {
-    const m = String(url || '').match(/-episode-(\d+)/i);
-    return m ? parseInt(m[1], 10) : 0;
-}
-
-function collectServers(html) {
-    const out = [];
-    const seen = new Set();
-    // primary embed
-    const pem = html.match(/<div[^>]+class="pembed"[^>]*data-ep="([^"]+)"[^>]*data-server="([^"]+)"[^>]*>/i);
-    if (pem) {
-        const ep = pem[1].trim();
-        const sv = pem[2].trim();
-        const key = ep + '|' + sv;
-        if (ep && sv && !seen.has(key)) { seen.add(key); out.push({ ep: ep, sv: sv }); }
     }
-    // additional servers in list
-    const re = /<div[^>]+class="server[^"]*"[^>]*data-server="([^"]+)"[^>]*data-ep="([^"]+)"[^>]*>/gi;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-        const sv = (m[1] || '').trim();
-        const ep = (m[2] || '').trim();
-        if (!sv || !ep) continue;
-        // some templates have reversed order data-ep/data-server, handle alternate
-        const key = ep + '|' + sv;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        out.push({ ep: ep, sv: sv });
-    }
-    // alternate regex where data-ep before data-server
-    const re2 = /data-ep="([^"]+)"[^>]*data-server="([^"]+)"|data-server="([^"]+)"[^>]*data-ep="([^"]+)"/gi;
-    // already covered, but ensure at least one
     return out;
-}
-
-async function searchViaSearchAjax(query) {
-    try {
-        const res = await soraFetch(KISS_AJAX_SEARCH, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Referer': KISS_BASE + '/home',
-                'Origin': KISS_BASE
-            },
-            body: 'query=' + encodeURIComponent(query)
-        });
-        if (!res) return [];
-        const html = await res.text();
-        return parseSearchHtml(html);
-    } catch (_) { return []; }
-}
-
-async function searchViaFilterAjax(query) {
-    try {
-        const res = await soraFetch(KISS_AJAX_FILTER, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Referer': KISS_BASE + '/filter?keyword=' + encodeURIComponent(query),
-                'Origin': KISS_BASE
-            },
-            body: 'keyword=' + encodeURIComponent(query) + '&page=1'
-        });
-        if (!res) return [];
-        const html = await res.text();
-        return parseFilterHtml(html);
-    } catch (_) { return []; }
-}
-
-function parseSearchHtml(html) {
-    const results = [];
-    const seen = new Set();
-    // format: <a class="unit" href=xxx> <img src="..."> <div class="name">Title</div>
-    const re = /<a[^>]+class="unit"[^>]*href=([^\s>]+)[\s\S]*?<img[^>]+src="([^"]+)"[^>]*>[\s\S]*?<div[^>]+class="name"[^>]*>([^<]+)<\/div>/gi;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-        let href = (m[1] || '').trim();
-        href = href.replace(/^["']|["']$/g, '');
-        let image = (m[2] || '').trim();
-        let title = cleanText(m[3] || '');
-        if (!href || !title) continue;
-        if (href.charAt(0) === '/') href = KISS_BASE + href;
-        else if (!/^https?:\/\//i.test(href)) href = KISS_BASE + '/' + href;
-        if (seen.has(href)) continue;
-        seen.add(href);
-        if (!image) image = KISS_BASE + '/assets/img/social.webp';
-        results.push({ title: title, image: image, href: href });
-    }
-    return results;
-}
-
-function parseFilterHtml(html) {
-    const results = [];
-    const seen = new Set();
-    // poster link and image, title in <div class='name'><a href='...'>Title</a>
-    const re = /<a[^>]+class='poster'[^>]+href='([^']+)'[\s\S]*?<img[^>]+src='([^']+)'[^>]*>[\s\S]*?<div class='name'>\s*<a[^>]+>([^<]+)<\/a>/gi;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-        let href = (m[1] || '').trim();
-        let image = (m[2] || '').trim();
-        let title = cleanText(m[3] || '');
-        if (!href || !title) continue;
-        if (href.charAt(0) === '/') href = KISS_BASE + href;
-        else if (!/^https?:\/\//i.test(href)) href = KISS_BASE + '/' + href;
-        if (seen.has(href)) continue;
-        seen.add(href);
-        results.push({ title: title, image: image, href: href });
-    }
-    // dedup by slug base (strip episode) to avoid listing same drama multiple times with different episodes
-    const bySlug = {};
-    const deduped = [];
-    for (let i = 0; i < results.length; i++) {
-        const slug = getSlugFromUrl(results[i].href);
-        if (!bySlug[slug]) { bySlug[slug] = true; deduped.push(results[i]); }
-    }
-    return deduped.length ? deduped : results;
-}
-
-function tryParseJson(str) {
-    try { return JSON.parse(str); } catch (_) { return null; }
 }
 
 function extractFirst(html, regex) {
     const m = String(html || '').match(regex);
-    return m ? (m[1] || '').trim() : '';
-}
-
-function cleanText(text) {
-    return String(text || '')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function decodeHtml(str) {
-    return cleanText(str);
+    return m ? m[1] : '';
 }
 
 /* NETWORK */
 
 async function soraFetch(url, options) {
-    options = options || {};
-    const headers = options.headers || {};
-    if (!headers['User-Agent']) headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-    if (!headers['Accept']) headers['Accept'] = '*/*';
-    const method = options.method || 'GET';
-    const body = typeof options.body !== 'undefined' ? options.body : null;
+    const opts = options || {};
+    const headers = opts.headers || {};
+    const method = opts.method || 'GET';
+    const body = typeof opts.body === 'undefined' ? null : opts.body;
     try {
         return await fetchv2(url, headers, method, body);
     } catch (e) {
         try {
             const resp = await fetch(url, { method: method, headers: headers, body: body });
-            if (!resp) return null;
             return {
                 ok: !!resp.ok,
                 status: resp.status || 0,
                 text: async function() { return await resp.text(); },
-                json: async function() {
-                    if (typeof resp.json === 'function') return await resp.json();
-                    return JSON.parse(await resp.text());
-                }
+                json: async function() { return await resp.json(); }
             };
-        } catch (err) {
-            console.log('[KissAsian] soraFetch error: ' + err);
+        } catch (error) {
+            console.log('[KissAsian] soraFetch error: ' + error);
             return null;
         }
     }
 }
-
-/* CRYPTO — AES-128-CBC decrypt (same Aes impl as flixlatam) */
 
 function kissDecrypt(b64, keyHex, ivHex) {
     const ct = kissB64ToBytes(b64);

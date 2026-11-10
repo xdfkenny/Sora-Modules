@@ -1,83 +1,12 @@
-AUDIT SUMMARY — 2026-10-21T07:10:42.561Z
-total: 175   (discontinued: 21, external: 20, active+local: 134)
-status counts: working=111  no-results=16  stream-broken=36  images-broken=4  text-broken=2  search-broken=5  load-error=1
+AUDIT SUMMARY — 2026-11-10T04:14:17.750Z
+total: 2   (discontinued: 0, external: 0, active+local: 2)
+status counts: working=2
 
-WORKING (active+local): 95
-  anikoto, hydrahd, 123anime, hydrahd-shirox, anidb, dessin-anime, henaojara, iptv-org, aniliberty, animevost, animegg, kisskh, mangadex, onetouch, nivod, lmanime, onwave, AnimeUnity, yummyanime, AnimeWorld, airflix, StreamingUnity, animeav1, an1me, aksv, animeland, animelib, animenosub, anidub, blackCloverPace, aniwave, borucut, concentratedBleach, dbzRecut, anime-sama, dragonballrecut, mangabuddy, mangafreak, imdb, chireads, onigashima, mangaworld, peachify, monoschinos2, readnovels, otaku-streamers, scan-sama, toontales, vidfast, weebcentral, xpass, 1tamilcrow, animeheaven, voir-anime, vidcore, animesdigital, arabictoons, asia2tv, doramaland, mangataro, narucannon, animeweek, mangakatana, novelbuddy, novelfire, onepace, luciferdonghua, purstream, rebuildOfNaruto, movix, readnovelfull, sameband, ristoanime, shizaproject, turkish123, spacepowerfans, yuYuHakushoPace, xiaoxintv, topcinema, mangabuddy-eclipse, mangadex-eclipse, mangafreak-eclipse, chireads-eclipse, mangataro-eclipse, novelbuddy-eclipse, mangaworld-eclipse, novelfire-eclipse, mangakatana-eclipse, readnovels-eclipse, readnovelfull-eclipse, scan-sama-eclipse, weebcentral-eclipse, streamcloud, myselfbbs, xgcartoon
+WORKING (active+local): 2
+  yfsp, otakutsu
 
 ACTIONABLE (active, local, broken, fixable-or-recordable):
-  [stream-broken] allmanga (needs_review) — no usable stream (eps=1187)
-  [no-results] comix (needs_review) — search returned 0 items
-  [stream-broken] allmanga-shirox (needs_review) — no usable stream (eps=1187)
-  [images-broken] allmanga-novels (needs_review) — images fail: 0 imgs
-  [no-results] kissasian (needs_review) — search returned 0 items
-  [stream-broken] yfsp (needs_review) — no usable stream (eps=1182)
-  [images-broken] allmanga-novels-shirox (needs_review) — images fail: 0 imgs
-  [no-results] nimegami (needs_review) — search returned 0 items
-  [no-results] anineko (needs_review) — search returned 0 items
-  [stream-broken] anitube (needs_review) — no usable stream (eps=0)
-  [stream-broken] animedefenders (needs_review) — no usable stream (eps=0)
-  [no-results] nakanime (needs_review) — search returned 0 items
-  [stream-broken] gidonline (needs_review) — no usable stream (eps=0)
-  [no-results] Nakastream (needs_review) — search returned 0 items
-  [stream-broken] animesrbija (needs_review) — no usable stream (eps=0)
-  [stream-broken] animexin (needs_review) — no usable stream (eps=0)
-  [stream-broken] anihq (needs_review) — no usable stream (eps=1)
-  [stream-broken] filmo (needs_review) — no usable stream (eps=1)
-  [stream-broken] filmpalast (needs_review) — no usable stream (eps=16)
-  [no-results] mangafire (needs_review) — search returned 0 items
-  [text-broken] lightnovelworld (needs_review) — text fail: sin resultados de búsqueda
-  [stream-broken] latanime (needs_review) — no usable stream (eps=1)
-  [no-results] miruro (needs_review) — search returned 0 items
-  [stream-broken] moflix (needs_review) — sin resultados de búsqueda
-  [no-results] otakutsu (needs_review) — search returned 0 items
-  [search-broken] rumanhua1 (needs_review) — fetch failed
-  [stream-broken] uaserial (needs_review) — no usable stream (eps=0)
-  [search-broken] noveldot (needs_review) — timeout 25000ms en search
-  [images-broken] allmanga-novels-eclipse (needs_review) — images fail: 0 imgs
-  [text-broken] lightnovelworld-eclipse (needs_review) — text fail: sin resultados de búsqueda
-  [no-results] mangafire-eclipse (needs_review) — search returned 0 items
-  [search-broken] rumanhua1-eclipse (needs_review) — fetch failed
-  [search-broken] noveldot-eclipse (needs_review) — timeout 25000ms en search
-  [stream-broken] flixlatam — no usable stream (eps=877)
-  [stream-broken] videasy — no usable stream (eps=17)
-  [stream-broken] aether — timeout 40000ms en stream
-  [stream-broken] catflix — no usable stream (eps=1464)
-  [no-results] comix-eclipse — search returned 0 items
-  [search-broken] nunuju — timeout 25000ms en search
 
 EXTERNAL (other repos — cannot fix here):
-  [stream-broken] allmangadub — no usable stream (eps=1161)
-  [stream-broken] allmangasub — no usable stream (eps=1181)
-  [stream-broken] animepahedub — sin resultados de búsqueda
-  [stream-broken] animepahesub — sin resultados de búsqueda
-  [no-results] batcave — search returned 0 items
-  [stream-broken] onepacedub — sin resultados de búsqueda
-  [load-error] weebcentral-kanzen — No se pudo cargar el módulo: searchResults is not defined
-  [no-results] anibd — search returned 0 items
-  [images-broken] readfreecomicsonline — images fail: 0 imgs
-  [stream-broken] emby — no usable stream (eps=1)
-  [stream-broken] jellyfin — no usable stream (eps=1)
 
 DISCONTINUED:
-  [no-results] anime-nexus — search returned 0 items
-  [working] torrentio — stream x57 → magnet:?xt=urn:btih:26ae1a154c19af80ae5bfac98b8f1d923b68af44&dn=One
-  [working] lncrawler — text 1704B/0img
-  [no-results] kaliscan — search returned 0 items
-  [stream-broken] vidlink — Cannot read properties of null (reading 'stream')
-  [stream-broken] rgshows — no usable stream (eps=17)
-  [stream-broken] 111movies — no usable stream (eps=17)
-  [stream-broken] vidrock — no usable stream (eps=17)
-  [stream-broken] vidapi — no usable stream (eps=17)
-  [stream-broken] hdrezka — no usable stream (eps=1)
-  [stream-broken] anime-base — sin resultados de búsqueda
-  [stream-broken] anizone — sin resultados de búsqueda
-  [working] anoboye — stream x1 → https://files.catbox.moe/avolvc.mp4
-  [stream-broken] animeportal — no usable stream (eps=0)
-  [working] onePieceFilmRedAmaLeeScore — stream x1 → https://pixeldrain.net/api/file/5doVw29C
-  [stream-broken] anify — no usable stream (eps=1211)
-  [working] onePieceTreasureEdition — stream x1 → https://pixeldrain.net/api/file/https://pixeldrain.net/l/VR7e6o5y?do
-  [working] kuudere — stream x1 → https://flixcloud.cc/e/rtt4nppua1i6?v=1
-  [stream-broken] donghuastream — no usable stream (eps=12)
-  [no-results] kaliscan-eclipse — search returned 0 items
-  [working] lncrawler-eclipse — text 1704B/0img

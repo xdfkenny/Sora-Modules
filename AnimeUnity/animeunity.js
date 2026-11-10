@@ -2,12 +2,12 @@
  * + vixcloud embed (stream).
  *
  * Domain move 2026-10-20: animeunity.so is NXDOMAIN; the site relaunched on
- * animeunity.to and the vixcloud.co embeds moved to vixcloud.cc, where the
+ * animeunity.co (2026-11-09 rotation) and the vixcloud.co embeds moved to vixcloud.cc, where the
  * embed page now exposes window.masterPlaylist (url + token + expires) and
  * the playlist answers 200 only with an extra `h=1` unlock param.
  */
 
-const AU_BASE = "https://www.animeunity.to";
+const AU_BASE = "https://www.animeunity.co";
 
 async function searchResults(keyword) {
   try {
@@ -128,7 +128,13 @@ async function extractStreamUrl(url) {
     let vixcloudUrl = vixcloudMatch[1];
     vixcloudUrl = vixcloudUrl.replace(/&amp;/g, "&");
 
-    const response2 = await soraFetch(vixcloudUrl);
+    // The embed edge 403s without an AnimeUnity Referer.
+    const response2 = await soraFetch(vixcloudUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+        "Referer": AU_BASE + "/",
+      },
+    });
     if (!response2) return JSON.stringify({ streams: [], subtitle: "" });
     const embed = await response2.text();
 

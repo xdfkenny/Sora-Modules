@@ -2,7 +2,7 @@ async function searchResults(keyword) {
     const uniqueResults = new Map();
 
     for (let i = 1; i <= 5; i++) {
-        const url = `https://web6.topcinema.cam/search/?query=${keyword}&type=all&offset=${i}`;
+        const url = `https://topcinemaa.vip/search/?query=${keyword}&type=all&offset=${i}`;
         const response2 = await soraFetch(url);
         const html2 = await response2.text();
 
@@ -38,18 +38,18 @@ async function searchResults(keyword) {
 }
 
 // searchResults("Interstellar");
-// extractDetails("https://web6.topcinema.cam/%d9%81%d9%8a%d9%84%d9%85-interstellar-2014-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/");
-// extractEpisodes("https://web6.topcinema.cam/%d9%81%d9%8a%d9%84%d9%85-interstellar-2014-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/");
+// extractDetails("https://topcinemaa.vip/%d9%81%d9%8a%d9%84%d9%85-interstellar-2014-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/");
+// extractEpisodes("https://topcinemaa.vip/%d9%81%d9%8a%d9%84%d9%85-interstellar-2014-%d9%85%d8%aa%d8%b1%d8%ac%d9%85-%d8%a7%d9%88%d9%86-%d9%84%d8%a7%d9%8a%d9%86/");
 
 // searchResults("Squid");
-// extractEpisodes("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
-// extractStreamUrl("https://web6.topcinema.cam/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
+// extractEpisodes("https://topcinemaa.vip/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
+// extractStreamUrl("https://topcinemaa.vip/%d9%85%d8%b3%d9%84%d8%b3%d9%84-%d9%84%d8%b9%d8%a8%d8%a9-%d8%a7%d9%84%d8%ad%d8%a8%d8%a7%d8%b1-squid-game-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%a7%d9%88%d9%84-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-1-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/watch/");
 
-// extractEpisodes("https://web6.topcinema.cam/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
-// extractStreamUrl("https://web6.topcinema.cam/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
+// extractEpisodes("https://topcinemaa.vip/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
+// extractStreamUrl("https://topcinemaa.vip/%d8%a7%d9%86%d9%85%d9%8a-naruto-shippuuden-%d8%a7%d9%84%d8%ad%d9%84%d9%82%d8%a9-500-%d9%88%d8%a7%d9%84%d8%a7%d8%ae%d9%8a%d8%b1%d8%a9-%d9%85%d8%aa%d8%b1%d8%ac%d9%85%d8%a9/");
 
 // searchResults("One piece");
-// extractEpisodes("https://web6.topcinema.cam/series/%d8%a7%d9%86%d9%85%d9%8a-one-piece-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ad%d8%a7%d8%af%d9%8a-%d9%88%d8%a7%d9%84%d8%b9%d8%b4%d8%b1%d9%88%d9%86-%d9%85%d8%aa%d8%b1%d8%ac%d9%85/");
+// extractEpisodes("https://topcinemaa.vip/series/%d8%a7%d9%86%d9%85%d9%8a-one-piece-%d8%a7%d9%84%d9%85%d9%88%d8%b3%d9%85-%d8%a7%d9%84%d8%ad%d8%a7%d8%af%d9%8a-%d9%88%d8%a7%d9%84%d8%b9%d8%b4%d8%b1%d9%88%d9%86-%d9%85%d8%aa%d8%b1%d8%ac%d9%85/");
 
 async function extractDetails(url) {
     const results = [];
@@ -277,7 +277,7 @@ async function extractStreamUrl(url) {
             const response3 = await soraFetch(streamEmbed, { 
                 headers: { 
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-                    "Referer": "https://web6.topcinema.cam/",
+                    "Referer": "https://topcinemaa.vip/",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
                 } 
             });
@@ -304,7 +304,7 @@ async function extractStreamUrl(url) {
             const response3 = await soraFetch(streamEmbed, { 
                 headers: { 
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-                    "Referer": "https://web6.topcinema.cam/",
+                    "Referer": "https://topcinemaa.vip/",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
                 } 
             });
@@ -332,7 +332,7 @@ async function extractStreamUrl(url) {
 		// 	const response3 = await soraFetch(streamEmbed, { 
         //         headers: { 
         //             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-        //             "Referer": "https://web6.topcinema.cam/",
+        //             "Referer": "https://topcinemaa.vip/",
         //             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
         //         } 
         //     });
@@ -355,7 +355,7 @@ async function extractStreamUrl(url) {
         //     const response3 = await soraFetch(streamEmbed, { 
         //         headers: { 
         //             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-        //             "Referer": "https://web6.topcinema.cam/",
+        //             "Referer": "https://topcinemaa.vip/",
         //             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
         //         } 
         //     });
@@ -381,7 +381,7 @@ async function extractStreamUrl(url) {
             const response3 = await soraFetch(streamEmbed, { 
                 headers: { 
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-                    "Referer": "https://web6.topcinema.cam/",
+                    "Referer": "https://topcinemaa.vip/",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
                 } 
             });
@@ -422,7 +422,7 @@ async function extractStreamUrl(url) {
             const response3 = await soraFetch(streamEmbed, { 
                 headers: { 
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-                    "Referer": "https://web6.topcinema.cam/",
+                    "Referer": "https://topcinemaa.vip/",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
                 } 
             });
@@ -448,7 +448,7 @@ async function extractStreamUrl(url) {
 		// 	const response3 = await soraFetch(streamEmbed, { 
         //         headers: { 
         //             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
-        //             "Referer": "https://web6.topcinema.cam/",
+        //             "Referer": "https://topcinemaa.vip/",
         //             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" 
         //         } 
         //     });
@@ -483,7 +483,7 @@ async function extractStreamUrl(url) {
         //         title: "Mixdrop",
         //         streamUrl: stream,
         //         headers: {
-        //             "Referer": "https://web6.topcinema.cam/",
+        //             "Referer": "https://topcinemaa.vip/",
         //             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/244.178.44.111 Safari/537.36",
         //             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
         //         }

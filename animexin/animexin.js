@@ -1,5 +1,6 @@
 async function searchResults(keyword) {
-    const results = [];
+
+    try {    const results = [];
     const response = await fetchv2(`https://animexin.dev/?s=${keyword}`);
     const html = await response.text();
 
@@ -15,10 +16,16 @@ async function searchResults(keyword) {
     }
 
     return JSON.stringify(results);
+    } catch (e) {
+        console.log("[searchResults] error: " + e);
+        return JSON.stringify([]);
+    }
 }
 
+
 async function extractDetails(url) {
-    const results = [];
+
+    try {    const results = [];
     const response = await fetchv2(url);
     const html = await response.text();
 
@@ -42,28 +49,44 @@ async function extractDetails(url) {
     });
 
     return JSON.stringify(results);
+    } catch (e) {
+        console.log("[extractDetails] error: " + e);
+        return JSON.stringify([{ description: "N/A", aliases: "N/A", airdate: "N/A" }]);
+    }
 }
 
+
 async function extractEpisodes(url) {
-    const results = [];
+
+    try {    const results = [];
     const response = await fetchv2(url);
     const html = await response.text();
 
-    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
+    // epl-num can be a number ("25") or a label ("Movie" on film pages)
+    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([^<]+)<\/div>/g;
 
     let match;
     while ((match = regex.exec(html)) !== null) {
+        const num = parseInt(match[2], 10);
+        const title = match[2].trim();
         results.push({
             href: match[1].trim(),
-            number: parseInt(match[2], 10)
+            number: isNaN(num) ? results.length + 1 : num,
+            title: isNaN(num) ? title : `Episode ${title}`
         });
     }
     results.reverse();
     return JSON.stringify(results);
+    } catch (e) {
+        console.log("[extractEpisodes] error: " + e);
+        return JSON.stringify([]);
+    }
 }
 
+
 async function extractStreamUrl(url) {
-    const response = await fetchv2(url);
+
+    try {    const response = await fetchv2(url);
     const html = await response.text();
     console.log("1")
     const optionRegex = /<option value="([^"]+)"[^>]*>\s*([\s\S]*?)\s*<\/option>/g;
@@ -138,6 +161,10 @@ async function extractStreamUrl(url) {
         streams: streams,
         subtitles: ""
     });
+    } catch (e) {
+        console.log("[extractStreamUrl] error: " + e);
+        return JSON.stringify({ streams: [], subtitles: "" });
+    }
 }
 
 const atob = (input) => {

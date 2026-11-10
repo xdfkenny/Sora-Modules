@@ -43,9 +43,9 @@ async function searchResults(keyword) {
             ]);
         }
 
-        // 3. Find the end of the cards container
-        const rowEnd = response.indexOf("</a></div>", rowStart) + 10;
-        let cardsHtml = response.substring(rowStart, rowEnd);
+        // 3. The cards container holds every result card; scan to the end of
+        //    the response (cardRegex is global and only matches result cards).
+        let cardsHtml = response.substring(rowStart);
         sendLog("cardsHtml preview:", cardsHtml.substring(0, 1000));
 
         sendLog("Cards container length:", cardsHtml.length);

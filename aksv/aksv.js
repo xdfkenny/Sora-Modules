@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     const results = [];
 
-    const response = await fetchv2("https://ak.sv/search?q=" + encodeURIComponent(keyword));
+    const response = await fetchv2("https://akwam.ss/search?q=" + encodeURIComponent(keyword));
     const html = await response.text();
     const filmListRegex = /<div class="col-lg-auto col-md-4 col-6 mb-12">[\s\S]*?<\/div>\s*<\/div>/g;
     const items = html.match(filmListRegex) || [];

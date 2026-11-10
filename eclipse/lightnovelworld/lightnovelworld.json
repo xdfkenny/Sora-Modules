@@ -1,6 +1,6 @@
 {
   "sourceName": "LightNovelWorld (Eclipse)",
-  "version": "1.0.1-e2",
+  "version": "2.0.0-e2",
   "language": "English",
   "languageType": [
     "Translated"
@@ -9,11 +9,11 @@
   "type": "novels",
   "quality": "N/A",
   "novel": true,
-  "baseUrl": "https://lightnovelworld.org/",
-  "searchBaseUrl": "https://lightnovelworld.org/api/search/?q=%s&search_type=title",
+  "baseUrl": "https://chikari.moe/",
+  "searchBaseUrl": "https://chikari.moe/api/novels/search?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/lightnovelworld/lightnovelworld.js",
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/lightnovelworld/lightnovelworld.js",
-  "iconUrl": "https://lightnovelworld.org/static/favicon.ico",
+  "iconUrl": "https://chikari.moe/favicon.ico",
   "author": {
     "name": "xdfkenny",
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",

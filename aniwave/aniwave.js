@@ -1,7 +1,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://aniwaves.ru/filter?keyword=${encodedKeyword}`);
+        const responseText = await soraFetch(`https://aniwaves.tv/filter?keyword=${encodedKeyword}`);
         const html = await responseText.text();
 
         const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
@@ -17,7 +17,7 @@ async function searchResults(keyword) {
             results.push({
                 title: match[3].trim(),
                 image: match[2].trim(),
-                href: `https://aniwaves.ru${match[1].trim()}`
+                href: `https://aniwaves.tv${match[1].trim()}`
             });
         }
 
@@ -65,8 +65,8 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        // Extract series slug from URLs like https://aniwaves.ru/watch/kimetsu-no-yaiba-77717
-        const slugMatch = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)/);
+        // Extract series slug from URLs like https://aniwaves.tv/watch/kimetsu-no-yaiba-77717
+        const slugMatch = url.match(/https:\/\/aniwaves\.tv\/watch\/([^\/]+)/);
         if (!slugMatch) throw new Error("Invalid URL format");
         const animeSlug = slugMatch[1];
 
@@ -92,7 +92,7 @@ async function extractEpisodes(url) {
             }
         } else {
             // Fallback search using the API
-            const apiUrl = `https://aniwaves.ru/filter?keyword=${encodeURIComponent(firstSlugWord)}`;
+            const apiUrl = `https://aniwaves.tv/filter?keyword=${encodeURIComponent(firstSlugWord)}`;
             const searchResponse = await soraFetch(apiUrl);
             const searchHtml = await searchResponse.text();
 
@@ -122,7 +122,7 @@ async function extractEpisodes(url) {
 async function extractStreamUrl(url) {
     try {
         console.log("Input URL: " + url);
-        const match = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)\/episode\/(\d+)/);
+        const match = url.match(/https:\/\/aniwaves\.tv\/watch\/([^\/]+)\/episode\/(\d+)/);
         if (!match) throw new Error("Invalid URL format – expected /watch/SLUG/episode/NUM");
 
         const animeSlug = match[1];
@@ -137,7 +137,7 @@ async function extractStreamUrl(url) {
         const headers = { 'Referer': url };
 
         // Step 1: Get server list (JSON -> extract result HTML)
-        const listUrl = "https://aniwaves.ru/ajax/server/list?servers=" + showId + "&eps=" + episodeNumber;
+        const listUrl = "https://aniwaves.tv/ajax/server/list?servers=" + showId + "&eps=" + episodeNumber;
         console.log("Fetching server list: " + listUrl);
         const listResp = await soraFetch(listUrl, { headers });
         if (!listResp) throw new Error("No response for server list");
@@ -160,7 +160,7 @@ async function extractStreamUrl(url) {
             console.log("\n--- Resolving " + type + " stream for link ID: " + linkId + " ---");
             try {
                 // Step 2: get embed URL
-                const srcUrl = "https://aniwaves.ru/ajax/sources?id=" + encodeURIComponent(linkId) + "&asi=0&autoPlay=0";
+                const srcUrl = "https://aniwaves.tv/ajax/sources?id=" + encodeURIComponent(linkId) + "&asi=0&autoPlay=0";
                 console.log("Fetching source: " + srcUrl);
                 const srcResp = await soraFetch(srcUrl, { headers });
                 if (!srcResp) { console.log("No response for source API"); return null; }
@@ -185,7 +185,9 @@ async function extractStreamUrl(url) {
                 console.log("getSources ID (data-id): " + sourceId);
 
                 // Step 4: call getSources
-                const getSrcUrl = "https://play.echovideo.ru/embed-1/getSources?id=" + sourceId;
+                // getSources lives on the embed host itself (play.vhscdn.to / echovideo...)
+                const embedBase = embedUrl.match(/https?:\/\/[^\/]+\//);
+                const getSrcUrl = (embedBase ? embedBase[0] : "https://play.vhscdn.to/") + "embed-1/getSources?id=" + sourceId;
                 console.log("Fetching getSources: " + getSrcUrl);
                 const getSrcResp = await soraFetch(getSrcUrl, { headers });
                 if (!getSrcResp) { console.log("No response for getSources"); return null; }
@@ -231,7 +233,7 @@ async function extractStreamUrl(url) {
     }
 }
 
-// extractStreamUrl(`https://aniwaves.ru/anime-watch/one-piece/ep-1`);
+// extractStreamUrl(`https://aniwaves.tv/anime-watch/one-piece/ep-1`);
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
