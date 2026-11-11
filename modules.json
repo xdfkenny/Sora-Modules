@@ -876,6 +876,16 @@
       "updated": "2026-10-20"
     },
     {
+      "id": "animesfhd",
+      "name": "AnimesFHD",
+      "iconUrl": "https://animesfhd.net/assets/img/pwa/icon-192.png",
+      "category": "anime",
+      "branch": "main",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesfhd/animesfhd.json",
+      "sampleQuery": "frieren",
+      "updated": "2026-11-11"
+    },
+    {
       "id": "animesrbija",
       "name": "AnimeSRBIJA",
       "iconUrl": "https://emojigraph.org/media/joypixels/flag-serbia_1f1f7-1f1f8.png",

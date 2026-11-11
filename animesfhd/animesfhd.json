@@ -1,0 +1,34 @@
+{
+  "sourceName": "AnimesFHD",
+  "iconUrl": "https://animesfhd.net/assets/img/pwa/icon-192.png",
+  "author": {
+    "name": "animesfhd",
+    "icon": "https://github.com/animesfhd.png",
+    "url": "https://github.com/animesfhd"
+  },
+  "version": "1.0.0",
+  "language": "Portuguese",
+  "languageType": [
+    "Subbed",
+    "Dubbed"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://animesfhd.net",
+  "searchBaseUrl": "https://animesfhd.net/api/series?pagination=1&page=1&per_page=24&q=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesfhd/animesfhd.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animesfhd/animesfhd.js"
+}
