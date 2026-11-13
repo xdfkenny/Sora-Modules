@@ -1,4 +1,7 @@
-﻿const BASE_URL = 'https://hydrahd.ws';
+﻿// The site moved .ws -> .gd (the .ws host now 301s, and every redirect-followed
+// ajax/page call answers "File not found" — the ws referer-host check rejects
+// the .gd origin). Use the canonical .gd host directly.
+const BASE_URL = 'https://hydrahd.gd';
 const STREMIO_OPENSUBTITLES_URL = 'https://opensubtitles-v3.strem.io';
 const EMPIRE_COMMUNITY_URL = 'https://stremio-community-subtitles.top';
 const OS_REST_SEARCH_URL = 'https://rest.opensubtitles.org/search';
@@ -15,7 +18,7 @@ const SCS_TOKEN_XOR = [59,12,39,40,36,113,116,116,115,53,123,16,115,3,37,38,42,1
 
 // Load marker: visible in the app's logs, so we can tell which script version is
 // actually running after a re-add (raw CDN can lag behind the pushed commit).
-console.log('[HydraHD] module script loaded v2.4.0 (VapLayer baseline resolver)');
+console.log('[HydraHD] module script loaded v2.6.0 (OneSRC Hydra1 lane, VapLayer removed)');
 
 // The app's JavaScriptCore may predate ES2020: polyfill Promise.allSettled so a
 // single rejected worker can never abort the whole stream extraction.
@@ -131,7 +134,7 @@ const pageMemo = {};
 const CLOCK_URLS = [
     'https://www.google.com/generate_204',
     'https://cp.cloudflare.com/generate_204',
-    'https://hydrahd.ws/robots.txt'
+    'https://hydrahd.gd/robots.txt'
 ];
 function clockFetch(url) {
     try {
@@ -651,7 +654,7 @@ async function extractStreamUrl(url) {
         // api/embed/playlist x2, xpass x2).
         const sharedResolverPromises = {};
         function resolveShared(kind) {
-            const fns = { vixsrc: resolveVixsrcLink, moviesapi: resolveMoviesapiLink, xpass: resolveXpassLink };
+            const fns = { vixsrc: resolveVixsrcLink, moviesapi: resolveMoviesapiLink, xpass: resolveXpassLink, onesrc: resolveOnesrcLink };
             if (!sharedResolverPromises[kind]) {
                 sharedResolverPromises[kind] = fns[kind](ctxInfo);
             }
@@ -666,9 +669,24 @@ async function extractStreamUrl(url) {
                 if (host === 'moviesapi.to' || host === 'www.moviesapi.to') return resolveShared('moviesapi');
                 if (host === 'vixsrc.to' || host === 'www.vixsrc.to') return resolveShared('vixsrc');
                 if (host === 'play.xpass.top') return resolveShared('xpass');
+                // Hydra1: the 1src player page has no m3u8 in its HTML, but its
+                // ?action=sources API returns ready-resolved playlists — see
+                // resolveOnesrcLink. resolveShared may hand back a LIST there.
+                if (/(^|\.)1src\.org$/.test(host)) {
+                    return resolveShared('onesrc').then(function(r) {
+                        return Array.isArray(r) ? (r[0] || null) : r;
+                    }).catch(function() { return null; });
+                }
                 // Next.js SPA: verified there is no m3u8 anywhere in the raw
                 // HTML — the generic scan can only burn its full timeout here.
                 if (/videasy/i.test(host)) return Promise.resolve(null);
+                // 2026-11 server-picker additions verified m3u8-free in raw HTML
+                // too (1src player page, ythd embed, primesrc embed) — skip them
+                // like Videasy so the generic scan never burns its 5s budget.
+                if (/(^|\.)1src\.org$/.test(host) || /(^|\.)ythd\.org$/.test(host)
+                    || /(^|\.)embedmaster\.link$/.test(host) || /(^|\.)primesrc\.me$/.test(host)) {
+                    return Promise.resolve(null);
+                }
             } catch (e) { /* fall through to generic scan */ }
             return resolveGenericLink(link);
         }
@@ -781,6 +799,7 @@ async function extractStreamUrl(url) {
         const keylessWorker = (async function() {
             try {
                 const directHosts = [
+                    { name: 'Hydra1 (Original)', kind: 'onesrc', origin: 'https://www.1src.org/' },
                     { name: 'Hydra2 (Original)', kind: 'vixsrc', origin: 'https://vixsrc.to/' },
                     { name: 'Golf (Original)', kind: 'moviesapi', origin: 'https://moviesapi.to/' },
                     { name: 'Whiskey (Original)', kind: 'xpass', origin: 'https://play.xpass.top/' }
@@ -789,13 +808,24 @@ async function extractStreamUrl(url) {
                     if (timeLeft() < 4000) return;
                     try {
                         const resolved = await resolveShared(host.kind);
-                        if (resolved && resolved.streamUrl) {
-                            const pushedSt = pushStream(host.name, resolved.streamUrl, { 'Referer': host.origin, 'Origin': host.origin });
+                        if (!resolved) return;
+                        // OneSRC hands back a LIST of already-resolved sources
+                        // (one per provider); the other resolvers return one
+                        // object. Normalize and push every usable entry.
+                        const entries = Array.isArray(resolved) ? resolved : [resolved];
+                        for (let i = 0; i < entries.length && streams.length < 8; i++) {
+                            const r = entries[i];
+                            if (!r || !r.streamUrl) continue;
+                            const nm = host.name + (i ? ' #' + (i + 1) : '');
+                            const pushedSt = pushStream(nm, r.streamUrl, { 'Referer': host.origin, 'Origin': host.origin });
                             // Resolver already downloaded the master for language
                             // discovery — hand the text to the probe so it does
                             // not re-fetch the same playlist.
                             if (pushedSt && resolved.playlistText) pushedSt.playlistText = resolved.playlistText;
-                            pushLanguageVariants(pushedSt, resolved.extraLangs);
+                            pushLanguageVariants(pushedSt, r.extraLangs || resolved.extraLangs);
+                            // Estimate class from the source label so the entry
+                            // still ranks when the probe runs out of time.
+                            if (pushedSt && r.estCls) pushedSt._estCls = r.estCls;
                         }
                     } catch (e) { /* skip this host */ }
                 }));
@@ -835,24 +865,11 @@ async function extractStreamUrl(url) {
                 console.error('[HydraHD] Videasy worker error:', e && e.message ? e.message : e);
             }
         })();
-        // Worker: VapLayer baseline — the reliable floor. If the site's own
-        // servers AND the mirror tier both fail, this is what still plays.
-        // Ids only; launches immediately with the rest.
-        const vaplayerWorker = (async function() {
-            try {
-                if (timeLeft() < 6000) return;
-                const found = await resolveVaplayerLink(ctxInfo);
-                if (found) {
-                    for (const s of found) {
-                        if (streams.length >= 10) break;
-                        const pushedSt = pushStream(s.label, s.url, s.headers);
-                        if (pushedSt && s.estCls) pushedSt._estCls = s.estCls;
-                    }
-                }
-            } catch (e) {
-                console.error('[HydraHD] VapLayer worker error:', e && e.message ? e.message : e);
-            }
-        })();
+        // VapLayer baseline worker REMOVED (2026-11): its playlist CDN
+        // (onlinecoursecreator.site) now answers 401 Authorization Required under
+        // every referer scheme, and the streamdata.vaplayer.ru API itself errors
+        // ("db error"). The 401 URLs used to land as streams[0] and poison the
+        // whole series result — the VixSrc keyless lane is the real floor now.
         // Shared mirror helper: pushes the resolved stream plus any extra
         // mirrors the resolver returned (VidSrc hands back up to 3).
         async function addMirror(title, origin, resolver) {
@@ -974,7 +991,7 @@ async function extractStreamUrl(url) {
         function isKnownHostLink(link) {
             let h = '';
             try { h = new URL(link).hostname; } catch (e) { h = ''; }
-            return /(^|\.)(moviesapi\.to|vixsrc\.to|play\.xpass\.top)$/i.test(h);
+            return /(^|\.)(moviesapi\.to|vixsrc\.to|play\.xpass\.top|1src\.org)$/i.test(h);
         }
         async function resolveEntry(entry) {
             if (timeLeft() < 4000) return;
@@ -1023,7 +1040,7 @@ async function extractStreamUrl(url) {
         // Each settle point is soft-clocked: on bridges that leave requests
         // pending forever (Shirox + blocked host) the ping clock wins the race
         // after a few seconds instead of freezing extraction entirely.
-        await softRace(Promise.allSettled([serverWorker, keylessWorker, mirrorWorker, videasyWorker, vaplayerWorker]), 12000);
+        await softRace(Promise.allSettled([serverWorker, keylessWorker, mirrorWorker, videasyWorker]), 12000);
         // Settle whatever probes are still in flight — most already finished,
         // overlapped inside the worker window (pipelined from pushStream).
         await softRace(Promise.allSettled(probePromises), 5000);
@@ -1511,50 +1528,57 @@ async function resolveXpassLink(ctx) {
 // the site's own servers AND the mirrors all fail, VapLayer still yields a
 // playable stream. The API demands its own client's Referer/Origin — sending
 // hydrahd's referer gets an empty shell back.
-const VAPLAYER_API = 'https://streamdata.vaplayer.ru/api.php';
-const VAPLAYER_ORIGIN = 'https://nextgencloudfabric.com';
-async function resolveVaplayerLink(ctx) {
-    if (!ctx || !ctx.tmdbId) return null;
+// VapLayer API constants removed — upstream dead (playlist CDN 401s, API "db error").
+// resolveVaplayerLink REMOVED (2026-11): upstream dead (see the note next to
+// the removed worker in extractStreamUrl).
+
+// ---- Hydra1 / OneSRC aggregator (www.1src.org) ---------------------------
+// The site's "Hydra1 (Original)" server button is a thin shell over
+// www.1src.org/players/tvplayer.php, whose `?action=sources&provider=all`
+// endpoint returns READY-RESOLVED JSON master playlists aggregated from
+// xpass/febbox/7reels/cineruv/nekowatch proxies — no token scheme, no
+// decryption. Playlists probe 200 with a plain www.1src.org Referer.
+// Movies are NOT covered: movieplayer.php is an obfuscated page with no
+// equivalent JSON endpoint (verified 2026-11, movie 122655 → "bad provider").
+const ONESRC_ORIGIN = 'https://www.1src.org';
+async function resolveOnesrcLink(ctx) {
+    if (!ctx || !ctx.tmdbId || ctx.isMovie) return null;
     try {
-        let apiUrl = VAPLAYER_API + '?tmdb=' + encodeURIComponent(String(ctx.tmdbId))
-            + '&type=' + (ctx.isMovie ? 'movie' : 'tv');
-        if (!ctx.isMovie) {
-            apiUrl += '&season=' + encodeURIComponent(String(ctx.season || 1))
-                + '&episode=' + encodeURIComponent(String(ctx.episode || 1));
-        }
+        const apiUrl = ONESRC_ORIGIN + '/players/tvplayer.php?action=sources&provider=all'
+            + '&tmdb=' + encodeURIComponent(String(ctx.tmdbId))
+            + '&s=' + encodeURIComponent(String(ctx.season || 1))
+            + '&e=' + encodeURIComponent(String(ctx.episode || 1));
         const r = await soraFetchTimed(apiUrl, {
-            headers: {
-                'Referer': VAPLAYER_ORIGIN + '/',
-                'Origin': VAPLAYER_ORIGIN,
-                'Accept': 'application/json'
-            }
-        }, 12000);
+            headers: { 'Referer': ONESRC_ORIGIN + '/', 'Accept': 'application/json' }
+        }, 10000);
         if (!r) return null;
         const data = await r.json().catch(function() { return null; });
-        if (!data || String(data.status_code || '') !== '200' || !data.data) return null;
-        const urls = Array.isArray(data.data.stream_urls) ? data.data.stream_urls : [];
-        if (!urls.length) return null;
-        // file_name carries the encode quality ("1080p HULU WEB-DL ..."); the
-        // pipelined probe re-measures from the master playlist when it reaches
-        // it. _estCls labels the stream even if the probe times out.
-        const q = (String(data.data.file_name || '').match(/(\d{3,4}p)\b/i) || [])[1] || '';
-        const estCls = q ? q.toLowerCase() : '';
-        const headers = { 'Referer': VAPLAYER_ORIGIN + '/', 'Origin': VAPLAYER_ORIGIN };
-        const found = urls.filter(function(u) { return /^https?:\/\/.+\.m3u8/i.test(u); })
-            .slice(0, 3)
-            .map(function(u, i) {
-                return {
-                    label: 'VapLayer' + (q ? ' ' + q : '') + ' (Baseline)' + (i ? ' #' + (i + 1) : ''),
-                    url: u,
-                    headers: headers,
-                    estCls: estCls
-                };
+        const sources = Array.isArray(data && data.sources) ? data.sources : [];
+        const headers = { 'Referer': ONESRC_ORIGIN + '/' };
+        const seenKeys = {};
+        const found = [];
+        for (let i = 0; i < sources.length && found.length < 5; i++) {
+            const s = sources[i];
+            const file = s && s.file ? String(s.file) : '';
+            if (!/^https?:\/\/.+\.m3u8/i.test(file)) continue;
+            const key = file.split('?')[0];
+            if (seenKeys[key]) continue;
+            seenKeys[key] = true;
+            const prov = String((s && s.provider) || '').trim();
+            const lab = String((s && s.label) || '').trim();
+            const qm = lab.match(/(\d{3,4})p/i);
+            found.push({
+                label: 'Hydra1' + (prov ? ' • ' + prov : '') + (lab ? ' • ' + lab : ''),
+                streamUrl: file,
+                headers: headers,
+                estCls: qm ? qm[1] + 'p' : ''
             });
+        }
         if (!found.length) return null;
-        console.log('[HydraHD] VapLayer baseline streams=' + found.length + ' q=' + (q || '?'));
+        console.log('[HydraHD] OneSRC sources=' + found.length);
         return found;
     } catch (e) {
-        console.error('[HydraHD] VapLayer error:', e && e.message ? e.message : e);
+        console.error('[HydraHD] OneSRC error:', e && e.message ? e.message : e);
         return null;
     }
 }

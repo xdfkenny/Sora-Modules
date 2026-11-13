@@ -144,10 +144,51 @@ async function extractChapters(url) {
     }
 }
 
+// novelfire.net intermittently 302s chapter pages to readnovel.site, which serves
+// a ~2.3KB JS "Loading..." page that JS-redirects to novelphoenix.com. Follow the
+// chain (up to 3 hops) until we land on a page with real content markup.
+function unescapeJsUrl(raw) {
+    return raw.replace(/\\+/g, '').trim();
+}
+
+function extractRedirectTarget(htmlText) {
+    // meta http-equiv="refresh" content="0;url='https://...'"
+    const metaMatch = htmlText.match(/http-equiv=["']?refresh["']?[^>]*url=['"]([^'"]+)['"]/i);
+    if (metaMatch) return unescapeJsUrl(metaMatch[1]);
+    // window.location.href = "https:\/\/..."
+    const jsMatch = htmlText.match(/window\.location\.href\s*=\s*["']([^"']+)["']/i);
+    if (jsMatch) return unescapeJsUrl(jsMatch[1]);
+    // <title>Redirecting to https://...</title> / <a href="https://...">
+    const titleMatch = htmlText.match(/Redirecting to (https?:\/\/[^\s'"<>]+)/i);
+    if (titleMatch) return titleMatch[1];
+    return null;
+}
+
+function hasRealContent(htmlText) {
+    return /<div id="content"[^>]*>/i.test(htmlText) ||
+           /<h3 class="chapter-title"/i.test(htmlText) ||
+           /<meta property="og:title"[^>]*chapter/i.test(htmlText);
+}
+
 async function extractText(url) {
     try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
+        let htmlText = '';
+        let currentUrl = url;
+        for (let hop = 0; hop < 4; hop++) {
+            const response = await soraFetch(currentUrl);
+            if (!response) throw new Error('Fetch returned null');
+            htmlText = await response.text();
+            if (hasRealContent(htmlText)) break;
+            const next = extractRedirectTarget(htmlText);
+            if (!next) break;
+            currentUrl = next;
+        }
+        // Known final home: novelphoenix.com mirrors the /book/<slug> → /novel/<slug> layout.
+        if (!hasRealContent(htmlText) && /novelfire\.net/.test(currentUrl)) {
+            currentUrl = currentUrl.replace('novelfire.net/book/', 'novelphoenix.com/novel/');
+            const response = await soraFetch(currentUrl);
+            if (response) htmlText = await response.text();
+        }
 
         // --- Capture entire #content block ---
         const contentMatch = htmlText.match(/<div id="content"[^>]*>([\s\S]*)<\/div>/i);

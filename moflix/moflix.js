@@ -1,122 +1,75 @@
-/** Sora Module Template
- * This template is designed to help you create a module for Sora.
- * It includes functions for searching, extracting details, episodes, and stream URLs.
- * You can modify these functions to suit your needs.
- * 
- * For more information, visit the Sora documentation at https://sora.jm26.net/docs
+/** Sora Module: Moflix (German movies/series)
+ * Rebuilt on the official replacement domain moflix-stream.top
+ * (moflix-stream.xyz is now fully behind a Cloudflare JS challenge).
+ * The Laravel API on .top needs no cookies/XSRF tokens.
+ * v1.1.0
  */
 
+var MOFLIX_BASE = 'https://moflix-stream.top';
+
+function moflixHeaders(referer) {
+  return {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'de-DE,de;q=0.9,en;q=0.8',
+    'Referer': referer || (MOFLIX_BASE + '/'),
+    'X-Requested-With': 'XMLHttpRequest'
+  };
+}
+
+async function moflixGetJson(url, referer) {
+  const response = await fetchv2(url, moflixHeaders(referer), 'GET', null);
+  const text = response && response.text ? await response.text() : (response || '');
+  return JSON.parse(text);
+}
 
 /** searchResults
- * Searches for anime/shows/movies based on a keyword.
- * @param {string} keyword - The search keyword.
- * @returns {Promise<string>} - A JSON string of search results.
+ * @param {string} keyword
+ * @returns {Promise<string>} JSON [{title, image, href}]
  */
 async function searchResults(keyword) {
   try {
     const encodedKeyword = encodeURIComponent(keyword);
-
-    const cookieData = await getAllCookies();
-
-    const xsrf = cookieData['XSRF-TOKEN'];
-    const session = cookieData['moflix_stream_session'];
-
-    console.log('XSRF Token:' + xsrf);
-    console.log('Session:' + session);
-
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-      'Referer': 'https://moflix-stream.xyz/',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-XSRF-TOKEN': xsrf,
-      'Cookie': `XSRF-TOKEN=${xsrf}; moflix_stream_session=${session}`
-    };
-
-    const response = await fetchv2(
-      `https://moflix-stream.xyz/api/v1/search/${encodedKeyword}?loader=searchAutocomplete`,
-      headers, "GET", null
-    );
-    sendLog('Response Status:' + response.status);
-
-    // if response contains cloudflare
-    if (response.status === 503) {
-      throw new Error('Cloudflare protection detected. Unable to fetch search results.');
-    }
-
-    const data = await response.json() || await JSON.parse(response);
-
+    const data = await moflixGetJson(MOFLIX_BASE + '/api/v1/search/' + encodedKeyword + '?loader=searchAutocomplete');
     let results = data.results || [];
-    // remove items with model_type not equal to "title"
-    results = results.filter(item => item.model_type === "title");
-
-
-
+    results = results.filter(item => item.model_type === 'title' || item.poster);
     const transformedResults = results.map(item => ({
       title: item.name,
       image: item.poster,
-      href: `https://moflix-stream.xyz/titles/${item.id}/${item.name}`
+      href: MOFLIX_BASE + '/titles/' + item.id + '/' + encodeURIComponent(String(item.name).replace(/\s+/g, '-').toLowerCase())
     }));
-
-    // console.log('Transformed Results:' + transformedResults);
-
     return JSON.stringify(transformedResults);
-
   } catch (error) {
-    console.log('Fetch error:' + error);
+    console.log('Moflix search error: ' + error);
     return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
   }
 }
 
-
 /** extractDetails
- * Extracts details of an anime from its page URL.
- * @param {string} url - The URL of the anime page.
- * @returns {Promise<string>} - A JSON string of the anime details.
+ * @param {string} url - title page url
+ * @returns {Promise<string>} JSON [{description, aliases, airdate}]
  */
 async function extractDetails(url) {
   try {
-    const match = url.match(/https:\/\/moflix-stream\.xyz\/titles\/(.+)\/(.+)/);
+    const match = url.match(/https:\/\/moflix-stream\.top\/titles\/([^\/]+)/);
+    if (!match) throw new Error('Invalid URL: ' + url);
     const encodedID = match[1];
-    console.log('Encoded ID:' + encodedID);
-
-    const cookieData = await getAllCookies();
-    const xsrf = cookieData['XSRF-TOKEN'];
-    const session = cookieData['moflix_stream_session'];
-
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-      'Referer': 'https://moflix-stream.xyz/',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-XSRF-TOKEN': xsrf,
-      'Cookie': `XSRF-TOKEN=${xsrf}; moflix_stream_session=${session}`
-    };
-
-    const response = await fetchv2(`https://moflix-stream.xyz/api/v1/titles/${encodedID}?loader=titlePage`, headers, "GET", null);
-    const data = await response.json() || await JSON.parse(response);
-
-
+    const data = await moflixGetJson(MOFLIX_BASE + '/api/v1/titles/' + encodedID + '?loader=titlePage');
     const info = data.title || {};
-
     const runtime = parseInt(info.runtime) || 0;
-    // convert to hh:mm format
     const hours = parseInt(runtime / 60, 10);
     const minutes = runtime % 60;
-    const formattedRuntime = `${hours}h ${minutes}m`;
-
-    const formattedDate = info.release_date ? info.release_date.split('T')[0] : 'Unknown';
-
+    const formattedRuntime = runtime > 0 ? hours + 'h ' + minutes + 'm' : 'Unknown';
+    const formattedDate = info.release_date ? String(info.release_date).split('T')[0] : 'Unknown';
+    const isSeries = info.is_series ? 'Series' : 'Movie';
     const transformedResults = [{
       description: info.description || 'No description available',
-      aliases: `Duration: ${formattedRuntime || 'Unknown'}`,
-      airdate: `Aired: ${formattedDate}`
+      aliases: 'Type: ' + isSeries + ' | Duration: ' + formattedRuntime,
+      airdate: 'Aired: ' + formattedDate
     }];
-
-
     return JSON.stringify(transformedResults);
   } catch (error) {
-    console.log('Details error:' + error);
+    console.log('Moflix details error: ' + error);
     return JSON.stringify([{
       description: 'Error loading description',
       aliases: 'Duration: Unknown',
@@ -125,396 +78,163 @@ async function extractDetails(url) {
   }
 }
 
-function fuzzysearch(needle, haystack) {
-  var hlen = haystack.length;
-  var nlen = needle.length;
-  if (nlen > hlen) {
-    return false;
-  }
-  if (nlen === hlen) {
-    return needle === haystack;
-  }
-  outer: for (var i = 0, j = 0; i < nlen; i++) {
-    var nch = needle.charCodeAt(i);
-    while (j < hlen) {
-      if (haystack.charCodeAt(j++) === nch) {
-        continue outer;
-      }
-    }
-    return false;
-  }
-  return true;
-}
-
-var uFuzzy = function () { "use strict"; const e = (e, t) => e > t ? 1 : t > e ? -1 : 0, t = 1 / 0, l = e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), n = "eexxaacctt", r = /\p{P}/gu, i = ["en", { numeric: !0, sensitivity: "base" }], s = (e, t, l) => e.replace("A-Z", t).replace("a-z", l), a = { unicode: !1, alpha: null, interSplit: "[^A-Za-z\\d']+", intraSplit: "[a-z][A-Z]", interBound: "[^A-Za-z\\d]", intraBound: "[A-Za-z]\\d|\\d[A-Za-z]|[a-z][A-Z]", interLft: 0, interRgt: 0, interChars: ".", interIns: t, intraChars: "[a-z\\d']", intraIns: null, intraContr: "'[a-z]{1,2}\\b", intraMode: 0, intraSlice: [1, t], intraSub: null, intraTrn: null, intraDel: null, intraFilt: () => !0, toUpper: e => e.toLocaleUpperCase(), toLower: e => e.toLocaleLowerCase(), compare: null, sort: (t, l, n, r = e) => { let { idx: i, chars: s, terms: a, interLft2: u, interLft1: g, start: f, intraIns: c, interIns: h, cases: o } = t; return i.map(((e, t) => t)).sort(((e, t) => s[t] - s[e] || c[e] - c[t] || a[t] + u[t] + .5 * g[t] - (a[e] + u[e] + .5 * g[e]) || h[e] - h[t] || f[e] - f[t] || o[t] - o[e] || r(l[i[e]], l[i[t]]))) } }, u = (e, l) => 0 == l ? "" : 1 == l ? e + "??" : l == t ? e + "*?" : e + `{0,${l}}?`, g = "(?:\\b|_)"; function f(t) { t = Object.assign({}, a, t); let { unicode: f, interLft: c, interRgt: o, intraMode: p, intraSlice: d, intraIns: m, intraSub: x, intraTrn: b, intraDel: R, intraContr: A, intraSplit: y, interSplit: I, intraBound: S, interBound: z, intraChars: E, toUpper: L, toLower: k, compare: C } = t; m ??= p, x ??= p, b ??= p, R ??= p, C ??= "undefined" == typeof Intl ? e : new Intl.Collator(...i).compare; let j = t.letters ?? t.alpha; if (null != j) { let e = L(j), t = k(j); I = s(I, e, t), y = s(y, e, t), z = s(z, e, t), S = s(S, e, t), E = s(E, e, t), A = s(A, e, t) } let Z = f ? "u" : ""; const $ = '".+?"', w = RegExp($, "gi" + Z), D = RegExp(`(?:\\s+|^)-(?:${E}+|${$})`, "gi" + Z); let { intraRules: T } = t; null == T && (T = e => { let t = a.intraSlice, l = 0, n = 0, r = 0, i = 0; if (/[^\d]/.test(e)) { let s = e.length; s > 4 ? (t = d, l = m, n = x, r = b, i = R) : 3 > s || (r = Math.min(b, 1), 4 == s && (l = Math.min(m, 1))) } return { intraSlice: t, intraIns: l, intraSub: n, intraTrn: r, intraDel: i } }); let B = !!y, M = RegExp(y, "g" + Z), U = RegExp(I, "g" + Z), F = RegExp("^" + I + "|" + I + "$", "g" + Z), O = RegExp(A, "gi" + Z); const v = (e, t = !1) => { let l = []; e = (e = e.replace(w, (e => (l.push(e), n)))).replace(F, ""), t || (e = k(e)), B && (e = e.replace(M, (e => e[0] + " " + e[1]))); let r = 0; return e.split(U).filter((e => "" != e)).map((e => e === n ? l[r++] : e)) }, G = /[^\d]+|\d+/g, N = (e, n = 0, r = !1) => { let i = v(e); if (0 == i.length) return []; let s, a = Array(i.length).fill(""); if (i = i.map(((e, t) => e.replace(O, (e => (a[t] = e, ""))))), 1 == p) s = i.map(((e, t) => { if ('"' === e[0]) return l(e.slice(1, -1)); let n = ""; for (let l of e.matchAll(G)) { let e = l[0], { intraSlice: r, intraIns: i, intraSub: s, intraTrn: g, intraDel: f } = T(e); if (i + s + g + f == 0) n += e + a[t]; else { let [l, c] = r, h = e.slice(0, l), o = e.slice(c), p = e.slice(l, c); 1 == i && 1 == h.length && h != p[0] && (h += "(?!" + h + ")"); let d = p.length, m = [e]; if (s) for (let e = 0; d > e; e++)m.push(h + p.slice(0, e) + E + p.slice(e + 1) + o); if (g) for (let e = 0; d - 1 > e; e++)p[e] != p[e + 1] && m.push(h + p.slice(0, e) + p[e + 1] + p[e] + p.slice(e + 2) + o); if (f) for (let e = 0; d > e; e++)m.push(h + p.slice(0, e + 1) + "?" + p.slice(e + 1) + o); if (i) { let e = u(E, 1); for (let t = 0; d > t; t++)m.push(h + p.slice(0, t) + e + p.slice(t) + o) } n += "(?:" + m.join("|") + ")" + a[t] } } return n })); else { let e = u(E, m); 2 == n && m > 0 && (e = ")(" + e + ")("), s = i.map(((t, n) => '"' === t[0] ? l(t.slice(1, -1)) : t.split("").map(((e, t, l) => (1 == m && 0 == t && l.length > 1 && e != l[t + 1] && (e += "(?!" + e + ")"), e))).join(e) + a[n])) } let f = 2 == c ? g : "", h = 2 == o ? g : "", d = h + u(t.interChars, t.interIns) + f; return n > 0 ? r ? s = f + "(" + s.join(")" + h + "|" + f + "(") + ")" + h : (s = "(" + s.join(")(" + d + ")(") + ")", s = "(.??" + f + ")" + s + "(" + h + ".*)") : (s = s.join(d), s = f + s + h), [RegExp(s, "i" + Z), i, a] }, P = (e, t, l) => { let [n] = N(t); if (null == n) return null; let r = []; if (null != l) for (let t = 0; l.length > t; t++) { let i = l[t]; n.test(e[i]) && r.push(i) } else for (let t = 0; e.length > t; t++)n.test(e[t]) && r.push(t); return r }; let Y = !!S, _ = RegExp(z, Z), q = RegExp(S, Z); const H = (e, l, n) => { let [r, i, s] = N(n, 1), a = v(n, !0), [u] = N(n, 2), g = i.length, f = Array(g), h = Array(g); for (let e = 0; g > e; e++) { let t = i[e], l = a[e], n = '"' == t[0] ? t.slice(1, -1) : t + s[e], r = '"' == l[0] ? l.slice(1, -1) : l + s[e]; f[e] = n, h[e] = r } let p = e.length, d = Array(p).fill(0), m = { idx: Array(p), start: d.slice(), chars: d.slice(), cases: d.slice(), terms: d.slice(), interIns: d.slice(), intraIns: d.slice(), interLft2: d.slice(), interRgt2: d.slice(), interLft1: d.slice(), interRgt1: d.slice(), ranges: Array(p) }, x = 1 == c || 1 == o, b = 0; for (let n = 0; e.length > n; n++) { let i = l[e[n]], s = i.match(r), a = s.index + s[1].length, p = a, d = !1, R = 0, A = 0, y = 0, I = 0, S = 0, z = 0, E = 0, L = 0, C = 0, j = []; for (let e = 0, l = 2; g > e; e++, l += 2) { let n = k(s[l]), r = f[e], u = r.length, m = n.length, b = n == r; if (s[l] == h[e] && E++, !b && s[l + 1].length >= u) { let t = k(s[l + 1]).indexOf(r); t > -1 && (j.push(p, m, t, u), p += J(s, l, t, u), n = r, m = u, b = !0, 0 == e && (a = p)) } if (x || b) { let t = p - 1, g = p + m, f = !1, h = !1; if (-1 == t || _.test(i[t])) b && R++, f = !0; else { if (2 == c) { d = !0; break } if (Y && q.test(i[t] + i[t + 1])) b && A++, f = !0; else if (1 == c) { let t = s[l + 1], g = p + m; if (t.length >= u) { let c, h = 0, o = !1, d = RegExp(r, "ig" + Z); for (; c = d.exec(t);) { h = c.index; let e = g + h, t = e - 1; if (-1 == t || _.test(i[t])) { R++, o = !0; break } if (q.test(i[t] + i[e])) { A++, o = !0; break } } o && (f = !0, j.push(p, m, h, u), p += J(s, l, h, u), n = r, m = u, b = !0, 0 == e && (a = p)) } if (!f) { d = !0; break } } } if (g == i.length || _.test(i[g])) b && y++, h = !0; else { if (2 == o) { d = !0; break } if (Y && q.test(i[g - 1] + i[g])) b && I++, h = !0; else if (1 == o) { d = !0; break } } b && (S += u, f && h && z++) } if (m > u && (C += m - u), e > 0 && (L += s[l - 1].length), !t.intraFilt(r, n, p)) { d = !0; break } g - 1 > e && (p += m + s[l + 1].length) } if (!d) { m.idx[b] = e[n], m.interLft2[b] = R, m.interLft1[b] = A, m.interRgt2[b] = y, m.interRgt1[b] = I, m.chars[b] = S, m.terms[b] = z, m.cases[b] = E, m.interIns[b] = L, m.intraIns[b] = C, m.start[b] = a; let t = i.match(u), l = t.index + t[1].length, r = j.length, s = r > 0 ? 0 : 1 / 0, g = r - 4; for (let e = 2; t.length > e;)if (s > g || j[s] != l) l += t[e].length, e++; else { let n = j[s + 1], r = j[s + 2], i = j[s + 3], a = e, u = ""; for (let e = 0; n > e; a++)u += t[a], e += t[a].length; t.splice(e, a - e, u), l += J(t, e, r, i), s += 4 } l = t.index + t[1].length; let f = m.ranges[b] = [], c = l, h = l; for (let e = 2; t.length > e; e++) { let n = t[e].length; l += n, e % 2 == 0 ? h = l : n > 0 && (f.push(c, h), c = h = l) } h > c && f.push(c, h), b++ } } if (e.length > b) for (let e in m) m[e] = m[e].slice(0, b); return m }, J = (e, t, l, n) => { let r = e[t] + e[t + 1].slice(0, l); return e[t - 1] += r, e[t] = e[t + 1].slice(l, l + n), e[t + 1] = e[t + 1].slice(l + n), r.length }; return { search: (...e) => ((e, n, i, s = 1e3, a) => { i = i ? !0 === i ? 5 : i : 0; let u = null, g = null, f = []; n = n.replace(D, (e => { let t = e.trim().slice(1); return t = '"' === t[0] ? l(t.slice(1, -1)) : t.replace(r, ""), "" != t && f.push(t), "" })); let c, o = v(n); if (f.length > 0) { if (c = RegExp(f.join("|"), "i" + Z), 0 == o.length) { let t = []; for (let l = 0; e.length > l; l++)c.test(e[l]) || t.push(l); return [t, null, null] } } else if (0 == o.length) return [null, null, null]; if (i > 0) { let t = v(n); if (t.length > 1) { let l = t.slice().sort(((e, t) => t.length - e.length)); for (let t = 0; l.length > t; t++) { if (0 == a?.length) return [[], null, null]; a = P(e, l[t], a) } if (t.length > i) return [a, null, null]; u = h(t).map((e => e.join(" "))), g = []; let n = new Set; for (let t = 0; u.length > t; t++)if (a.length > n.size) { let l = a.filter((e => !n.has(e))), r = P(e, u[t], l); for (let e = 0; r.length > e; e++)n.add(r[e]); g.push(r) } else g.push([]) } } null == u && (u = [n], g = [a?.length > 0 ? a : P(e, n)]); let p = null, d = null; if (f.length > 0 && (g = g.map((t => t.filter((t => !c.test(e[t])))))), s >= g.reduce(((e, t) => e + t.length), 0)) { p = {}, d = []; for (let l = 0; g.length > l; l++) { let n = g[l]; if (null == n || 0 == n.length) continue; let r = u[l], i = H(n, e, r), s = t.sort(i, e, r, C); if (l > 0) for (let e = 0; s.length > e; e++)s[e] += d.length; for (let e in i) p[e] = (p[e] ?? []).concat(i[e]); d = d.concat(s) } } return [[].concat(...g), p, d] })(...e), split: v, filter: P, info: H, sort: t.sort } } const c = (() => { let e = { A: "ÁÀÃÂÄĄĂÅ", a: "áàãâäąăå", E: "ÉÈÊËĖĚ", e: "éèêëęě", I: "ÍÌÎÏĮİ", i: "íìîïįı", O: "ÓÒÔÕÖ", o: "óòôõö", U: "ÚÙÛÜŪŲŮŰ", u: "úùûüūųůű", C: "ÇČĆ", c: "çčć", D: "Ď", d: "ď", G: "Ğ", g: "ğ", L: "Ł", l: "ł", N: "ÑŃŇ", n: "ñńň", S: "ŠŚȘŞ", s: "šśșş", T: "ŢȚŤ", t: "ţțť", Y: "Ý", y: "ý", Z: "ŻŹŽ", z: "żźž" }, t = {}, l = ""; for (let n in e) e[n].split("").forEach((e => { l += e, t[e] = n })); let n = RegExp(`[${l}]`, "g"), r = e => t[e]; return e => { if ("string" == typeof e) return e.replace(n, r); let t = Array(e.length); for (let l = 0; e.length > l; l++)t[l] = e[l].replace(n, r); return t } })(); function h(e) { let t, l, n = (e = e.slice()).length, r = [e.slice()], i = Array(n).fill(0), s = 1; for (; n > s;)s > i[s] ? (t = s % 2 && i[s], l = e[s], e[s] = e[t], e[t] = l, ++i[s], s = 1, r.push(e.slice())) : (i[s] = 0, ++s); return r } const o = (e, t) => t ? `<mark>${e}</mark>` : e, p = (e, t) => e + t; return f.latinize = c, f.permute = e => h([...Array(e.length).keys()]).sort(((e, t) => { for (let l = 0; e.length > l; l++)if (e[l] != t[l]) return e[l] - t[l]; return 0 })).map((t => t.map((t => e[t])))), f.highlight = function (e, t, l = o, n = "", r = p) { n = r(n, l(e.substring(0, t[0]), !1)) ?? n; for (let i = 0; t.length > i; i += 2)n = r(n, l(e.substring(t[i], t[i + 1]), !0)) ?? n, t.length - 3 > i && (n = r(n, l(e.substring(t[i + 1], t[i + 2]), !1)) ?? n); return r(n, l(e.substring(t[t.length - 1]), !1)) ?? n }, f }();
-
-async function fuzzyMatch(needle, haystack) {
-  needle = needle.toLowerCase().replace(/[\W_]+/g, '');
-
-  let uf = new uFuzzy({});
-  let idxs = uf.filter(haystack, needle);
-  if (idxs != null && idxs.length > 0) {
-    // sort/rank only when <= 1,000 items
-    let infoThresh = 1e3;
-
-    if (idxs.length <= infoThresh) {
-      let info = uf.info(idxs, haystack, needle);
-
-      // order is a double-indirection array (a re-order of the passed-in idxs)
-      // this allows corresponding info to be grabbed directly by idx, if needed
-      let order = uf.sort(info, haystack, needle);
-
-      // render post-filtered & ordered matches
-      for (let i = 0; i < order.length; i++) {
-        // using info.idx here instead of idxs because uf.info() may have
-        // further reduced the initial idxs based on prefix/suffix rules
-        console.log(haystack[info.idx[order[i]]]);
-      }
-    } else {
-      // render pre-filtered but unordered matches
-      for (let i = 0; i < idxs.length; i++) {
-        console.log(haystack[idxs[i]]);
-      }
-    }
-  }
-  return idxs.length > 0;
-}
-
-async function getTypeFromUrl(url) {
+function getTypeFromUrl(url) {
   try {
-    const match = url.match(/https:\/\/moflix-stream\.xyz\/titles\/(.+)\/(.+)/);
-    const encodedID = match[1];
-    const cookieData = await getAllCookies();
-    const xsrf = cookieData['XSRF-TOKEN'];
-    const session = cookieData['moflix_stream_session'];
-
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-      'Referer': 'https://moflix-stream.xyz/',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-XSRF-TOKEN': xsrf,
-      'Cookie': `XSRF-TOKEN=${xsrf}; moflix_stream_session=${session}`
-    };
-
-    const response = await fetchv2(`https://moflix-stream.xyz/api/v1/titles/${encodedID}?loader=titlePage`, headers, "GET", null);
-    const data = await response.json();
-    const type = data.title && (data.title.type || (data.title.is_series ? 'tv' : 'movie'));
-    console.log('getTypeFromUrl type:' + type);
-    return type;
+    const match = url.match(/https:\/\/moflix-stream\.top\/titles\/([^\/]+)/);
+    if (!match) return null;
+    return moflixGetJson(MOFLIX_BASE + '/api/v1/titles/' + match[1] + '?loader=titlePage')
+      .then(function (data) {
+        const info = data.title || {};
+        // NOTE: the API sometimes reports type "movie" even for series;
+        // is_series is authoritative.
+        return info.is_series ? 'tv' : 'movie';
+      });
   } catch (error) {
-    console.log('getTypeFromUrl error:' + error);
+    console.log('getTypeFromUrl error: ' + error);
   }
-  return null;
+  return Promise.resolve(null);
 }
 
 /** extractEpisodes
- * Extracts episodes of an anime from its page URL.
- * @author ibro - modified by Cufiy
- * @param {string} url - The URL of the anime page.
- * @returns {Promise<string>} - A JSON string of the anime episodes.
+ * @param {string} url
+ * @returns {Promise<string>} JSON [{href, number}]
  */
 async function extractEpisodes(url) {
   try {
     const type = await getTypeFromUrl(url);
-    console.log('Determined type:' + type);
-
-    const match = url.match(/https:\/\/moflix-stream\.xyz\/titles\/(.+)\/(.+)/);
+    const match = url.match(/https:\/\/moflix-stream\.top\/titles\/([^\/]+)/);
+    if (!match) throw new Error('Invalid URL: ' + url);
     const showId = match[1];
-    const name = match[2];
 
     if (type === 'movie') {
-      const movie = [
-        { href: url, number: 1, title: "Full Movie" }
-      ];
-
-      console.log(movie);
-      return JSON.stringify(movie);
+      return JSON.stringify([{ href: url, number: 1, title: 'Full Movie' }]);
     } else if (type === 'tv') {
-
-      const cookieData = await getAllCookies();
-      const xsrf = cookieData['XSRF-TOKEN'];
-      const session = cookieData['moflix_stream_session'];
-
-      const headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-        'Referer': 'https://moflix-stream.xyz/',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-XSRF-TOKEN': xsrf,
-        'Cookie': `XSRF-TOKEN=${xsrf}; moflix_stream_session=${session}`
-      };
-
-      let seasonCount = 1;
       const allEpisodes = [];
-
-      while (true) {
-        const response = await fetchv2(`https://moflix-stream.xyz/api/v1/titles/${showId}/seasons/${seasonCount}?loader=seasonPage&perPage=100`, headers, "GET", null);
-        const data = await response.json() || await JSON.parse(response);
-        const episodes = data.episodes?.data || [];
-
-        if (episodes.length === 0) {
-          break; // No more seasons
-        }
-
+      let seasonCount = 1;
+      while (seasonCount <= 50) {
+        const data = await moflixGetJson(MOFLIX_BASE + '/api/v1/titles/' + showId + '/seasons/' + seasonCount + '?loader=seasonPage&perPage=100');
+        const episodes = (data.episodes && data.episodes.data) || [];
+        if (episodes.length === 0) break;
         for (const episode of episodes) {
           const episodeNumber = parseInt(episode.episode_number) || 0;
-          const episodeTitle = episode.name || episode.title || `Episode ${episodeNumber}`;
-          // https://moflix-stream.xyz/titles/85333/jujutsu-kaisen/season/1/episode/1
-          const episodeUrl = `https://moflix-stream.xyz/titles/${showId}/${name}/season/${seasonCount}/episode/${episodeNumber}`;
-
+          const episodeTitle = episode.name || episode.title || ('Episode ' + episodeNumber);
           allEpisodes.push({
-            href: episodeUrl,
+            href: MOFLIX_BASE + '/titles/' + showId + '/watch/season/' + seasonCount + '/episode/' + episodeNumber,
             number: episodeNumber,
             title: episodeTitle
           });
         }
-
         seasonCount++;
       }
-
-      console.log(allEpisodes);
       return JSON.stringify(allEpisodes);
-    } else {
-      console.error('Unknown type for URL:' + url);
-      throw new Error("Invalid URL format");
     }
+    throw new Error('Unknown type for URL: ' + url);
   } catch (error) {
-    console.log('Fetch error in extractEpisodes: ' + error);
+    console.log('Moflix episodes error: ' + error);
     return JSON.stringify([]);
   }
 }
 
-
 /** extractStreamUrl
- * Extracts the stream URL of an anime episode from its page URL.
- * @param {string} url - The URL of the anime episode page.
- * @returns {Promise<string|null>} - The stream URL or null if not found.
+ * @param {string} url - movie or episode url
+ * @returns {Promise<string|null>} {streams:[{title, streamUrl}]}
  */
 async function extractStreamUrl(url) {
   try {
-    const match = url.match(/https:\/\/moflix-stream\.xyz\/titles\/([^\/]+)\/([^\/]+)(?:\/season\/(\d+)\/episode\/(\d+))?/);
+    const match = url.match(/https:\/\/moflix-stream\.top\/titles\/([^\/]+)(?:\/watch\/season\/(\d+)\/episode\/(\d+))?/);
     if (!match) {
-      console.error('Invalid moflix URL:' + url);
+      console.log('Invalid moflix URL: ' + url);
       return null;
     }
     const encodedID = match[1];
-    const name = match[2];
-    const seasonNum = match[3];
-    const episodeNum = match[4];
-    const type = (seasonNum && episodeNum) ? 'tv' : 'movie';
-    console.log('ID:' + encodedID, 'Name:' + name, 'Type:' + type);
-
-    const cookieData = await getAllCookies();
-    const xsrf = cookieData['XSRF-TOKEN'];
-    const session = cookieData['moflix_stream_session'];
-
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-      'Referer': 'https://moflix-stream.xyz/',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-XSRF-TOKEN': xsrf,
-      'Cookie': `XSRF-TOKEN=${xsrf}; moflix_stream_session=${session}`
-    };
+    const seasonNum = match[2];
+    const episodeNum = match[3];
+    const isTv = !!(seasonNum && episodeNum);
 
     let apiUrl;
-    if (type === 'tv') {
-      // TV episode
-      const seasonNumber = seasonNum;
-      const episodeNumber = episodeNum;
-      console.log('Season number:' + seasonNumber, 'Episode number:' + episodeNumber, 'for show ID:' + encodedID);
-      apiUrl = `https://moflix-stream.xyz/api/v1/titles/${encodedID}/seasons/${seasonNumber}/episodes/${episodeNumber}?loader=episodePage`;
+    if (isTv) {
+      apiUrl = MOFLIX_BASE + '/api/v1/titles/' + encodedID + '/seasons/' + seasonNum + '/episodes/' + episodeNum + '?loader=episodePage';
     } else {
-      // Movie
-      apiUrl = `https://moflix-stream.xyz/api/v1/titles/${encodedID}?loader=titlePage`;
+      apiUrl = MOFLIX_BASE + '/api/v1/titles/' + encodedID + '?loader=titlePage';
     }
-    console.log('API URL:' + apiUrl);
-
-    const response = await fetchv2(apiUrl, headers, "GET", null);
-    const data = await response.json() || await JSON.parse(response);
-
-    let mirrors = [];
-    if (type === 'movie') {
-      mirrors = data.title?.videos || [];
-    } else {
-      mirrors = data.episode?.videos || [];
-    }
-
+    const data = await moflixGetJson(apiUrl);
+    const mirrors = isTv ? ((data.episode && data.episode.videos) || []) : ((data.title && data.title.videos) || []);
     if (mirrors.length === 0) {
-      console.error('No video mirrors found for URL:' + url);
+      console.log('No mirrors for ' + url);
       return null;
     }
-    console.log('Found mirrors:' + mirrors);
-    /*
-    Found mirrors: [{"id":156053,"name":"Mirror 1","thumbnail":null,"src":"https://moflix-stream.day/e/PKN4OwnnvPnEDLj","type":"embed","quality":"1080p/stereo","title_id":85333,"season_num":1,"episode_num":1,"origin":"local","downvotes":0,"upvotes":0,"approved":true,"order":0,"created_at":"2024-02-13T20:48:19.000000Z","updated_at":"2024-02-13T20:48:19.000000Z","user_id":358,"language":"de","category":"full","episode_id":37163,"score":null,"model_type":"video"},{"id":155858,"name":"Mirror 2","thumbnail":null,"src":"https://moflix-stream.click/v/s6hidu0v7pz1","type":"embed","quality":"1080p/stereo","title_id":85333,"season_num":1,"episode_num":1,"origin":"local","downvotes":0,"upvotes":0,"approved":true,"order":0,"created_at":"2024-02-13T19:50:53.000000Z","updated_at":"2024-02-13T19:50:53.000000Z","user_id":358,"language":"de","category":"full","episode_id":37163,"score":null,"model_type":"video"}]
-    */
 
-    const providerMatch = {
-      'moflix-stream.click': 'packer-mirror1',
-      'doods.to': 'veev',
-      'streamtape.com': 'streamtape',
-      'mixdrop.co': 'mixdrop',
-    }
-    // You will need to get the stream Urls yourself 
-    // and put them in the providers object like this:
-    // providers = {
-    //   "https://vidmoly.to/embed-preghvoypr2m.html": "vidmoly",
-    //   "https://speedfiles.net/123456": "speedfiles",
-    //   "https://voe.sx/123456": "voe"
-    // };
-
-    let providers = {};
+    const providers = {};
     for (const mirror of mirrors) {
-      for (const key in providerMatch) {
-        if (mirror.src.includes(key)) {
-          providers[mirror.src] = providerMatch[key];
+      const src = mirror.src || '';
+      if (/frstream\.life|firestream\.to/i.test(src)) {
+        // FireStream embed: one-time token blob -> resolve API -> direct m3u8/mp4
+        const resolved = await extractFireStream(src);
+        for (const s of resolved) {
+          providers[s.streamUrl] = 'direct-' + s.title;
         }
+      } else if (/moflix-stream\.click/i.test(src)) {
+        providers[src] = 'packer-mirror1';
+      } else if (/streamtape/i.test(src)) {
+        providers[src] = 'streamtape';
       }
-    }
-    console.log('Providers to extract:' + providers);
-
-    let streams = [];
-    // Extract all available streams
-    try {
-      streams = await multiExtractor(providers);
-      let returnedStreams = {
-        streams: streams,
-      }
-
-      console.log("Multi extractor streams: " + JSON.stringify(returnedStreams));
-      return JSON.stringify(returnedStreams);
-    } catch (error) {
-      console.log("Multi extractor error:" + error);
-      return JSON.stringify([{ provider: "Error2", link: "" }]);
+      // rpmplay / upns / veev / anonstream / gupload mirrors are JS-only players
+      // that cannot be resolved with fetchv2 - skipped.
     }
 
+    const streams = await multiExtractor(providers);
+    return JSON.stringify({ streams: streams });
   } catch (error) {
-    console.log('Fetch error:' + error);
-    return null;
+    console.log('Moflix stream error: ' + error);
+    return JSON.stringify({ streams: [] });
   }
 }
 
-async function getAllCookies() {
+/** FireStream (frstream.life / firestream.to) resolver.
+ * Embed pages carry a <script id="token-blob"> one-time token; the player
+ * POSTs it to /api/videos/<slug>/resolve and receives signed m3u8/mp4 URLs.
+ */
+async function extractFireStream(embedUrl) {
+  const out = [];
   try {
-    const site = await soraFetch("https://moflix-stream.xyz/", { method: 'GET', headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' } });
+    const originMatch = embedUrl.match(/https?:\/\/[^\/]+/);
+    const slugMatch = embedUrl.match(/\/e\/([A-Za-z0-9_-]+)/);
+    if (!originMatch || !slugMatch) return out;
+    const origin = originMatch[0];
+    const slug = slugMatch[1];
 
-    // helper to read header values in plain JS environments where Headers.get may not exist
-    function headerValue(headers, name) {
-      if (!headers) return null;
-      const target = String(name).toLowerCase();
-
-      sendLog('Trying method 0 to get header (node-fetch)');
-      // 0) Node-Fetch: headers.get() -> single value
-      // try {
-      //   if (typeof headers.get === 'function') {
-      //     const value = headers.get(target);
-      //     if (value) return value;
-      //   }
-      // } catch (e) { /* ignore */ }
-
-      sendLog('Trying method 1 to get header');
-      // 1) Node/Fetch: headers.raw() -> object with arrays
-      try {
-        if (typeof headers.raw === 'function') {
-          const raw = headers.raw();
-          if (raw && raw[target]) return raw[target];
-        }
-      } catch (e) { /* ignore */ }
-
-      sendLog('Trying method 2 to get header');
-      // 2) Plain object (IncomingMessage.headers or simple map)
-    //   try{
-    //   if (typeof headers === 'object' && !Array.isArray(headers)) {
-    //     for (const k in headers) {
-    //       if (Object.prototype.hasOwnProperty.call(headers, k) && String(k).toLowerCase() === target) {
-    //         return headers[k];
-    //       }
-    //     }
-    //   }
-    // } catch (e) { /* ignore */ }
-
-      sendLog('Trying method 3 to get header');
-      // 3) Iterable of pairs (e.g., [ [name, value], ... ])
-      try {
-        if (typeof headers[Symbol.iterator] === 'function') {
-          for (const pair of headers) {
-            if (!pair) continue;
-            // array pair
-            if (Array.isArray(pair) && pair.length >= 2) {
-              if (String(pair[0]).toLowerCase() === target) return pair[1];
-            }
-            // object pair like { name, value }
-            if (pair.name && pair.value && String(pair.name).toLowerCase() === target) return pair.value;
-          }
-        }
-      } catch (e) { /* ignore */ }
-
-      sendLog('Trying method 4 to get header');
-      // 4) Fallback: try property access (some libs expose lowercase keys)
-      try {
-        if (headers[target]) return headers[target];
-      } catch (e) { }
-
-      return null;
+    const pageResponse = await fetchv2(embedUrl, {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+      'Referer': MOFLIX_BASE + '/'
+    }, 'GET', null);
+    const html = pageResponse && pageResponse.text ? await pageResponse.text() : (pageResponse || '');
+    const blobMatch = html.match(/<script id="token-blob"[^>]*>([^<]+)<\/script>/);
+    if (!blobMatch) {
+      console.log('FireStream: no token blob on ' + embedUrl);
+      return out;
     }
+    const blob = blobMatch[1].trim();
 
-    // Use helper to get set-cookie header(s)
-    const setCookieRaw = headerValue(site && site.headers ? site.headers : null, 'set-cookie') || '';
-
-    // Normalize to array of cookie strings
-    let cookieArray = [];
-    if (Array.isArray(setCookieRaw)) {
-      cookieArray = setCookieRaw.map(s => String(s).trim()).filter(Boolean);
-    } else if (typeof setCookieRaw === 'string' && setCookieRaw.length > 0) {
-      // Split on newlines or commas that precede a new cookie name (safe-split)
-      cookieArray = String(setCookieRaw).split(/[\n,] *(?=[A-Za-z0-9_\-]+=)/).map(s => s.trim()).filter(Boolean);
+    const resolveResponse = await fetchv2(origin + '/api/videos/' + slug + '/resolve', {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+      'Content-Type': 'application/json',
+      'Referer': embedUrl,
+      'Origin': origin
+    }, 'POST', JSON.stringify({ blob: blob }));
+    const text = resolveResponse && resolveResponse.text ? await resolveResponse.text() : (resolveResponse || '');
+    const data = JSON.parse(text);
+    if (data.signedVideoUrl) {
+      out.push({ title: 'FireStream HLS', streamUrl: data.signedVideoUrl });
     }
-
-    // console.log('Fetched cookies:' + cookieArray);
-
-    // Keep only the base name=value (before any attributes)
-    const baseCookies = cookieArray.map(c => c.split(';')[0].trim()).filter(Boolean);
-
-    // Filter: keep XSRF-TOKEN or cookies with very long values (original logic)
-    const filtered = baseCookies.filter(cookie => {
-      if (cookie.startsWith('XSRF-TOKEN=')) return true;
-      const parts = cookie.split('=');
-      const val = parts[1] || '';
-      return val.length > 100;
-    });
-
-    sendLog();
-
-    return {
-      Cookie: filtered.join('; '),
-      "XSRF-TOKEN": decodeURIComponent((filtered.find(c => c.startsWith('XSRF-TOKEN=')) || '').split('=')[1] || ''),
-      "moflix_stream_session": decodeURIComponent((filtered.find(c => c.startsWith('moflix_stream_session=')) || '').split('=')[1] || '')
-    };
+    if (data.signedVideoMp4Url) {
+      out.push({ title: 'FireStream MP4', streamUrl: data.signedVideoMp4Url });
+    }
+    console.log('FireStream resolved ' + out.length + ' streams for ' + embedUrl);
   } catch (error) {
-    console.error('Error fetching cookies: ' + error);
-    return [];
+    console.log('FireStream error: ' + error);
   }
+  return out;
 }
-
-async function sendLog(message, msg = null) {
-  // send http://192.168.2.130/sora-module/log.php?action=add
-  console.log(message, msg ? msg : "");
-  return;
-  const postMsg = message + (msg ? ' | ' + msg : '');
-  await soraFetch('http://192.168.2.130/sora-module/log.php?action=add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ message: postMsg })
-
-  }).catch(error => {
-    console.error('Error sending log: ' + error);
-  });
-}
-
-
 
 // ⚠️ DO NOT EDIT BELOW THIS LINE ⚠️
 // EDITING THIS FILE COULD BREAK THE UPDATER AND CAUSE ISSUES WITH THE EXTRACTOR

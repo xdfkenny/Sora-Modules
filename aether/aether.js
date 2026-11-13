@@ -245,7 +245,17 @@ async function extractStreamUrl(url) {
             if (!streamUrl || typeof streamUrl !== "string" || !streamUrl.startsWith("http")) return false;
             if (seenStreams.has(streamUrl)) { console.log(`[Aether][Player] ♻️ [${title}] flux en double, ignoré`); return false; }
             seenStreams.add(streamUrl);
-            streams.push({ title, streamUrl, headers: headers || { "Referer": `${SITE_URL}/`, "Origin": SITE_URL } });
+            // FIX v1.2.4 : les CDN de flux (ex: cdn.kaxate.fun) exigent un Referer
+            // égal à leur propre origine — l'ancien Referer aether.ist donnait 403.
+            let streamOrigin = SITE_URL;
+            try {
+                const proto = streamUrl.indexOf("://");
+                if (proto > 0) {
+                    const afterProto = streamUrl.indexOf("/", proto + 3);
+                    streamOrigin = afterProto > 0 ? streamUrl.substring(0, afterProto) : streamUrl;
+                }
+            } catch (e) {}
+            streams.push({ title, streamUrl, headers: headers || { "Referer": `${streamOrigin}/`, "Origin": streamOrigin } });
             console.log(`[Aether][Player] ✅ [${title}] flux ajouté : ${streamUrl.slice(0, 70)}...`);
             return true;
         }

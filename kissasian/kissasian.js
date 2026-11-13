@@ -2,7 +2,7 @@ const KISS_BASE = 'https://kissasian.ng';
 const KISS_WATCH = 'https://dramavideo.se/watch?v=';
 const KISS_PLAYER = 'https://player.dramavideo.se/';
 const KISS_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36';
-const KISS_BUILD = '2.0.0';
+const KISS_BUILD = '2.0.1';
 console.log('[KissAsian] module loaded v' + KISS_BUILD + ' (kissasian.ng)');
 
 /* MAIN FUNCTIONS */
@@ -150,7 +150,8 @@ async function extractStreamUrl(url) {
                             title: 'KissAsian HLS' + (servers.length > 1 ? ' (' + servers[j].sv + ')' : ''),
                             streamUrl: entry.file,
                             headers: {
-                                'Referer': 'https://dramavideo.se/',
+                                'Referer': KISS_PLAYER,
+                                'Origin': 'https://player.dramavideo.se',
                                 'User-Agent': KISS_UA
                             }
                         });
@@ -160,10 +161,35 @@ async function extractStreamUrl(url) {
                 }
             }
         }
+        // probe streams (tokenized master.txt upstreams are flaky): working ones first
+        if (streams.length > 1) {
+            const alive = [];
+            const dead = [];
+            for (let i = 0; i < streams.length; i++) {
+                if (await kissProbeStream(streams[i])) alive.push(streams[i]);
+                else dead.push(streams[i]);
+            }
+            if (alive.length > 0) return JSON.stringify({ streams: alive.concat(dead), subtitles: '' });
+        }
         return JSON.stringify({ streams: streams, subtitles: '' });
     } catch (e) {
         console.log('[KissAsian] stream error: ' + e);
         return JSON.stringify({ streams: [], subtitles: '' });
+    }
+}
+
+// Light GET (Range 0-2048) to check a stream URL is currently serving a playlist.
+async function kissProbeStream(stream) {
+    try {
+        const headers = {};
+        for (const k in (stream.headers || {})) headers[k] = stream.headers[k];
+        headers['Range'] = 'bytes=0-2048';
+        const res = await soraFetch(stream.streamUrl, { headers: headers });
+        if (!res) return false;
+        const status = res.status || 0;
+        return status >= 200 && status < 300;
+    } catch (e) {
+        return false;
     }
 }
 

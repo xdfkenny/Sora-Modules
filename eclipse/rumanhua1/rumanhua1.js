@@ -2,12 +2,20 @@
 // Eclipse (Soupy-dev/Eclipse, fork of cranci1/Luna) legacy-module
 // compatibility shim for rumanhua1.
 //
+// Rebuilt 2026-11-12 on the successor site rumanhua2.com
+// (rumanhua1.com hangs on TCP with no HTTP reply since ~2026-10).
+// The new site is a different codebase:
+//   search:   POST /s  body "k=<keyword>"  -> JSON {code,data:[{id,name,imgurl,remarks}]}
+//   detail:   GET  /<id>/                  -> og:* meta + first 20 chapters in .chaplist-box
+//   chapters: POST /morechapter body "id=<id>" -> JSON [{chapterid,chaptername}]
+//   images:   GET  /<id>/<chapterid>.html  -> <img data-src="https://p6.ecombdimg.com/...">
+//
 // Eclipse runs reader modules in a bare JSContext. What it provides:
 //   manga env: fetch(url, options) -> Promise<{status, headers, text(), json(), data}>
 //   novel env: fetch(url, headers) -> Promise<text>
 //              fetchv2(url, hdrs, method, body) -> Promise<{status, headers, body, text(), json()}>
-//   shared:    console.log, Promise, setTimeout, btoa/atob (novel env only)
-//   missing:   URL constructor, atob/btoa (manga env), console.error/warn/info/debug
+//   shared:    console.log, Promise
+//   missing:   URL constructor, atob/btoa, console.error/warn/info/debug
 //
 // This prelude fills those gaps so the module below runs unchanged in
 // BOTH the original app and Eclipse. Every shim is guarded — it only
@@ -18,8 +26,6 @@
           : (typeof self !== "undefined") ? self
           : this;
 
-    // atob / btoa — absent from Kanzen's manga JSContext; the novel env
-    // provides its own, so the guards leave those untouched.
     var B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     if (typeof g.atob !== "function") {
         g.atob = function (input) {
@@ -58,9 +64,7 @@
         };
     }
 
-    // URL — JSC has no WHATWG URL constructor. Covers what the modules
-    // need: absolute passthrough, protocol-relative, and same-base
-    // relative resolution against the second argument.
+    // URL — JSC has no WHATWG URL constructor.
     if (typeof g.URL !== "function") {
         function makeURL(full) {
             var url = {};
@@ -133,76 +137,169 @@
     }
 })();
 
-async function searchResults(keyword,page=0){ 
-  const headers = {
-    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "X-Requested-With": "XMLHttpRequest",
-  };
-  const postData = `k=${encodeURIComponent(keyword)}`;
+// NOTE: plain http on purpose — the CDN's TLS cert only covers rumanhua.com
+// (mismatch on rumanhua2.com breaks strict-TLS clients), and http serves the
+// same backend directly with no redirect (rumanhua.com https 301s here and
+// drops the POST body).
+var RUMANHUA_BASE = "http://rumanhua2.com";
 
-  const response = await fetch(`http://www.rumanhua1.com/s`, {
-    method: "POST",
-    headers: headers,
-    body: postData
-  });
-  const html = await response.text();
-  const results = [];
-  const regex = /<div class="col-auto">[\s\S]*?<a href="([^"]+)"[\s\S]*?<img[^>]*src="([^"]+)"[\s\S]*?<p class="e-title">([^<]+)<\/p>[\s\S]*?<p class="tip">([^<]+)<\/p>/g;
-  let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-          id: "http://www.rumanhua1.com" + match[1],
-          imageURL: match[2],
-          title: match[3]
+// soraFetch wrapper: prefer fetchv2 (Sora runtime), fall back to fetch
+// (Eclipse manga env). Normalizes the response to {status, text(), json()}.
+async function soraFetch(url, options) {
+    options = options || {};
+    var doFetch = (typeof fetchv2 === "function") ? fetchv2 : fetch;
+    var res = await doFetch(url, options.headers || {}, options.method || "GET", options.body || undefined);
+    if (res && typeof res.text !== "function") {
+        // Sora fetchv2 returns {status, headers, body} — wrap it.
+        var body = (res.body !== undefined) ? res.body : res;
+        var status = res.status || 200;
+        return {
+            status: status,
+            text: async function () { return (typeof body === "string") ? body : JSON.stringify(body); },
+            json: async function () {
+                var t = (typeof body === "string") ? body : JSON.stringify(body);
+                try { return JSON.parse(t); } catch (e) { return null; }
+            }
+        };
+    }
+    return res;
+}
+
+function tryParseJson(text) {
+    try { return JSON.parse(text); } catch (e) { return null; }
+}
+
+async function searchResults(keyword) {
+  try {
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "X-Requested-With": "XMLHttpRequest",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Referer": RUMANHUA_BASE + "/"
+    };
+    const postData = "k=" + encodeURIComponent(keyword);
+
+    const response = await soraFetch(RUMANHUA_BASE + "/s", {
+      method: "POST",
+      headers: headers,
+      body: postData
     });
+    const text = await response.text();
+    const json = tryParseJson(text);
+    const results = [];
+    if (json && json.code === "200" && Array.isArray(json.data)) {
+      for (let i = 0; i < json.data.length; i++) {
+        const it = json.data[i];
+        if (!it || !it.id) continue;
+        results.push({
+          id: RUMANHUA_BASE + "/" + it.id + "/",
+          imageURL: it.imgurl || "",
+          title: it.name || ""
+        });
+      }
+    }
+    console.log(JSON.stringify(results));
+    return results;
+  } catch (e) {
+    console.error("searchResults error: " + e);
+    return [];
   }
-  console.log(JSON.stringify(results));
-  return results;
 }
 
 async function extractDetails(url) {
-  function parseHtmlData(htmlContent) {
-    const tagsRegex = /<span>标\s+签：\s*<\/span>\s*([\s\S]*?)<span>状/;
-    const descRegex = /<p class="content">([\s\S]+?)<\/p>/;
-    const tagsMatch = htmlContent.match(tagsRegex);
-    const descMatch = htmlContent.match(descRegex);
+  try {
+    const response = await soraFetch(url);
+    const html = await response.text();
+    let description = "";
+    let title = "";
+    let cover = "";
+    let tags = [];
 
-    
-    const tags = [];
-    if (tagsMatch && tagsMatch[1].trim()) {
-        tagsMatch[1].split(/[,，、]/).forEach(tag => {
-            const t = tag.trim();
-            if (t) tags.push(t);
-        });
+    const ogDesc = html.match(/property="og:description"\s+content="([^"]*)"/) ||
+                   html.match(/<meta name="description" content="([^"]*)"/);
+    if (ogDesc) description = ogDesc[1].trim();
+    const ogTitle = html.match(/property="og:title"\s+content="([^"]*)"/);
+    if (ogTitle) title = ogTitle[1].trim();
+    const ogImage = html.match(/property="og:image"\s+content="([^"]*)"/);
+    if (ogImage) cover = ogImage[1].trim();
+    const kw = html.match(/<meta name="keywords" content="([^"]*)"/);
+    if (kw && kw[1].trim()) {
+      kw[1].split(/[,，、]/).forEach(function (t) {
+        const v = t.replace(/《|》|全部|章节|漫画|手机|免费|看|阅读|最新|手机/g, "").trim();
+        if (v && tags.indexOf(v) === -1) tags.push(v);
+      });
     }
-    
-    return {
-        description: descMatch ? descMatch[1].replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim() : "",
-        tags: tags
-    };
-  }
 
-  const response = await fetch(url);
-  const data = await response.text();
-  console.log(JSON.stringify(parseHtmlData(data)));
-  return parseHtmlData(data);
+    console.log(JSON.stringify({ description: description, title: title, cover: cover, tags: tags }));
+    return { description: description, title: title, cover: cover, tags: tags };
+  } catch (e) {
+    console.error("extractDetails error: " + e);
+    return { description: "", title: "", cover: "", tags: [] };
+  }
+}
+
+function chapterNumber(title) {
+  const m = String(title).match(/(\d+)\s*话/) || String(title).match(/第\s*(\d+)/) || String(title).match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : 0;
 }
 
 async function extractChapters(url) {
-  function parseHtmlData(htmlContent) {
-    const chapterRegex = /<a href="([^"]+)"><li>([^<]+)<\/li><\/a>/g;
+  try {
+    const seen = {};
     const chapters = [];
-    let match;
-    let index = 0;
 
-    while ((match = chapterRegex.exec(htmlContent)) !== null) {
-      chapters.push([
+    // Detail page embeds the newest ~20 chapters in .chaplist-box
+    const detailRes = await soraFetch(url);
+    const html = await detailRes.text();
+    const liRe = /<li><a href="(\/[^"\/]+\/[^"\/]+\.html)">([^<]+)<\/a><\/li>/g;
+    let m;
+    while ((m = liRe.exec(html)) !== null) {
+      const href = m[1];
+      if (seen[href]) continue;
+      seen[href] = true;
+      chapters.push({ href: href, title: m[2].trim() });
+    }
+
+    // Older chapters come from POST /morechapter?id=<mangaId>
+    const idM = String(url).match(/\/([^\/]+)\/?$/) || String(url).match(/\/([^\/]+)\/\??/);
+    const mangaId = idM ? idM[1] : null;
+    if (mangaId) {
+      const moreRes = await soraFetch(RUMANHUA_BASE + "/morechapter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "X-Requested-With": "XMLHttpRequest",
+          "Referer": url
+        },
+        body: "id=" + encodeURIComponent(mangaId)
+      });
+      const moreText = await moreRes.text();
+      const moreJson = tryParseJson(moreText);
+      if (moreJson && moreJson.code === "200" && Array.isArray(moreJson.data)) {
+        for (let i = 0; i < moreJson.data.length; i++) {
+          const c = moreJson.data[i];
+          if (!c || !c.chapterid) continue;
+          const href = "/" + mangaId + "/" + c.chapterid + ".html";
+          if (seen[href]) continue;
+          seen[href] = true;
+          chapters.push({ href: href, title: String(c.chaptername || "").trim() });
+        }
+      }
+    }
+
+    // Sort ascending by chapter number, then emit the Eclipse shape
+    chapters.sort(function (a, b) { return chapterNumber(a.title) - chapterNumber(b.title); });
+
+    const out = [];
+    let index = 0;
+    for (let i = 0; i < chapters.length; i++) {
+      out.push([
         String(index),
         [
           {
-            id: "http://rumanhua1.com" + match[1],
-            title: match[2].trim(),
-            chapter: index,
+            id: RUMANHUA_BASE + chapters[i].href,
+            title: chapters[i].title,
+            chapter: chapterNumber(chapters[i].title),
             scanlation_group: "Rumanhua"
           }
         ]
@@ -210,346 +307,33 @@ async function extractChapters(url) {
       index++;
     }
 
-    return {
-      en: chapters
-    };
+    const result = { en: out };
+    console.log(JSON.stringify({ chapterCount: out.length }));
+    return result;
+  } catch (e) {
+    console.error("extractChapters error: " + e);
+    return { en: [] };
   }
-
-  const response = await fetch(url);
-  const data = await response.text();
-  console.log(JSON.stringify(parseHtmlData(data)));
-  return parseHtmlData(data);
 }
 
-async function  extractImages(url) {
-  function parseHtmlData(htmlContent) {
-    const scriptRegex = /<script[^>]*type=['"]text\/javascript['"][^>]*>([\s\S]*?)<\/script>/g;
-    let obfuscatedScript = null;
-    let match;
-
-    while ((match = scriptRegex.exec(htmlContent)) !== null) {
-      const scriptText = match[1];
-      if (scriptText.includes("eval(function(p,a,c,k,e,d")) {
-        obfuscatedScript = scriptText;
-        break;
-      }
+async function extractImages(url) {
+  try {
+    const response = await soraFetch(url);
+    const html = await response.text();
+    const images = [];
+    // Reader pages embed every page as <img ... data-src="https://p6.ecombdimg.com/...">
+    const imgRe = /data-src="(https?:\/\/[^"]+(?:jpe?g|png|webp|gif)[^"]*)"/g;
+    let m;
+    while ((m = imgRe.exec(html)) !== null) {
+      const src = m[1];
+      // Skip UI placeholders loaded through the same attribute
+      if (src.indexOf("/static/images/") !== -1) continue;
+      if (images.indexOf(src) === -1) images.push(src);
     }
-
-    if (!obfuscatedScript) {
-      console.error('No obfuscated script found.');
-      return [];
-    }
-
-    const unpackedCode = unpack(obfuscatedScript);
-    const dataMatch = unpackedCode.match(/var\s+\w+\s*=\s*["']([\s\S]*?)["'];?/);
-    const encrypted = dataMatch ? dataMatch[1] : null;
-
-    if (encrypted) {
-      const decodedData = decode(encrypted);
-      console.log('Decoded Data:', JSON.stringify(decodedData));
-      return decodedData;
-    }
-
-    console.error('No encrypted data found.');
+    console.log(JSON.stringify({ imageCount: images.length }));
+    return images;
+  } catch (e) {
+    console.error("extractImages error: " + e);
     return [];
   }
-
-  const response = await fetchv2(url);
-  const data = await response.text();
-  const result = parseHtmlData(data);
-  console.log(JSON.stringify(result));
-  return result;
-}
-
-class Unbaser {
-  constructor(base) {
-    this.ALPHABET = {
-      62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-      95: "' !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
-    };
-    this.dictionary = {};
-    this.base = base;
-    if (36 < base && base < 62) {
-      this.ALPHABET[base] = this.ALPHABET[base] ||
-        this.ALPHABET[62].substr(0, base);
-    }
-    if (2 <= base && base <= 36) {
-      this.unbase = (value) => parseInt(value, base);
-    }
-    else {
-      try {
-        [...this.ALPHABET[base]].forEach((cipher, index) => {
-          this.dictionary[cipher] = index;
-        });
-      }
-      catch (er) {
-        throw Error("Unsupported base encoding.");
-      }
-      this.unbase = this._dictunbaser;
-    }
-  }
-  _dictunbaser(value) {
-    let ret = 0;
-    [...value].reverse().forEach((cipher, index) => {
-      ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-    });
-    return ret;
-  }
-}
-
-function detect(source) {
-  return source.replace(" ", "").startsWith("eval(function(p,a,c,k,e,");
-}
-
-function unpack(source) {
-  let { payload, symtab, radix, count } = _filterargs(source);
-  if (count != symtab.length) {
-    throw Error("Malformed p.a.c.k.e.r. symtab.");
-  }
-  let unbase;
-  try {
-    unbase = new Unbaser(radix);
-  }
-  catch (e) {
-    throw Error("Unknown p.a.c.k.e.r. encoding.");
-  }
-  function lookup(match) {
-    const word = match;
-    let word2;
-    if (radix == 1) {
-      word2 = symtab[parseInt(word)];
-    }
-    else {
-      word2 = symtab[unbase.unbase(word)];
-    }
-    return word2 || word;
-  }
-  source = payload.replace(/\b\w+\b/g, lookup);
-  return _replacestrings(source);
-  function _filterargs(source) {
-    const juicers = [
-      /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
-      /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
-    ];
-    for (const juicer of juicers) {
-      const args = juicer.exec(source);
-      if (args) {
-        let a = args;
-        if (a[2] == "[]") {
-        }
-        try {
-          return {
-            payload: a[1],
-            symtab: a[4].split("|"),
-            radix: parseInt(a[2]),
-            count: parseInt(a[3]),
-          };
-        }
-        catch (ValueError) {
-          throw Error("Corrupted p.a.c.k.e.r. data.");
-        }
-      }
-    }
-    throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
-  }
-  function _replacestrings(source) {
-    return source;
-  }
-}
-
-function decode(_0x4a8b2c) {
-  const _0x3f2d1a = [
-    "jsjiami.com.v6", "wpbDtsKEw51r", "csK+w5vDong=", "WlRcGsKl", "bcO/w7JNwq4=", "wo1dGcK5wrY=", "w4MywrYwwpM=", "wpE7GcKOwr8=", "w53CksKNw6Nhw6bCi8OJd8KbSj/DtsK4PMOUAkLCg8KYwowKwrROcMKjwowtRMK2BsKjS8Kjw4HDryFA", "UcKOw6PDtlXDgj7CgCoLwoDCsw==", "XMKJdsO3LA==", "w5vCm8O5KsOEw6rDthI6", "wqNww71YwqMEClXCsArDu0XDgjfCngg4VMK+w4Msw791wrPChMKiwq4eG8K1w6TDpQZcVsOcw6IMwoTDslbCjMKmw5rCtGkOwoJZw49qwqVVwr/DocOWA8OhZCPCpXjCssOSw7w=", "OcKRU8OGwqXCr8K3SsK0w7d8w5UkwpDCjy8=", "woA4T8O9bsO8wocfLHnDuCc=", "wqXCpcOwwroWwoVRAQkEw7Mj", "w7wQDzozwoAHS8K7bMKTw64=", "w5fDlcK3w5XCug==", "w55Ww5dqw4YhIXzCijPCjSvDrBHCsCgdY8KfwroQw4RFw4bCv8KXwrdeRsOtw6jDrgYUW8OXw70Bw4TDr0vCn8Oqwoo=", "w7bDo2YMccKxwrjDrG5IGgctwohXOsO+wpF9bMOSw7DDs17DlMKPAMKqw4I/w75kHMOoAGsfw54=", "RcKgw6fDjXs=", "w5HDnHXCjsODw7xE", "w4ocwqQDwpjCig==", "GMKybcOcw6zCpsOS", "MzNHd8KpTg==", "w5vDmnDCmcO6w4c=", "wpvDhcKEN8OVdsKt", "PcO7wq95woTChA==", "L8ObwrTCpzw=", "woXCpnYGVw==", "MUlpwrPCqg==", "Z3fDl8K0Jw==", "wqbDrsKGG8Ol", "wrMwLsKAwq0=", "woTDkw3DsH0=", "RlxcJsKt", "wrRYYcKrAg==", "wp13csK3HQ==", "wrTDssKaJ8O4", "Mn5OwrNXwoU=", "w7LDkhQA", "ZsK0ZcOlwps=", "wonClzp1", "w5BlSjgzwo9ZAsK6acOJw64=", "Xx4qBjDCvE3CkcOfc8OVw44=", "w6HCgEPCgcOYwoFwwp7Ch8KhQm0=", "w4vDnUPCnMO2", "ayp3ZMKuwoE4w4nDh3hlw4s=", "w5w5w40rwo8=", "cntvAiTClmTDk8OkVcOnw44=", "WMOOw6ZjwrkR", "VWhhOAM=", "W8KZw6LDvGLDgg==", "wovDv8KqH8Os", "PnTCtcKSw4HCu3BjwpPCvcOYw7Y=", "McOJwq7CshQ=", "woBxNcKbwq/Cu8O8A8KbbA==", "woLDisKSIcOI", "w4URwqsWwq3Clg==", "bjsjHBiHBIamlKzFSLi.rcom.v6=="
-  ];
-
-  (function (_0x2e4f18, _0x1c9d3e, _0x5a7b2f) {
-    const _0x3d8c1b = function (_0x4b2e5f, _0x2d1a3c, _0x1f8e4d, _0x3a9b2e, _0x5c1d4f, _0x2b3e1a) {
-      _0x2d1a3c = _0x2d1a3c >> 8;
-      _0x5c1d4f = "po";
-      const _0x4e2d1c = "shift", _0x1a3f2e = "push", _0x3c4b5d = "‮";
-      if (_0x2d1a3c < _0x4b2e5f) {
-        while (--_0x4b2e5f) {
-          _0x3a9b2e = _0x2e4f18[_0x4e2d1c]();
-          if (_0x2d1a3c === _0x4b2e5f && _0x3c4b5d === "‮" && _0x3c4b5d.length === 1) {
-            _0x2d1a3c = _0x3a9b2e;
-            _0x1f8e4d = _0x2e4f18[_0x5c1d4f + "p"]();
-          } else if (_0x2d1a3c && _0x1f8e4d.replace(/[bHBHBIlKzFSLr=]/g, "") === _0x2d1a3c) {
-            _0x2e4f18[_0x1a3f2e](_0x3a9b2e);
-          }
-        }
-        _0x2e4f18[_0x1a3f2e](_0x2e4f18[_0x4e2d1c]());
-      }
-      return 978102;
-    };
-    return _0x3d8c1b(++_0x1c9d3e, _0x5a7b2f) >> _0x1c9d3e ^ _0x5a7b2f;
-  })(_0x3f2d1a, 185, 47360);
-
-  const _0x5e1f2a = _0x3f2d1a.length ^ 185;
-
-  const _0x1d4c3b = function (_0x2a1e3f, _0x4c2d1e) {
-    _0x2a1e3f = ~~`0x${_0x2a1e3f.slice(1)}`;
-    let _0x3b4e2d = _0x3f2d1a[_0x2a1e3f];
-
-    if (_0x1d4c3b.BZQWxr === void 0) {
-      (function () {
-        const _0x5a2c1d = typeof window !== "undefined" ? window : typeof process === "object" && typeof require === "function" && typeof global === "object" ? global : this;
-        const _0x4b3e2c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        _0x5a2c1d.atob = function (_0x3e1d4f) {
-          const _0x2c4b3e = String(_0x3e1d4f).replace(/=+$/, "");
-          let _0x1c3d2e = "";
-          for (let _0x1f3e2d = 0, _0x4e2c1b, _0x3d1e4c, _0x2b4e1a = 0; _0x3d1e4c = _0x2c4b3e.charAt(_0x2b4e1a++); ~_0x3d1e4c && (_0x4e2c1b = _0x1f3e2d % 4 ? _0x4e2c1b * 64 + _0x3d1e4c : _0x3d1e4c, _0x1f3e2d++ % 4) ? _0x1c3d2e += String.fromCharCode(_0x4e2c1b >> (_0x1f3e2d * -2 & 6) & 255) : 0) {
-            _0x3d1e4c = _0x4b3e2c.indexOf(_0x3d1e4c);
-          }
-          return _0x1c3d2e;
-        };
-      })();
-
-      const _0x2e4d1c = function (_0x3a2e1d, _0x4b3d2c) {
-        const _0x1c2e3d = [];
-        let _0x5e2d1a = 0;
-        let _0x4a1e3b;
-        let _0x2d3c1e = "";
-        let _0x3e2b4d = "";
-        _0x3a2e1d = atob(_0x3a2e1d);
-        for (let _0x1d4e2c = 0, _0x2c1a3e = _0x3a2e1d.length; _0x1d4e2c < _0x2c1a3e; _0x1d4e2c++) {
-          _0x3e2b4d += "%" + ("00" + _0x3a2e1d.charCodeAt(_0x1d4e2c).toString(16)).slice(-2);
-        }
-        _0x3a2e1d = decodeURIComponent(_0x3e2b4d);
-        for (let _0x4e2d3c = 0; _0x4e2d3c < 256; _0x4e2d3c++) {
-          _0x1c2e3d[_0x4e2d3c] = _0x4e2d3c;
-        }
-        for (let _0x4e2d3c = 0; _0x4e2d3c < 256; _0x4e2d3c++) {
-          _0x5e2d1a = (_0x5e2d1a + _0x1c2e3d[_0x4e2d3c] + _0x4b3d2c.charCodeAt(_0x4e2d3c % _0x4b3d2c.length)) % 256;
-          _0x4a1e3b = _0x1c2e3d[_0x4e2d3c];
-          _0x1c2e3d[_0x4e2d3c] = _0x1c2e3d[_0x5e2d1a];
-          _0x1c2e3d[_0x5e2d1a] = _0x4a1e3b;
-        }
-        let _0x4e2d3c = 0;
-        _0x5e2d1a = 0;
-        for (let _0x2b1e4c = 0; _0x2b1e4c < _0x3a2e1d.length; _0x2b1e4c++) {
-          _0x4e2d3c = (_0x4e2d3c + 1) % 256;
-          _0x5e2d1a = (_0x5e2d1a + _0x1c2e3d[_0x4e2d3c]) % 256;
-          _0x4a1e3b = _0x1c2e3d[_0x4e2d3c];
-          _0x1c2e3d[_0x4e2d3c] = _0x1c2e3d[_0x5e2d1a];
-          _0x1c2e3d[_0x5e2d1a] = _0x4a1e3b;
-          _0x2d3c1e += String.fromCharCode(_0x3a2e1d.charCodeAt(_0x2b1e4c) ^ _0x1c2e3d[(_0x1c2e3d[_0x4e2d3c] + _0x1c2e3d[_0x5e2d1a]) % 256]);
-        }
-        return _0x2d3c1e;
-      };
-
-      _0x1d4c3b.RFtTHu = _0x2e4d1c;
-      _0x1d4c3b.KEpAmN = {};
-      _0x1d4c3b.BZQWxr = !0;
-    }
-
-    const _0x4e3d2c = _0x1d4c3b.KEpAmN[_0x2a1e3f];
-    if (_0x4e3d2c === void 0) {
-      if (_0x1d4c3b.CwFFPP === void 0) {
-        _0x1d4c3b.CwFFPP = !0;
-      }
-      _0x3b4e2d = _0x1d4c3b.RFtTHu(_0x3b4e2d, _0x4c2d1e);
-      _0x1d4c3b.KEpAmN[_0x2a1e3f] = _0x3b4e2d;
-    } else {
-      _0x3b4e2d = _0x4e3d2c;
-    }
-    return _0x3b4e2d;
-  };
-
-  const _0x3c2e4d = function (_0x4d3e2a, _0x2e1c4b) {
-    const _0x1e4c3d = { Qcdqx: _0x1d4c3b("\u202B7", "Aykh") };
-    const _0x4a2e1d = _0x2e1c4b[_0x1d4c3b("\u202E8", "K4F0")];
-    let _0x3e2d1c, _0x2c4e1a, _0x1d3e2b, _0x4e1c3d, _0x2a4e1c, _0x3d2e1a, _0x1c4e3b, _0x4e2d3a;
-    let _0x2e4c1d = 0, _0x3c1e2d = 0, _0x1d2e4c = "", _0x4e3c2d = [];
-
-    if (!_0x4d3e2a) return _0x4d3e2a;
-    _0x4d3e2a += "";
-
-    do {
-      _0x4e1c3d = _0x4a2e1d[_0x1d4c3b("\u202E9", "#YOq")](_0x4d3e2a[_0x1d4c3b("\u202Ea", "3DFV")](_0x2e4c1d++));
-      _0x2a4e1c = _0x4a2e1d[_0x1d4c3b("\u202Eb", "w2OY")](_0x4d3e2a[_0x1d4c3b("\u202Ec", "b&Qr")](_0x2e4c1d++));
-      _0x3d2e1a = _0x4a2e1d.indexOf(_0x4d3e2a[_0x1d4c3b("\u202Ed", "#YOq")](_0x2e4c1d++));
-      _0x1c4e3b = _0x4a2e1d[_0x1d4c3b("\u202Ee", "JxZa")](_0x4d3e2a[_0x1d4c3b("\u202Ef", "&T[E")](_0x2e4c1d++));
-      _0x4e2d3a = _0x2e1c4b.utMCl(_0x2e1c4b[_0x1d4c3b("\u202E10", "nbJx")](_0x2e1c4b[_0x1d4c3b("\u202E11", "Aykh")](_0x4e1c3d, 18) | _0x2e1c4b[_0x1d4c3b("\u202E12", "sL23")](_0x2a4e1c, 12), _0x2e1c4b.WqTyQ(_0x3d2e1a, 6)), _0x1c4e3b);
-      _0x3e2d1c = _0x2e1c4b[_0x1d4c3b("\u202E13", "TF]V")](_0x2e1c4b[_0x1d4c3b("\u202E14", "JxZa")](_0x4e2d3a, 16), 255);
-      _0x2c4e1a = _0x2e1c4b[_0x1d4c3b("\u202E15", "uikU")](_0x2e1c4b.TEfIH(_0x4e2d3a, 8), 255);
-      _0x1d3e2b = _0x2e1c4b[_0x1d4c3b("\u202E16", "zzoR")](_0x4e2d3a, 255);
-
-      if (_0x2e1c4b.zHmTm(_0x3d2e1a, 64)) {
-        _0x4e3c2d[_0x3c1e2d++] = String.fromCharCode(_0x3e2d1c);
-      } else if (_0x2e1c4b[_0x1d4c3b("\u202E1a", "JxZa")](_0x1c4e3b, 64)) {
-        _0x4e3c2d[_0x3c1e2d++] = String.fromCharCode(_0x3e2d1c, _0x2c4e1a);
-      } else {
-        _0x4e3c2d[_0x3c1e2d++] = String.fromCharCode(_0x3e2d1c, _0x2c4e1a, _0x1d3e2b);
-      }
-    } while (_0x2e1c4b.iDzLi(_0x2e4c1d, _0x4d3e2a[_0x1d4c3b("\u202E1b", "(WP^")]));
-
-    _0x1d2e4c = _0x4e3c2d[_0x1d4c3b("\u202E1c", "fYo#")]("");
-    return _0x1d2e4c;
-  };
-
-  const _0x2e1c4b = {
-    gzHdY: _0x1d4c3b("\u202B0", "&SK*"),
-    utMCl: function (_0x1a, _0x2b) { return _0x1a | _0x2b; },
-    vgqOC: function (_0x1c, _0x2d) { return _0x1c | _0x2d; },
-    QecxE: function (_0x1e, _0x2e) { return _0x1e << _0x2e; },
-    WqTyQ: function (_0x1f, _0x2f) { return _0x1f << _0x2f; },
-    AgFWF: function (_0x3a, _0x3b) { return _0x3a & _0x3b; },
-    TEfIH: function (_0x3c, _0x3d) { return _0x3c >> _0x3d; },
-    TAVIP: function (_0x3e, _0x3f) { return _0x3e & _0x3f; },
-    zHmTm: function (_0x4a, _0x4b) { return _0x4a == _0x4b; },
-    tDzsM: function (_0x4c, _0x4d) { return _0x4c === _0x4d; },
-    xLwmg: "nEEWq",
-    FYzuU: function (_0x4e, _0x4f) { return _0x4e == _0x4f; },
-    iDzLi: function (_0x5a, _0x5b) { return _0x5a < _0x5b; },
-    eTWDI: function (_0x5c, _0x5d) { return _0x5c(_0x5d); },
-    qWSBZ: _0x1d4c3b("\u202E1", "hNnh"),
-    QlgUw: _0x1d4c3b("\u202B2", "%m[D"),
-    hddam: "dmJmc2EyNTY=",
-    soRwM: _0x1d4c3b("\u202B3", "ems^"),
-    UJGLi: _0x1d4c3b("\u202B4", "P%H%"),
-    cNKXu: "ZHNvMTV0bG8=",
-    yTJMA: function (_0x5d, _0x5e) { return _0x5d % _0x5e; },
-    hukZk: function (_0x5f, _0x6a) { return _0x5f ^ _0x6a; },
-    PdtKZ: function (_0x6b, _0x6c) { return _0x6b !== _0x6c; },
-    hLzOE: _0x1d4c3b("\u202E5", "s#ic"),
-    nDMPZ: function (_0x6d, _0x6e) { return _0x6d + _0x6e; },
-    RmRio: function (_0x6f, _0x7a) { return _0x6f + _0x7a; },
-    jFsAJ: function (_0x7b, _0x7c) { return _0x7b + _0x7c; },
-    clqYT: _0x1d4c3b("\u202E6", "&SK*"),
-    SdgUu: function (_0x7d, _0x7e) { return _0x7d(_0x7e); }
-  };
-
-  const _0x4e2c3d = [
-    _0x1d4c3b("\u202B1f", "P%H%"),
-    _0x1d4c3b("\u202E20", "Eh%@"),
-    _0x2e1c4b.QlgUw,
-    _0x1d4c3b("\u202E21", "#YOq"),
-    _0x2e1c4b.hddam,
-    _0x2e1c4b[_0x1d4c3b("\u202E22", "#YOq")],
-    _0x1d4c3b("\u202B23", "]ZXp"),
-    _0x2e1c4b.UJGLi,
-    _0x2e1c4b[_0x1d4c3b("\u202E24", "db#q")],
-    _0x1d4c3b("\u202E25", "Eh%@")
-  ];
-
-  const _0x1a2e3d = _0x3c2e4d(_0x4a8b2c, _0x2e1c4b);
-
-  for (let _0x2c3e4d = 0; _0x2c3e4d < _0x4e2c3d.length; _0x2c3e4d++) {
-    try {
-      const _0x3d4e2c = _0x4e2c3d[_0x2c3e4d];
-      const _0x4e1c2d = _0x3c2e4d(_0x3d4e2c, _0x2e1c4b);
-      let _0x2e3c4d = "";
-
-      for (let _0x1c2e4d = 0; _0x1c2e4d < _0x1a2e3d.length; _0x1c2e4d++) {
-        const _0x3e2d4c = _0x1c2e4d % _0x4e1c2d.length;
-        _0x2e3c4d += String.fromCharCode(_0x1a2e3d.charCodeAt(_0x1c2e4d) ^ _0x4e1c2d.charCodeAt(_0x3e2d4c));
-      }
-
-      const _0x4c2e3d = _0x3c2e4d(_0x2e3c4d, _0x2e1c4b);
-      const _0x1e2c4d = JSON.parse(_0x4c2e3d);
-      return _0x1e2c4d;
-    } catch (_0x2d4e3c) { }
-  }
-
-  throw new Error('No candidate produced valid JSON.');
 }

@@ -108,15 +108,27 @@ async function extractEpisodes(url) {
         const results = [];
 
         for (const translatorBlock of Object.values(translators)) {
-            const seasons = translatorBlock.seasons || {};
-            for (const [seasonNum, episodesArr] of Object.entries(seasons)) {
-                for (const ep of episodesArr) {
-                    // Avoid duplicates
-                    if (!results.some(e => e.href === `${url}|${seasonNum}|${ep.num}`)) {
-                        results.push({
-                            href: `${url}|${seasonNum}|${ep.num}`,
-                            number: Number(ep.num)
-                        });
+            const seasons = translatorBlock.seasons || null;
+            if (seasons && typeof seasons === 'object' && Object.keys(seasons).length > 0) {
+                // Series: seasons is an object keyed by season number,
+                // each season value is an object keyed by episode number (upstream format change 2025)
+                for (const [seasonNum, episodesObj] of Object.entries(seasons)) {
+                    const epsArr = Array.isArray(episodesObj) ? episodesObj : Object.values(episodesObj || {});
+                    for (const ep of epsArr) {
+                        if (!results.some(e => e.href === `${url}|${seasonNum}|${ep.num}`)) {
+                            results.push({
+                                href: `${url}|${seasonNum}|${ep.num}`,
+                                number: Number(ep.num)
+                            });
+                        }
+                    }
+                }
+            } else {
+                // Movie: translator block itself holds the single episode's data
+                if (translatorBlock && translatorBlock.hls) {
+                    const href = `${url}|1|1`;
+                    if (!results.some(e => e.href === href)) {
+                        results.push({ href, number: 1 });
                     }
                 }
             }
@@ -164,12 +176,24 @@ async function extractStreamUrl(url) {
 
         for (const translatorKey of translatorKeys) {
             const translatorBlock = translators[translatorKey];
-            const seasons = translatorBlock.seasons || {};
-            const episodesArr = seasons[season];
-            if (!episodesArr) continue;
+            const seasons = translatorBlock.seasons || null;
+
+            // Build the list of episode objects for this translator:
+            // Series: seasons[season] is an object keyed by episode number (upstream format change 2025);
+            // Movie: the translator block itself is the episode object.
+            let episodeObjs = [];
+            if (seasons && typeof seasons === 'object' && Object.keys(seasons).length > 0) {
+                const seasonEntry = seasons[season] || seasons[String(Number(season))];
+                if (!seasonEntry) continue;
+                episodeObjs = Array.isArray(seasonEntry) ? seasonEntry : Object.values(seasonEntry);
+            } else if (translatorBlock && translatorBlock.hls) {
+                if (episode && episode !== '1') continue;
+                // Movie blocks have no "num" field — inject it so the episode filter below matches
+                episodeObjs = [Object.assign({}, translatorBlock, { num: '1' })];
+            }
 
             // Get all episodes for this season and translator
-            for (const episodeObj of episodesArr) {
+            for (const episodeObj of episodeObjs) {
                 // Only use hls.m3u8
                 if (episodeObj.hls !== "hls.m3u8" && !episodeObj.hls.endsWith(".m3u8")) continue;
 

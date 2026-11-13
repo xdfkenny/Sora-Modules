@@ -16,19 +16,19 @@
     {
       "id": "hydrahd",
       "name": "HydraHD",
-      "iconUrl": "https://hydrahd.ws/fav-192.png",
+      "iconUrl": "https://hydrahd.gd/fav-192.png",
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hydrahd/hydrahd.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-05",
+      "updated": "2026-11-13",
       "needs_review": true,
-      "note": "2026-10-15 audit: v2.4.0 VapLayer baseline worker emits streams again (futurefocusedentrepreneurs.site player payloads); vidsrc.hair still DNS-dead, videasy API still changed, xpass/moviesapi empty. Playability of the VapLayer/FlixCloud payloads in native players NOT yet verified — keeping needs_review pending that check."
+      "note": "2026-11-13 v2.6.0: VapLayer lane removed (playlist CDN 401s, API dead) and the dangling vaplayerWorker reference that aborted extraction was dropped; new Hydra1 lane resolves www.1src.org tvplayer.php?action=sources (aggregated xpass/febbox/nekowatch playlists, TV only — movie player is obfuscated). One Piece S1E1 5 streams, Breaking Bad S1E1 7 streams (VixSrc + Hydra1 + Italian variant), playlists probed 200/EXTM3U with 1src Referer; vidsrc.hair/vidfast.vc/Videasy still dead."
     },
     {
       "id": "hydrahd-shirox",
       "name": "HydraHD (Shirox)",
-      "iconUrl": "https://hydrahd.ws/fav-192.png",
+      "iconUrl": "https://hydrahd.gd/fav-192.png",
       "category": "movies/shows/anime",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hydrahd/hydrahd-shirox.json",
@@ -123,7 +123,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/AllManga-DUB/allmanga-dub.json",
       "sampleQuery": "one piece",
-      "updated": null
+      "updated": "2026-11-13"
     },
     {
       "id": "allmangasub",
@@ -176,7 +176,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/flixlatam/flixlatam.json",
       "sampleQuery": "one piece",
-      "updated": "2026-11-10"
+      "updated": "2026-11-13"
     },
     {
       "id": "allmanga-shirox",
@@ -186,7 +186,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-shirox/allmanga-shirox.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-21",
+      "updated": "2026-11-13",
       "note": "Shirox build of the AllAnime module (fetchv2 impersonate:chrome). 2026-10-22: keygen rotated to build 181 (same constants as the classic build); extractStreamUrl returns sub+dub sources again. Use the classic AllAnime module on Sora/Luna; this build for Shirox.",
       "needs_review": true
     },
@@ -210,8 +210,8 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/allmanga-novels-shirox/allmanga-novels-shirox.json",
       "sampleQuery": "one punch man",
-      "updated": "2026-10-21",
-      "note": "Shirox build of the AllManga manga module (kanzen contract). 2026-10-22: keygen rotated to build 181 (same constants as the classic manga build) — the chapterPages k9 image API works again. Image CDN still 403s without a Referer (documented Sora-ReaderView app-side limitation). See the allmanga-novels entry.",
+      "updated": "2026-11-13",
+      "note": "Shirox build of the AllManga manga module (kanzen contract). 2026-11-13: keygen rotated to build 189 (site rebuilt on SvelteKit; constants decoded from chunk DmW2_MRj.js — boot message now epoch|lane|group|host|buildId joined by |, prefix iGmNgPGdi:, new mask blocks, salt 175/202 frag 129/61). Boot token verified byte-identical to mkissa.to's own live x-aa-boot; search/details/chapters verified live. chapterPages endpoint currently answers NEED_CAPTCHA to non-browser clients (even with no aaReq) — a server-side client-trust gate; may pass from the app runtime, else needs a real-browser verification. Image CDN still 403s without a Referer (documented Sora-ReaderView app-side limitation).",
       "needs_review": true
     },
     {
@@ -223,7 +223,7 @@
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/comix/comix.json",
       "sampleQuery": "one piece",
       "needs_review": true,
-      "updated": "2026-09-25",
+      "updated": "2026-11-13",
       "note": "2026-10-20 re-check: comix.to AND comix.ws both answer 403 'Just a moment' (CF managed challenge) to the api/v1 search from this egress — no-results, so the harness can't reach past the wall. The 2026-10-05 revival (search → details → 1128 chapters → 14-page images) was verified in a real browser context where the CF challenge clears; a blocked run is IP/TLS reputation, not module breakage. Clears needs_review when a browser-context re-verify passes."
     },
     {
@@ -247,7 +247,7 @@
       "sampleQuery": "wonder coach",
       "needs_review": true,
       "note": "2026-11-10 rebuild v2.0.0: ported to live mirror kissasian.ng (WordPress ?s= search, Madara episodes, dramavideo.se player chain with AES-128-CBC decrypt). Verified end-to-end: search → 5 eps → decrypted HLS HTTP 200.",
-      "updated": "2026-11-10"
+      "updated": "2026-11-13"
     },
     {
       "id": "aniliberty",
@@ -317,7 +317,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/lncrawler/lncrawler.json",
       "sampleQuery": "solo leveling",
-      "updated": "2026-10-20",
+      "updated": "2026-11-13",
       "discontinued": true,
       "note": "upstream lncrawler.monster unreachable - connection timeout from both site and API hosts (checked 2026-10)"
     },
@@ -412,8 +412,8 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/StreamingUnity/StreamingUnity.json",
       "sampleQuery": "one piece",
-      "note": "Revived 2026-10-20: streamingcommunityz.us/.jetzt/.plus are NXDOMAIN; the site now lives on streamingcommunityz.build (same vixcloud.cc master-playlist backend, `h=1` unlock param). Removed a load-time debug fetch, hardened null-response paths; full pipeline + playlist verified 200 without Referer.",
-      "updated": "2026-11-10"
+      "note": "2026-11-12: vixcloud now rejects playlist requests that mismatch the video's `h=1` flag — some videos 403 with `&h=1`, others without it (per-video, not a TLS/cookie wall). extractStreamUrl now probes both token/expires variants with fetchv2 and returns the one verified to start with #EXTM3U; master + variant playlists verified 200 for 4 keywords.",
+      "updated": "2026-11-13"
     },
     {
       "id": "aether",
@@ -423,7 +423,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aether/aether.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-11-13"
     },
     {
       "id": "airflix",
@@ -433,7 +433,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/airflix/airflix.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "aksv",
@@ -455,7 +455,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/an1me/an1me.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "anime-sama",
@@ -465,7 +465,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anime-sama/anime-sama.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-11-13"
     },
     {
       "id": "animeav1",
@@ -528,9 +528,9 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anineko/anineko.json",
       "sampleQuery": "one piece",
-      "needs_review": true,
-      "note": "upstream anineko.to /browser returns a PHP database-connection error (backend down, checked 2026-10)",
-      "updated": "2026-10-20"
+      "needs_review": false,
+      "note": "rebuilt on anineko.cc (upstream moved off anineko.to, now Cloudflare 522) via megaplay.buzz getSources + AES-CBC enc decrypt; site rate-limits hard (empty browse grid under load)",
+      "updated": "2026-11-13"
     },
     {
       "id": "anitube",
@@ -634,7 +634,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/imdb/imdb.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "mangabuddy",
@@ -674,7 +674,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/monoschinos2/monoschinos2.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "nakanime",
@@ -706,7 +706,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otaku-streamers/otaku-streamers.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "peachify",
@@ -716,7 +716,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/peachify/peachify.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
+      "updated": "2026-11-13",
       "needs_review": true,
       "note": "stream backends usa.eat-peach.sbs / uwu.eat-peach.sbs DNS-dead (checked 2026-10-11); search/details/episodes via peachify.top still work — module recovers automatically if the backends return"
     },
@@ -768,7 +768,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidcore/vidcore.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "videasy",
@@ -778,7 +778,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/videasy/videasy.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "vidfast",
@@ -788,7 +788,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidfast/vidfast.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "voir-anime",
@@ -798,7 +798,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/voir-anime/voir-anime.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-25"
+      "updated": "2026-11-13"
     },
     {
       "id": "weebcentral",
@@ -818,7 +818,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/xpass/xpass.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "1tamilcrow",
@@ -853,7 +853,7 @@
       "sampleQuery": "one piece",
       "needs_review": true,
       "note": "2026-10-20: anihq.cc (the kiranime site the module targets) answers 403 'Just a moment' (CF managed challenge) to the wp-json kiranime REST endpoint from this egress — same reputation wall as comix/moflix. The alternate anihq.com is a different non-kiranime hub (no /wp-json kiranime routes, /watch/ structure), so it is not a drop-in substitute. Not fixable in-module; clears on a clean browser context / residential egress.",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "animeheaven",
@@ -971,7 +971,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/filmpalast/filmpalast.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
+      "updated": "2026-11-13",
       "needs_review": true,
       "note": "Recorded 2026-10-21: search + episodes work (16 eps), but the episode page offers only one hoster (VOE HD) and its voe.sx video now 404s - the Voe content has rotated off the CDN (alternate Voe domains vize.so/noe.to/voe.to are unreachable from this host). The module's Voe extractor (ROT13+base64 obfuscation) is structurally sound; availability is gated on the upstream Voe CDN holding the content. Re-probe with live content or after a Voe domain rotation."
     },
@@ -983,10 +983,10 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kaliscan/kaliscan.json",
       "sampleQuery": "soul",
-      "updated": "2026-10-20",
-      "discontinued": true,
+      "updated": "2026-11-13",
+      "discontinued": false,
       "needs_review": false,
-      "note": "kaliscan.io DNS dead (checked 2026-10-11); kaliscan.org/.app are unrelated sites — KaliScan has not relocated"
+      "note": "kaliscan.io DNS dead; module rebuilt on kaliscan.org (live Madara site, verified 2026-11-12: search/details/chapters/images all pass)"
     },
     {
       "id": "latanime",
@@ -1069,14 +1069,14 @@
     {
       "id": "moflix",
       "name": "Moflix",
-      "iconUrl": "https://moflix-stream.xyz/favicon/icon-512x512.png",
+      "iconUrl": "https://moflix-stream.top/favicon/icon-512x512.png",
       "category": "movies/shows",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/moflix/moflix.json",
       "sampleQuery": "one piece",
-      "updated": "2026-10-20",
-      "needs_review": true,
-      "note": "Re-verified 2026-10-15: /api/v1/search answers a Cloudflare challenge page (403 Just a moment) to scripts; works in-app only after Verify Cloudflare (Dessin Anime pattern). Session-cookie flow (XSRF+session) verified unchanged; response shape confirmed 2026-10-11."
+      "updated": "2026-11-13",
+      "needs_review": false,
+      "note": "Rebuilt 2026-11-13 on official replacement domain moflix-stream.top (moflix-stream.xyz now fully behind CF JS challenge; whole site 403 to scripts). New API needs no cookies/XSRF. Streams via moflix-stream.click packer hls2 + FireStream token-blob resolve + streamtape."
     },
     {
       "id": "movix",
@@ -1128,7 +1128,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/novelfire/novelfire.json",
       "sampleQuery": "solo leveling",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "onepace",
@@ -1148,7 +1148,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/otakutsu/otakutsu.json",
       "sampleQuery": "one piece",
-      "updated": "2026-11-10",
+      "updated": "2026-11-13",
       "needs_review": true,
       "note": "site otakutsu.cc unreachable, search API returns no results (checked 2026-10)"
     },
@@ -1170,7 +1170,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/readnovelfull/readnovelfull.json",
       "sampleQuery": "leveling",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "rebuildOfNaruto",
@@ -1325,7 +1325,7 @@
       "name": "VidLink",
       "category": "shows/movies/anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/vidlink/vidlink.json",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "sourceName": "RGShows",
@@ -1467,7 +1467,7 @@
         "name": "anonymous",
         "icon": "https://files.catbox.moe/741wp7.png"
       },
-      "version": "1.0.2",
+      "version": "2.0.0",
       "language": "Russian",
       "streamType": "HLS",
       "quality": "1080p",
@@ -1481,11 +1481,11 @@
       "downloadSupport": false,
       "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hdrezka/hdrezka.js",
       "id": "hdrezka",
-      "discontinued": true,
+      "discontinued": false,
       "name": "HDRezka",
       "category": "shows/movies/anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/hdrezka/hdrezka.json",
-      "updated": "2026-09-25"
+      "updated": "2026-11-13"
     },
     {
       "sourceName": "Anoboye",
@@ -1577,7 +1577,7 @@
       "name": "Anime-Portal",
       "category": "anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/animeportal/animeportal.json",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "sourceName": "Anizone",
@@ -1600,11 +1600,10 @@
       "softsub": true,
       "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anizone/anizone.js",
       "id": "anizone",
-      "discontinued": true,
       "name": "Anizone",
       "category": "anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anizone/anizone.json",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "sourceName": "Kuudere",
@@ -1631,7 +1630,7 @@
       "name": "Re:ANIME",
       "category": "anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.json",
-      "updated": "2026-10-20",
+      "updated": "2026-11-13",
       "note": "kuudere.to rebranded to reanime.to (Oct 2026). Search/details/episodes via SSR; streams open the flixcloud site player (native HLS cannot decode its XOR-encoded playlists)."
     },
     {
@@ -1667,11 +1666,10 @@
       "supportsEclipse": true,
       "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/donghuastream/donghuastream.js",
       "id": "donghuastream",
-      "discontinued": true,
       "name": "DonghuaStream",
       "category": "anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/donghuastream/donghuastream.json",
-      "updated": "2026-10-20",
+      "updated": "2026-11-13",
       "sampleQuery": "battle through the heavens"
     },
     {
@@ -1694,11 +1692,11 @@
       "asyncJS": true,
       "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceFilmRedAmaLeeScore/onePieceFilmRedAmaLeeScore.js",
       "id": "onePieceFilmRedAmaLeeScore",
-      "discontinued": true,
+      "discontinued": false,
       "name": "One Piece Film Red: AmaLee Score",
       "category": "anime",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onePieceFilmRedAmaLeeScore/onePieceFilmRedAmaLeeScore.json",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "sourceName": "One Piece Treasure Edition",
@@ -1798,12 +1796,11 @@
       "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/Icon.png",
       "category": "mangas",
       "branch": "main",
-      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/mangaball.json",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangaball/mangaball.json",
       "sampleQuery": "one piece",
-      "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined",
-      "updated": null,
-      "note": "upstream moved to mangaball.com; external search API no longer exists, script cannot find listings (checked 2026-10)"
+      "needs_review": false,
+      "updated": "2026-11-13",
+      "note": "vendored from JayGxnzalez/Modules; manifest baseUrl gives the reader a mangaball.com Referer — the page CDN 403s requests without it"
     },
     {
       "id": "mangadot",
@@ -1834,11 +1831,9 @@
       "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/main/One-Pace-DUB/One_Pace_Logo.png",
       "category": "anime",
       "branch": "main",
-      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/One-Pace-DUB/onepace-dub.json",
-      "sampleQuery": "naruto",
-      "needs_review": true,
-      "note": "external module (JayGxnzalez); fetchv2 call returned null in test env 2026-09",
-      "updated": null
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepacedub/onepacedub.json",
+      "sampleQuery": "wano",
+      "updated": "2026-11-13"
     },
     {
       "id": "readfreecomicsonline",
@@ -1846,22 +1841,21 @@
       "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=readfreecomicsonline.com",
       "category": "mangas",
       "branch": "main",
-      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/ReadFreeComicsOnline/readfreecomicsonline.json",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/Sora-Modules/main/readfreecomicsonline/readfreecomicsonline.json",
       "sampleQuery": "one piece",
-      "needs_review": true,
-      "review_reason": "Failed to parse URL from undefined",
-      "updated": null,
-      "note": "external module (JayGxnzalez); chapters return 0 as of 2026-10-11 — upstream markup changed, cannot fix here"
+      "updated": "2026-11-13",
+      "note": "rebuild v2.0.0 (2026-11-12): upstream single-post theme now uses h1.single-title + comic-pages container; module brought in-repo, chapters/images verified"
     },
     {
       "id": "usatv",
       "name": "USA TV",
-      "iconUrl": "https://848b3516657c-usatv.baby-beamup.club/public/logo.png",
+      "iconUrl": "https://i.imgur.com/pvXZ8DX.png",
       "category": "live",
       "branch": "main",
-      "manifestUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/USA-TV/usa-tv.json",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/usatv/usatv.json",
       "sampleQuery": "espn",
-      "updated": null
+      "note": "rebuild 2026-11-12: vendored locally - upstream baby-beamup.club instance NXDOMAIN, tvpass/moveonjoy/a1xs dead; 41 channels on verified-live iptv-org HLS sources",
+      "updated": "2026-11-13"
     },
     {
       "id": "weebcentral-kanzen",
@@ -1886,7 +1880,7 @@
       "sampleQuery": "one piece",
       "updated": null,
       "needs_review": true,
-      "note": "upstream anibd.app no longer resolves / site stopped (checked 2026-10)"
+      "note": "dead end: anibd.app hijacked (302 to mmani.com) and the AnimeApps API backend (eng/epeng.animeapps.top serving search3/single/api2/apilink/play2) shows its own shutdown page — site stopped, no successor domain (checked 2026-11)"
     },
     {
       "id": "emby",
@@ -1918,7 +1912,7 @@
       "sampleQuery": "angel next door",
       "needs_review": true,
       "note": "Eclipse-ported copy of allmanga-novels. 2026-10-22: keygen rotated to build 181 (same as the classic manga build); the chapterPages k9 image API works again. search/details/chapters OK; image CDN 403s without a Referer (documented app-side limitation). Keygen details in the allmanga entry.",
-      "updated": "2026-10-21"
+      "updated": "2026-11-13"
     },
     {
       "id": "chireads-eclipse",
@@ -1938,7 +1932,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/comix/comix.json",
       "sampleQuery": "one piece",
-      "updated": "2026-09-28"
+      "updated": "2026-11-13"
     },
     {
       "id": "kaliscan-eclipse",
@@ -1948,10 +1942,10 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/kaliscan/kaliscan.json",
       "sampleQuery": "soul",
-      "updated": "2026-10-20",
-      "discontinued": true,
+      "updated": "2026-11-13",
+      "discontinued": false,
       "needs_review": false,
-      "note": "kaliscan.io DNS dead (checked 2026-10-11); kaliscan.org/.app are unrelated sites — KaliScan has not relocated"
+      "note": "kaliscan.io DNS dead; module rebuilt on kaliscan.org (live Madara site, verified 2026-11-12: search/details/chapters/images all pass)"
     },
     {
       "id": "lightnovelworld-eclipse",
@@ -2080,7 +2074,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/novelfire/novelfire.json",
       "sampleQuery": "solo leveling",
-      "updated": "2026-10-20"
+      "updated": "2026-11-13"
     },
     {
       "id": "readnovelfull-eclipse",
@@ -2109,11 +2103,10 @@
       "category": "mangas",
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.json",
-      "sampleQuery": "one piece",
-      "needs_review": true,
-      "note": "upstream rumanhua1.com unreachable (checked 2026-10)",
-      "review_reason": "fetch failed",
-      "updated": "2026-10-20"
+      "sampleQuery": "海贼王",
+      "needs_review": false,
+      "note": "rebuilt on successor rumanhua2.com (rumanhua1.com dead since 2026-10; verified 2026-11-13)",
+      "updated": "2026-11-13"
     },
     {
       "id": "scan-sama-eclipse",

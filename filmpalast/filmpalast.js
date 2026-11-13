@@ -4,7 +4,7 @@
  * @module filmpalast
  * @author JMcrafte26
  * @license MIT
- * @version 1.2.3
+ * @version 1.4.0
  */
 
 /**
@@ -212,21 +212,22 @@ async function extractStreamUrl(url) {
     }
 
     const hosters = await selectHoster(html);
-    console.log("Hosters found: " + hosters);
+    console.log("Hosters found: " + JSON.stringify(hosters));
 
-     try {
-        // Inside extractStreamUrl function
-        let streams = await multiExtractor(hosters);
-        let returnedStreams = {
-            streams: streams,
-        };
-        sendLog("Returned Streams: " + JSON.stringify(returnedStreams));
-        // Check if the returned streams are not empty
-        // Return the streams as a JSON string
-    return JSON.stringify(returnedStreams);
+    try {
+      // Vixeo hosters are resolved by the local extractor; the rest go
+      // through the global extractor block below.
+      const vixeo = await extractVixeoStream(hosters);
+      const geStreams = await multiExtractor(vixeo.remaining);
+      const streams = vixeo.streams.concat(geStreams);
+      const returnedStreams = {
+        streams: streams,
+      };
+      sendLog("Returned Streams: " + JSON.stringify(returnedStreams));
+      return JSON.stringify(returnedStreams);
     } catch (error) {
-        console.log("Error extracting stream URL: " + error);
-        return null;
+      console.log("Error extracting stream URL: " + error);
+      return null;
     }
   } catch (error) {
     console.log("Fetch error: " + error);
@@ -256,6 +257,60 @@ async function selectHoster(html) {
   }
 
   return hosters;
+}
+
+/**
+ * Extracts the stream URL from a Vixeo (vidsonic.net) embed page.
+ * The embed page stores the m3u8 URL as a pipe-separated hex string
+ * decoded by stripping pipes, hex-decoding pairwise and reversing.
+ * @param {string} url - The embed page URL.
+ * @returns {Promise<string|null>} - The m3u8 URL or null.
+ */
+async function vixeoExtractor(url) {
+  try {
+    const response = await soraFetch(url, {
+      headers: { Referer: "https://filmpalast.to/" },
+    });
+    const html = response ? await response.text() : "";
+    const hexMatch = html.match(/const _0x1 = '([0-9a-f|]+)';/);
+    if (!hexMatch) {
+      console.log("Vixeo extractor: no obfuscated URL found");
+      return null;
+    }
+    const clean = hexMatch[1].split("|").join("");
+    let decoded = "";
+    for (let i = 0; i < clean.length; i += 2) {
+      decoded += String.fromCharCode(parseInt(clean.substr(i, 2), 16));
+    }
+    const streamUrl = decoded.split("").reverse().join("");
+    if (streamUrl.startsWith("http")) {
+      console.log("Vixeo stream URL: " + streamUrl);
+      return streamUrl;
+    }
+    console.log("Vixeo extractor: decoded value is not a URL");
+    return null;
+  } catch (error) {
+    console.log("Vixeo extractor error: " + error);
+    return null;
+  }
+}
+
+async function extractVixeoStream(hosters) {
+  // Vixeo embeds are not handled by the global extractor block below,
+  // so resolve them here and return them separately.
+  const streams = [];
+  const remaining = {};
+  for (const [hosterUrl, hosterName] of Object.entries(hosters)) {
+    if (hosterName === "vixeo") {
+      const streamUrl = await vixeoExtractor(hosterUrl);
+      if (streamUrl) {
+        streams.push({ title: "Vixeo", streamUrl });
+      }
+    } else {
+      remaining[hosterUrl] = hosterName;
+    }
+  }
+  return { streams, remaining };
 }
 
 function sendLog(message) {

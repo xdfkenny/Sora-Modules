@@ -1,31 +1,61 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const url = `https://readnovelfull.com/novel-list/search?keyword=${encodedKeyword}`;
-        const response = await soraFetch(url);
-        const html = await response.text();
 
-        const results = [];
-        const rowRegex = /<div class="row">([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/g;
-        let rowMatch;
+        // Primary: full search page (returns rows with cover images)
+        try {
+            const url = `https://readnovelfull.com/novel-list/search?keyword=${encodedKeyword}`;
+            const response = await soraFetch(url);
+            if (response && response.status === 200) {
+                const html = await response.text();
+                const results = [];
+                const rowRegex = /<div class="row">([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/g;
+                let rowMatch;
+                while ((rowMatch = rowRegex.exec(html)) !== null) {
+                    const rowHtml = rowMatch[1];
+                    const imgMatch = rowHtml.match(/<img\s+src="([^"]+)"[^>]*class="cover"/);
+                    const linkMatch = rowHtml.match(/<h3 class="novel-title">\s*<a href="([^"]+)"\s+title="([^"]+)"/);
+                    if (imgMatch && linkMatch) {
+                        let image = imgMatch[1];
+                        if (!image.startsWith("http")) image = "https:" + image;
+                        results.push({
+                            title: decodeHtmlEntities(linkMatch[2]),
+                            href: "https://readnovelfull.com" + linkMatch[1],
+                            image
+                        });
+                    }
+                }
+                if (results.length > 0) {
+                    console.log(JSON.stringify(results));
+                    return JSON.stringify(results);
+                }
+            }
+        } catch (e) {
+            console.error("Primary search failed, trying ajax: " + e);
+        }
 
-        while ((rowMatch = rowRegex.exec(html)) !== null) {
-            const rowHtml = rowMatch[1];
-
-            const imgMatch = rowHtml.match(/<img\s+src="([^"]+)"[^>]*class="cover"/);
-            const linkMatch = rowHtml.match(/<h3 class="novel-title">\s*<a href="([^"]+)"\s+title="([^"]+)"/);
-
-            if (imgMatch && linkMatch) {
-                let image = imgMatch[1];
-                if (!image.startsWith("http")) image = "https:" + image;
-
-                results.push({
-                    title: decodeHtmlEntities(linkMatch[2]),
-                    href: "https://readnovelfull.com" +linkMatch[1],
-                    image
-                });
+        // Fallback: ajax lightweight search (HTML anchor list, no images) — fetch each page for the cover
+        const ajaxUrl = `https://readnovelfull.com/ajax/search-novel?keyword=${encodedKeyword}`;
+        const ajaxResponse = await soraFetch(ajaxUrl);
+        const ajaxHtml = await ajaxResponse ? await ajaxResponse.text() : '';
+        const anchorRegex = /<a\s+href="(\/[^"]+\.html)"\s+class="list-group-item"\s+title="([^"]+)"/g;
+        const seen = {};
+        const pages = [];
+        let anchorMatch;
+        while ((anchorMatch = anchorRegex.exec(ajaxHtml)) !== null) {
+            const href = "https://readnovelfull.com" + anchorMatch[1];
+            if (!seen[href]) {
+                seen[href] = true;
+                pages.push({ title: decodeHtmlEntities(anchorMatch[2]), href });
             }
         }
+
+        const results = [];
+        const coverJobs = pages.slice(0, 10).map(p =>
+            fetchCover(p.href).then(image => ({ ...p, image: image || "" }))
+        );
+        const settled = await Promise.all(coverJobs);
+        for (const r of settled) results.push(r);
 
         console.log(JSON.stringify(results));
         return JSON.stringify(results);
@@ -36,6 +66,24 @@ async function searchResults(keyword) {
             href: "",
             image: ""
         }]);
+    }
+}
+
+async function fetchCover(novelUrl) {
+    try {
+        const response = await soraFetch(novelUrl);
+        if (!response) return "";
+        const html = await response.text();
+        const ogMatch = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i)
+            || html.match(/<img\s+src="([^"]+)"[^>]*class="cover"/);
+        if (ogMatch) {
+            let image = ogMatch[1];
+            if (!image.startsWith("http")) image = "https:" + image;
+            return image;
+        }
+        return "";
+    } catch (e) {
+        return "";
     }
 }
 
@@ -131,7 +179,6 @@ async function extractText(url) {
   try {
     const response = await soraFetch(url);
     let htmlText = await response.text();
-    console.log(htmlText);
 
     const startPattern = /<div id="chr-content"[^>]*>/;
     const endPattern = /<\/div><hr class="chr-end">\s*<div class="chr-nav" id="chr-nav-bottom">/;

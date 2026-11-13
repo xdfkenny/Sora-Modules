@@ -2,7 +2,7 @@
 // ⚙️ MODULE SORA — VOIRANIME (Tracker Pro + Filemoon + Logs Console)
 // ==========================================
 
-const BASE_URL = "https://voir-anime.to";
+const BASE_URL = "https://voiranime.buzz";
 
 // ==========================================
 // 🎛️ CONFIG — Activer / désactiver les extracteurs
@@ -69,75 +69,109 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
 // ==========================================
 
 // --- 1. RECHERCHE ---
+// voiranime.buzz (nouveau domaine depuis la mort de voir-anime.to) protège les URLs
+// avec query-string par un challenge Cloudflare : la recherche GET ?s= est donc
+// bloquée. On utilise le endpoint AJAX WordPress du thème (POST admin-ajax,
+// action=wp-manga-search-manga) qui n'est PAS challenge, avec fallback HTML GET.
+const VOIRANIME_LOGO = "https://voiranime.buzz/wp-content/uploads/2021/04/voiranime-logo.png";
+const monProxyVercel = "https://proxy-imaga-sora.kurzmathis4.workers.dev/?url=";
+
 async function searchResults(keyword) {
-    console.log(`[Recherche] 🔍 Recherche classique pour : "${keyword}"`);
+    console.log(`[Recherche] 🔍 Recherche pour : "${keyword}"`);
     try {
-        const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(keyword)}&post_type=wp-manga`;
-        console.log(`[Recherche] 🔗 URL appelée : ${searchUrl}`);
+        const results = [];
 
-        const headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Referer": "https://voir-anime.to"
-        };
-
-        const response = await soraFetch(searchUrl, { headers });
-        const html = await response.text();
-
-        if (html.includes("Just a moment...") || html.includes("Cloudflare") || html.includes("DDoS")) {
-            console.log(`[Recherche] ⛔ AÏE ! L'application est bloquée par Cloudflare.`);
-            sendSupabaseLog("VoirAnime", "BLOCKED", { keyword: keyword, reason: "Cloudflare" });
-            return JSON.stringify([]);
+        // 1️⃣ Endpoint AJAX du thème wp-manga (POST, pas de challenge CF)
+        try {
+            const ajaxRes = await soraFetch(`${BASE_URL}/wp-admin/admin-ajax.php`, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                    "Referer": `${BASE_URL}/`,
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                method: "POST",
+                body: `action=wp-manga-search-manga&title=${encodeURIComponent(keyword)}`
+            });
+            if (ajaxRes) {
+                const txt = await ajaxRes.text();
+                if (txt && txt.charAt(0) === '{' && !txt.includes("Just a moment")) {
+                    const j = JSON.parse(txt);
+                    if (j && j.success && Array.isArray(j.data)) {
+                        for (let it of j.data) {
+                            if (!it || !it.url || !it.title) continue;
+                            const href = String(it.url);
+                            if (!href.includes(BASE_URL)) continue;
+                            const title = String(it.title).replace(/&amp;/g, '&').replace(/&#039;/g, "'").trim();
+                            if (!results.find(r => r.href === href)) {
+                                results.push({ title: title, image: VOIRANIME_LOGO, href: href });
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (ajaxErr) {
+            console.error(`[Recherche] ⚠️ AJAX échoué, fallback HTML :`, ajaxErr);
         }
 
-        const results = [];
-        const blocks = html.split(/c-tabs-item__content|page-item-detail|class=["']c-image["']/i);
+        // 2️⃣ Fallback / enrichissement : recherche HTML classique
+        if (results.length === 0) {
+            const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(keyword)}&post_type=wp-manga`;
+            const headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer": `${BASE_URL}/`
+            };
+            const response = await soraFetch(searchUrl, { headers });
+            if (!response) return JSON.stringify([]);
+            const html = await response.text();
 
-        for (let i = 1; i < blocks.length; i++) {
-            let block = blocks[i];
-            
-            let hrefMatch = block.match(/href=["']([^"']+)["']/i);
-            let titleMatch = block.match(/title=["']([^"']+)["']/i) || block.match(/alt=["']([^"']+)["']/i);
-            let imgMatch = block.match(/data-src=["']([^"']+)["']/i) || block.match(/src=["']([^"']+)["']/i);
-            let yearMatch = block.match(/release-year[^>]*>\s*<a[^>]*>(\d{4})<\/a>/i);
+            if (html.includes("Just a moment...") || html.includes("DDoS")) {
+                console.log(`[Recherche] ⛔ Bloqué par Cloudflare.`);
+                sendSupabaseLog("VoirAnime", "BLOCKED", { keyword: keyword, reason: "Cloudflare" });
+                return JSON.stringify([]);
+            }
 
-            if (hrefMatch && titleMatch) {
-                let href = hrefMatch[1];
-                let title = titleMatch[1];
-                
-                if (href.includes('.css') || href.includes('.js') || href.includes('wp-') || title.includes('RSD') || !href.includes(BASE_URL)) {
-                    continue;
-                }
+            const blocks = html.split(/c-tabs-item__content|page-item-detail|class=["']c-image["']/i);
+            for (let i = 1; i < blocks.length; i++) {
+                let block = blocks[i];
+                let hrefMatch = block.match(/href=["']([^"']+)["']/i);
+                let titleMatch = block.match(/title=["']([^"']+)["']/i) || block.match(/alt=["']([^"']+)["']/i);
+                let imgMatch = block.match(/data-src=["']([^"']+)["']/i) || block.match(/src=["']([^"']+)["']/i);
+                let yearMatch = block.match(/release-year[^>]*>\s*<a[^>]*>(\d{4})<\/a>/i);
 
-                title = title.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&#8211;/g, "-").trim();
-                let rawImage = imgMatch ? imgMatch[1] : "";
-                if (rawImage.startsWith('/')) rawImage = BASE_URL + rawImage;
-                
-                const monProxyVercel = "https://proxy-imaga-sora.kurzmathis4.workers.dev/?url=";
-                let image = rawImage ? `${monProxyVercel}${encodeURIComponent(rawImage)}` : `${BASE_URL}/wp-content/uploads/2021/04/voiranime-logo.png`;
+                if (hrefMatch && titleMatch) {
+                    let href = hrefMatch[1];
+                    let title = titleMatch[1];
+                    if (href.includes('.css') || href.includes('.js') || href.includes('wp-') || title.includes('RSD') || !href.includes(BASE_URL)) continue;
 
-                let year = yearMatch ? yearMatch[1] : null;
+                    title = title.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&#8211;/g, "-").trim();
+                    let rawImage = imgMatch ? imgMatch[1] : "";
+                    if (rawImage.startsWith('/')) rawImage = BASE_URL + rawImage;
+                    let image = rawImage ? `${monProxyVercel}${encodeURIComponent(rawImage)}` : VOIRANIME_LOGO;
+                    let year = yearMatch ? yearMatch[1] : null;
 
-                if (!results.find(r => r.href === href)) {
-                    let item = { title: title, image: image, href: href };
-                    if (year) item.year = year; 
-                    results.push(item);
+                    if (!results.find(r => r.href === href)) {
+                        let item = { title: title, image: image, href: href };
+                        if (year) item.year = year;
+                        results.push(item);
+                    }
                 }
             }
         }
-        
+
         console.log(`[Recherche] ✅ ${results.length} animes trouvés.`);
-        sendSupabaseLog("VoirAnime", "SEARCH", { 
-            keyword: keyword, 
+        sendSupabaseLog("VoirAnime", "SEARCH", {
+            keyword: keyword,
             results_count: results.length,
             top_results: results.slice(0, 3).map(r => r.title)
         });
 
         return JSON.stringify(results);
 
-    } catch (e) { 
+    } catch (e) {
         console.error(`[Recherche] 🚨 Erreur :`, e);
         sendSupabaseLog("VoirAnime", "ERROR", { keyword: keyword, error_message: String(e) });
-        return JSON.stringify([]); 
+        return JSON.stringify([]);
     }
 }
 
@@ -254,6 +288,8 @@ async function extractStreamUrl(url) {
         
         while ((match = redirectRegex.exec(html)) !== null) {
             let redirectUrl = match[1].replace(/&amp;/g, '&');
+            // les valeurs "host=LECTEUR ..." contiennent des espaces bruts -> encoder
+            redirectUrl = redirectUrl.replace(/ /g, '%20');
             if (redirectUrl.startsWith('/')) redirectUrl = BASE_URL + redirectUrl;
             if (!pagesToFetch.includes(redirectUrl)) pagesToFetch.push(redirectUrl);
         }
@@ -701,12 +737,25 @@ async function extractStreamUrl(url) {
 // =====================================================================
 
 // --- SORA FETCH ---
+// voiranime.buzz passe par Cloudflare : les requêtes sans User-Agent / Referer
+// se font challenger. On injecte des headers par défaut sur les URLs du site.
+const VOIRANIME_DEFAULT_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+    "Referer": `${BASE_URL}/`
+};
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    let headers = options.headers ?? {};
+    if (String(url).includes(BASE_URL)) {
+        const merged = Object.assign({}, VOIRANIME_DEFAULT_HEADERS);
+        if (options.headers) { for (const k in options.headers) merged[k] = options.headers[k]; }
+        headers = merged;
+    }
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
     } catch (e) {
         try {
-            return await fetch(url, options);
+            return await fetch(url, { headers, method: options.method ?? 'GET', body: options.body ?? null });
         } catch (error) {
             return null;
         }

@@ -91,7 +91,13 @@ async function extractStreamUrl(url) {
 
 async function getDefaultHeaders() {
     const session = await fetchv2("https://ilovefeet.simplepostrequest.workers.dev/session");
-    const sessionKey = await session.text();
+    const raw = await session.text();
+    // Session worker may return a full Set-Cookie string
+    // ("bb_betasessionhash=<hash>; expires=...; path=/...") or a bare hash.
+    // Extract only the hash value to avoid a doubly-prefixed Cookie header.
+    let sessionKey = raw.trim().split(";")[0];
+    const hashMatch = sessionKey.match(/bb_betasessionhash=([A-Za-z0-9]+)/);
+    if (hashMatch) sessionKey = hashMatch[1];
     return {
         "Content-Type": "application/x-www-form-urlencoded",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",

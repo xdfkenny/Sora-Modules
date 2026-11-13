@@ -1,6 +1,6 @@
 {
   "sourceName": "RumanHua1 (Eclipse)",
-  "version": "1.1-e2",
+  "version": "1.2-e2",
   "language": "Chinese",
   "languageType": [
     "Translated"
@@ -8,8 +8,8 @@
   "streamType": "mangas",
   "type": "mangas",
   "quality": "N/A",
-  "baseUrl": "http://rumanhua1.com/",
-  "searchBaseUrl": "http://rumanhua1.com/",
+  "baseUrl": "http://rumanhua2.com/",
+  "searchBaseUrl": "http://rumanhua2.com/s?k=%s",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.js",
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/rumanhua1/rumanhua1.js",
   "iconURL": "https://i.ibb.co/TDfbbwDB/Untitled-design.png",

@@ -6,7 +6,7 @@ async function searchResults(keyword) {
         const results = Array.isArray(payload?.results)
           ? payload.results
             .map((item) => {
-              const source = item?.prefered_source;
+              const source = item?.suggested_source || item?.prefered_source || null;
               const href = item?.slug || source?.novel_slug || "";
               const image = source?.cover_url || source?.cover_min_url || "";
 
@@ -39,7 +39,7 @@ async function extractDetails(slug) {
   try {
     const response = await soraFetch(`https://api.lncrawler.monster/novels/${slug}/`);
     const payload = await response.json();
-    const source = payload?.prefered_source || payload?.sources?.[0] || null;
+    const source = pickSource(payload);
     const synopsis = source?.synopsis || "";
 
     const description = synopsis
@@ -77,7 +77,7 @@ async function extractChapters(slug) {
   try {
     const novelResponse = await soraFetch(`https://api.lncrawler.monster/novels/${slug}/`);
     const novelPayload = await novelResponse.json();
-    const sourceSlug = novelPayload?.prefered_source?.source_slug || novelPayload?.sources?.[0]?.source_slug || "lncrawler";
+    const sourceSlug = pickSource(novelPayload)?.source_slug || "lncrawler";
 
     const firstPageResponse = await soraFetch(`https://api.lncrawler.monster/novels/${slug}/${sourceSlug}/chapters/?page=1&page_size=100`);
     const firstPagePayload = await firstPageResponse.json();
@@ -149,6 +149,30 @@ async function extractText(url) {
   }
 }
 
+  // Upstream renamed prefered_source -> suggested_source; pick the best source
+  // (prefer English, prefer the one with the most available chapters), with
+  // legacy-field fallbacks.
+  function pickSource(payload) {
+    if (payload?.suggested_source) {
+      return payload.suggested_source;
+    }
+    if (payload?.prefered_source) {
+      return payload.prefered_source;
+    }
+    const sources = Array.isArray(payload?.sources) ? payload.sources.filter(Boolean) : [];
+    if (!sources.length) {
+      return null;
+    }
+    const scored = sources.map((s) => {
+      let score = 0;
+      if (s.language === "en") score += 10;
+      score += Math.min(s.available_chapters_count || s.chapters_count || 0, 1000) / 10000;
+      return { s, score };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    return scored[0].s;
+  }
+
   function normalizeChapterImageUrls(content, imagesPath, apiOrigin) {
     if (!content) {
       return "";
@@ -170,7 +194,9 @@ async function extractText(url) {
       } else if (normalizedImagesPath) {
         absoluteSrc = `${normalizedImagesPath}/${src.replace(/^\.\//, "")}`;
       } else {
-        absoluteSrc = new URL(src, `${apiOrigin}/`).toString();
+        // Avoid relying on `new URL` (absent in some JS engines); resolve manually.
+        const base = String(apiOrigin || "").replace(/\/+$/, "");
+        absoluteSrc = `${base}/${String(src).replace(/^\.?\//, "")}`;
       }
 
       return `<img${beforeSrc}src=${quote}${absoluteSrc}${quote}${afterSrc}>`;

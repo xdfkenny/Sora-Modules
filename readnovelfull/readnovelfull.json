@@ -6,7 +6,7 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "language": "English",
   "languageType": [
     "Translated"
@@ -14,7 +14,7 @@
   "streamType": "novels",
   "quality": "N/A",
   "baseUrl": "https://readnovelfull.com/",
-  "searchBaseUrl": "https://readnovelfull.com/search/?wd=%s",
+  "searchBaseUrl": "https://readnovelfull.com/novel-list/search?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/readnovelfull/readnovelfull.js",
   "type": "novels",
   "asyncJS": true,

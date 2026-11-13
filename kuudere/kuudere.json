@@ -1,22 +1,22 @@
 {
   "sourceName": "Re:ANIME",
-  "iconUrl": "https://reanime.to/favicon.ico",
+  "iconUrl": "https://reanime.cz/favicon.ico",
   "author": {
     "name": "xdfkenny",
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "version": "2.0.0",
+  "version": "2.1.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://reanime.to/",
-  "searchBaseUrl": "https://reanime.to/search?q=%s",
+  "baseUrl": "https://reanime.cz/",
+  "searchBaseUrl": "https://reanime.cz/search?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.js",
   "type": "anime",
   "downloadSupport": false,
   "asyncJS": true,
   "softsub": true,
-  "note": "kuudere.to rebranded to reanime.to. Search/details/episodes via SSR scraping. Streams open the flixcloud site player (its HLS playlists are XOR-encoded for its own patched hls.js, so native players cannot play the raw m3u8s).",
+  "note": "kuudere.to rebranded to reanime.cz. Search/details/episodes via SSR scraping. Streams open the flixcloud site player (its HLS playlists are XOR-encoded for its own patched hls.js, so native players cannot play the raw m3u8s).",
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/kuudere/kuudere.js"
 }

@@ -2,7 +2,7 @@
 // Search moved from the admin-ajax.php "advanced_search" action (Cloudflare now
 // 403s it for non-browser clients, which made Shirox show "Error" cards) to the
 // public REST endpoint the theme itself uses: wp-json/kiranime/v1/anime/search.
-console.log('[AniHQ] module script loaded v1.1.0 (REST search + hardening)');
+console.log('[AniHQ] module script loaded v1.1.2 (CF-challenge bot-UA fallback)');
 
 // The app's JavaScriptCore may predate ES2020: polyfill Promise.allSettled so
 // a single rejected fetch can never abort stream extraction.
@@ -51,18 +51,57 @@ function toResponseLike(value) {
     };
 }
 
+// CF managed challenge: anihq.cc serves "Just a moment…" 403 to browser UAs on
+// /anime-show/ and /watch/ pages (wp-json REST stays open). Link-preview /
+// crawler UAs (facebookexternalhit, Googlebot) get the real HTML through.
+// Only retry when the response actually looks like a challenge, so normal
+// hosts (wp-json, VOE pages) keep the browser UA.
+var ANIHQ_UAS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+    'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+];
+
+function looksLikeChallenge(status, body) {
+    if (status === 403 || status === 503) return true;
+    return typeof body === 'string' && body.indexOf('Just a moment') !== -1;
+}
+
 async function soraFetch(url, options) {
     options = options || {};
     var headers = options.headers || {};
-    headers['User-Agent'] = headers['User-Agent'] ||
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
     var method = options.method || 'GET';
-    try {
-        var raw = await fetchv2(url, headers, method, options.body || null);
-        return toResponseLike(raw);
-    } catch (e) {
-        return null;
+    var firstBody = '';
+    for (var i = 0; i < ANIHQ_UAS.length; i++) {
+        var attemptHeaders = {};
+        for (var k in headers) attemptHeaders[k] = headers[k];
+        attemptHeaders['User-Agent'] = ANIHQ_UAS[i];
+        try {
+            var raw = await fetchv2(url, attemptHeaders, method, options.body || null);
+            var resp = toResponseLike(raw);
+            if (!resp || resp.ok === false && (resp.status === 403 || resp.status === 503) && i < ANIHQ_UAS.length - 1) {
+                continue;
+            }
+            // Challenge page detected after fetch: peek at the body once (only
+            // for the first attempt) and retry with a crawler UA.
+            if (resp) {
+                var body = await resp.text();
+                if (i < ANIHQ_UAS.length - 1 && looksLikeChallenge(resp.status, body)) {
+                    continue;
+                }
+                // Hand the already-read body back through a fresh Response-like.
+                resp.text = (function (b) {
+                    return async function () { return b; };
+                })(body);
+                resp.json = async function () { return JSON.parse(body); };
+                return resp;
+            }
+            return resp;
+        } catch (e) {
+            if (i === ANIHQ_UAS.length - 1) return null;
+        }
     }
+    return null;
 }
 
 function stripTags(html) {

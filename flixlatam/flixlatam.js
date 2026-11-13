@@ -299,16 +299,34 @@ async function resolveVidurl(vidurlPath) {
     if (!response) return null;
     const text = await response.text();
 
-    const challenge = text.match(/POW_CHALLENGE\s*=\s*'([^']+)'/);
-    const difficulty = text.match(/POW_DIFFICULTY\s*=\s*(\d+)/);
-    const salt = text.match(/POW_SALT\s*=\s*'([^']+)'/);
-    if (!challenge || !difficulty || !salt) return null;
-
     const dataLinkMatch = text.match(/let\s+dataLink\s*=\s*(\[[\s\S]*?\]);/);
     if (!dataLinkMatch) return null;
-    const dataLink = JSON.parse(dataLinkMatch[1]);
+    let dataLink;
+    try { dataLink = JSON.parse(dataLinkMatch[1]); } catch (e) { return null; }
 
-    const aesKey = solvePoW(challenge[1], parseInt(difficulty[1], 10), salt[1]);
+    // 2026-11 markup: the PoW markers are gone. The page now ships two plain
+    // constants and derives the AES key as SHA-256(LINK_CHALLENGE + LINK_SALT)
+    // directly (see the page's getLinkKey()) — no nonce search at all.
+    let aesKey = null;
+    const linkChal = text.match(/LINK_CHALLENGE\s*=\s*'([^']+)'/);
+    const linkSalt = text.match(/LINK_SALT\s*=\s*'([^']+)'/);
+    if (linkChal && linkSalt) {
+        const keyHex = flixSha256FastHex(linkChal[1] + linkSalt[1]);
+        if (keyHex) {
+            aesKey = [];
+            for (let i = 0; i < keyHex.length; i += 2) {
+                aesKey.push(parseInt(keyHex.slice(i, i + 2), 16));
+            }
+        }
+    }
+    // Legacy fallback: older renders shipped a SHA-256 proof-of-work instead.
+    if (!aesKey) {
+        const challenge = text.match(/POW_CHALLENGE\s*=\s*'([^']+)'/);
+        const difficulty = text.match(/POW_DIFFICULTY\s*=\s*(\d+)/);
+        const salt = text.match(/POW_SALT\s*=\s*'([^']+)'/);
+        if (!challenge || !difficulty || !salt) return null;
+        aesKey = solvePoW(challenge[1], parseInt(difficulty[1], 10), salt[1]);
+    }
     if (!aesKey) return null;
 
     const embeds = [];
@@ -317,10 +335,13 @@ async function resolveVidurl(vidurlPath) {
         const sorted = (file.sortedEmbeds || []);
         for (let i = 0; i < sorted.length; i++) {
             const e = sorted[i];
+            // The site strips backticks from the plaintext after decrypting
+            // (decryptOnDemand does plain.replace(/`/g,'')) — mirror it, since
+            // backticks occasionally appear inside the ciphertext padding.
             embeds.push({
                 server: e.servername,
                 lang: file.video_language,
-                link: flixAesDecrypt(e.link, aesKey)
+                link: String(flixAesDecrypt(e.link, aesKey) || '').replace(/`/g, '').trim()
             });
         }
     }

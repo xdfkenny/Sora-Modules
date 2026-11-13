@@ -1,5 +1,5 @@
 // ==========================================
-// ⚙️ MODULE SORA — ANIME-SAMA (Supabase Edition + Sibnet Fix)test update
+// ⚙️ MODULE SORA — ANIME-SAMA (Supabase Edition + jeton /api/lien.php, 12/11/2026)
 // ==========================================
 
 // ==========================================
@@ -139,21 +139,39 @@ async function extractDetails(url) {
         const html = await response.text();
 
         let description = "Pas de description disponible.";
-        let descMatch = html.match(/id=["']synopsis["'][^>]*>([\s\S]*?)<\//i) || 
-                          html.match(/class=["']synopsis["'][^>]*>([\s\S]*?)<\//i) || 
-                          html.match(/<p class=["']text-sm[^>]*>([\s\S]*?)<\/p>/i);
+        // 12/11/2026 : le synopsis n'est plus dans le corps — prendre la meta description (synopsis réel)
+        let descMatch = html.match(/<meta[^>]+name=["']description["'][^>]+content=["'](.+?)["']\s*\/?>/i) ||
+                        html.match(/<meta[^>]+content=["'](.+?)["'][^>]+name=["']description["']/i) ||
+                        html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["'](.+?)["']\s*\/?>/i) ||
+                        // 12/11/2026 : certains catalogues n'ont pas de meta description — synopsis inline
+                        html.match(/id=["']synopsis(?:Text)?["'][^>]*>([\s\S]*?)<\/(?:p|div|span)/i);
 
         if (descMatch && descMatch[1]) {
             description = descMatch[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").trim();
         }
 
         return JSON.stringify([{ description, aliases: "Anime-Sama" }]);
-    } catch (e) { 
-        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Anime-Sama" }]); 
+    } catch (e) {
+        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Anime-Sama" }]);
     }
 }
 
 // --- 3. ÉPISODES ---
+// 12/11/2026 : episodes.js supprimé (403). La page de saison contient désormais
+// « var eps1 = ["lien:<n°>", ...] » en inline — on parse la page elle-même.
+async function _asParseSeasonPage(html) {
+    // Retourne { epCount, jeton } — le nb d'épisodes = la plus longue var epsN
+    let epCount = 0;
+    const arrayRegex = /var\s+eps[0-9]+\s*=\s*\[([^\]]*)\]/g;
+    let m;
+    while ((m = arrayRegex.exec(html)) !== null) {
+        const entries = m[1].match(/['"][^'"]+['"]/g) || [];
+        if (entries.length > epCount) epCount = entries.length;
+    }
+    const jetonMatch = html.match(/var\s+epsJeton\s*=\s*["']([^"']+)["']/);
+    return { epCount: epCount, jeton: jetonMatch ? jetonMatch[1] : "" };
+}
+
 async function extractEpisodes(url) {
     console.log(`[Episodes AS] 📂 Analyse multi-saisons : ${url}`);
     try {
@@ -166,73 +184,50 @@ async function extractEpisodes(url) {
         const seasonRegex = /panneauAnime\s*\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]\s*\)/gi;
         let match;
         let tabs = [];
-        
+
         while ((match = seasonRegex.exec(html)) !== null) {
             let name = match[1].trim();
             let path = match[2].trim();
             if (name.toLowerCase() === 'nom' || path.toLowerCase() === 'url') continue;
+            // les tabs « scan » sont des mangas, pas des épisodes vidéo
+            if (path.toLowerCase().indexOf('scan') !== -1) continue;
             let fullUrl = path.startsWith('http') ? path : url + path;
+            if (!fullUrl.endsWith('/')) fullUrl += '/';
             tabs.push({ name: name, url: fullUrl });
         }
 
-        if (tabs.length === 0) tabs.push({ name: "Saison 1", url: url + "saison1/vostfr" });
+        if (tabs.length === 0) tabs.push({ name: "Saison 1", url: url + "saison1/vostfr/" });
 
         let results = [];
         let fallbackSeason = 1;
 
         for (let tab of tabs) {
             try {
-                let jsUrl = tab.url;
-                if (!jsUrl.endsWith('/')) jsUrl += '/';
-                jsUrl += "episodes.js";
-                
-                let jsRes = await fetchv2(jsUrl, headers, "GET");
-                let jsContent = await jsRes.text();
+                const res = await fetchv2(tab.url, headers, "GET");
+                const pageHtml = await res.text();
+                if (!pageHtml || pageHtml.length < 200) continue;
 
-                if (!jsContent || jsContent.includes("<html") || jsContent.length < 50) {
-                    let tabRes = await fetchv2(tab.url, headers, "GET");
-                    let tabText = await tabRes.text();
-                    let scriptMatch = tabText.match(/<script[^>]+src=['"]([^'"]*episodes\.js[^'"]*)['"]/i);
-                    if (scriptMatch) {
-                        let scriptSrc = scriptMatch[1].trim();
-                        let baseFolder = tab.url.endsWith('/') ? tab.url : tab.url + '/';
-                        jsUrl = scriptSrc.startsWith('http') ? scriptSrc : (scriptSrc.startsWith('/') ? new URL(url).origin + scriptSrc : baseFolder + scriptSrc);
-                        jsRes = await fetchv2(jsUrl, headers, "GET");
-                        jsContent = await jsRes.text();
-                    }
+                const info = await _asParseSeasonPage(pageHtml);
+                const maxEpisodes = info.epCount;
+                if (maxEpisodes <= 0) continue;
+
+                let cleanTabName = tab.name.replace(/\(?(VOSTFR|VF)\)?/i, '').trim();
+                let currentSeason = fallbackSeason;
+                let seasonMatch = cleanTabName.match(/saison\s*(\d+)/i);
+
+                if (seasonMatch) currentSeason = parseInt(seasonMatch[1]);
+                else if (cleanTabName.toLowerCase().includes('film') || cleanTabName.toLowerCase().includes('oav')) currentSeason = 0;
+
+                for (let i = 0; i < maxEpisodes; i++) {
+                    let epHref = `${tab.url}?episode_index=${i}`;
+                    let epTitle = maxEpisodes === 1 ? cleanTabName : `Épisode ${i + 1}`;
+
+                    results.push({
+                        title: epTitle, name: epTitle, href: epHref,
+                        number: i + 1, season: currentSeason
+                    });
                 }
-
-                if (!jsContent || jsContent.includes("<html") || jsContent.length < 50) continue;
-
-                const arrayRegex = /(?:var|let|const)\s+[a-zA-Z0-9_]+\s*=\s*\[([\s\S]*?)\]/gm;
-                let arrMatch;
-                let maxEpisodes = 0;
-
-                while ((arrMatch = arrayRegex.exec(jsContent)) !== null) {
-                    let urls = arrMatch[1].match(/['"]([^'"]+)['"]/g) || [];
-                    if (urls.length > maxEpisodes) maxEpisodes = urls.length;
-                }
-
-                if (maxEpisodes > 0) {
-                    let cleanTabName = tab.name.replace(/\(?(VOSTFR|VF)\)?/i, '').trim();
-                    let currentSeason = fallbackSeason;
-                    let seasonMatch = cleanTabName.match(/saison\s*(\d+)/i);
-                    
-                    if (seasonMatch) currentSeason = parseInt(seasonMatch[1]);
-                    else if (cleanTabName.toLowerCase().includes('film') || cleanTabName.toLowerCase().includes('oav')) currentSeason = 0; 
-
-                    for (let i = 0; i < maxEpisodes; i++) {
-                        let separator = jsUrl.includes('?') ? '&' : '?';
-                        let epHref = `${jsUrl}${separator}episode_index=${i}`;
-                        let epTitle = maxEpisodes === 1 ? cleanTabName : `Épisode ${i + 1}`;
-                        
-                        results.push({
-                            title: epTitle, name: epTitle, href: epHref,
-                            number: i + 1, season: currentSeason     
-                        });
-                    }
-                    if (!cleanTabName.toLowerCase().includes('film')) fallbackSeason++;
-                }
+                if (!cleanTabName.toLowerCase().includes('film')) fallbackSeason++;
             } catch (e) { }
         }
         return JSON.stringify(results);
@@ -240,13 +235,15 @@ async function extractEpisodes(url) {
 }
 
 // --- 4. LECTEUR ---
+// 12/11/2026 : la page de saison ne contient plus d'adresses mais « lien:<n°> » + epsJeton.
+// La vraie URL d'un épisode = GET /api/lien.php?j=<epsJeton>&l=<n°> (renvoie {"u":"<embed>"}).
 async function extractStreamUrl(url) {
     console.log(`[Lecteur AS] 🎬 Démarrage pour : ${url}`);
-    
+
     try {
         let epIndex = 0;
         let jsUrl1 = url;
-        
+
         if (url.includes('episode_index=')) {
             let parts = url.split('episode_index=');
             epIndex = parseInt(parts[1]) || 0;
@@ -255,43 +252,69 @@ async function extractStreamUrl(url) {
         }
 
         let langsToFetch = [];
-        let langMatch = jsUrl1.match(/\/(vostfr|vf|va)\//i);
+        let langMatch = jsUrl1.match(/\/(vostfr|vf2|vf|va|vostfr2)\//i);
 
         if (langMatch) {
             let currentLang = langMatch[1].toLowerCase();
             langsToFetch = [
                 { lang: "VOSTFR", url: jsUrl1.replace(`/${currentLang}/`, '/vostfr/') },
                 { lang: "VF", url: jsUrl1.replace(`/${currentLang}/`, '/vf/') },
-                { lang: "VA", url: jsUrl1.replace(`/${currentLang}/`, '/va/') }
+                { lang: "VF2", url: jsUrl1.replace(`/${currentLang}/`, '/vf2/') }
             ];
+            // dédoublonne (si la saison n'existe qu'en une langue, certaines demandes seraient identiques)
+            let seen = {};
+            langsToFetch = langsToFetch.filter(l => { if (seen[l.url]) return false; seen[l.url] = 1; return true; });
         } else {
-            langsToFetch = [{ lang: "VOSTFR", url: jsUrl1 }]; 
+            langsToFetch = [{ lang: "VOSTFR", url: jsUrl1 }];
         }
 
-        const headers = { "User-Agent": "Mozilla/5.0", "Referer": "https://anime-sama.to/" };
+        const originMatch = jsUrl1.match(/^(https?:\/\/[^\/]+)/i);
+        const origin = originMatch ? originMatch[1] : "https://anime-sama.to";
 
-        let fetchPromises = langsToFetch.map(l => fetchv2(l.url, headers, "GET").then(r => r.text()).catch(() => ""));
-        let contents = await Promise.all(fetchPromises);
-        
         let allEmbeds = [];
 
-        function parseJsContent(jsText, langTag) {
-            if (!jsText || jsText.includes("<html") || jsText.length < 50) return;
-            const arrayRegex = /(?:var|let|const)\s+([a-zA-Z0-9_]+)\s*=\s*\[([\s\S]*?)\];/gm;
-            let match;
-            while ((match = arrayRegex.exec(jsText)) !== null) {
-                let urls = match[2].match(/['"]([^'"]+)['"]/g) || [];
-                if (epIndex < urls.length) {
-                    let rawUrl = urls[epIndex].replace(/['"]/g, '').trim();
-                    if (rawUrl.startsWith('http')) {
-                        allEmbeds.push({ url: rawUrl, lang: langTag });
+        for (let l of langsToFetch) {
+            try {
+                const headers = { "User-Agent": "Mozilla/5.0", "Referer": l.url };
+                const res = await fetchv2(l.url, headers, "GET");
+                const html = await res.text();
+                if (!html || html.length < 200 || html.includes("Just a moment")) continue;
+
+                // d'abord : mode hérité — la page contient encore des URLs directes
+                const arrayRegex = /var\s+eps[0-9]+\s*=\s*\[([^\]]*)\]/g;
+                let arrMatch;
+                let bestEntries = [];
+                let jeton = "";
+                const jetonMatch = html.match(/var\s+epsJeton\s*=\s*["']([^"']+)["']/);
+                if (jetonMatch) jeton = jetonMatch[1];
+
+                while ((arrMatch = arrayRegex.exec(html)) !== null) {
+                    let entries = arrMatch[1].match(/['"]([^'"]+)['"]/g) || [];
+                    if (entries.length > bestEntries.length) bestEntries = entries;
+                }
+                if (bestEntries.length === 0) continue;
+
+                if (epIndex >= bestEntries.length) continue;
+                let rawEntry = bestEntries[epIndex].replace(/['"]/g, '').trim();
+
+                if (rawEntry.startsWith('http')) {
+                    // mode hérité : URL directe
+                    allEmbeds.push({ url: rawEntry, lang: l.lang });
+                } else if (rawEntry.indexOf('lien:') === 0 && jeton) {
+                    // nouveau mode : résolution via l'API avec le jeton de la page
+                    let lienId = rawEntry.slice(5);
+                    let apiUrl = `${origin}/api/lien.php?j=${encodeURIComponent(jeton)}&l=${encodeURIComponent(lienId)}`;
+                    const apiRes = await fetchv2(apiUrl, { "User-Agent": "Mozilla/5.0", "Referer": l.url }, "GET");
+                    const apiText = await apiRes.text();
+                    let data = null;
+                    try { data = JSON.parse(apiText); } catch (e) {}
+                    if (data && data.u && String(data.u).startsWith('http')) {
+                        allEmbeds.push({ url: data.u, lang: l.lang });
+                    } else {
+                        console.log(`[Lecteur AS] ⚠️ api/lien.php échec (${l.lang}) : ${apiText.substring(0, 120)}`);
                     }
                 }
-            }
-        }
-
-        for (let i = 0; i < contents.length; i++) {
-            if (contents[i]) parseJsContent(contents[i], langsToFetch[i].lang);
+            } catch (e) { }
         }
 
         let streams = [];

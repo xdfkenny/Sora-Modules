@@ -331,7 +331,15 @@ async function extractText(url) {
 // extractText('https://novelfire.net/book/my-longevity-simulation/chapter-1');
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    const headers = Object.assign({ "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" }, options.headers ?? {});
+    // novelfire's WAF 302s requests lacking an Accept header into a
+    // JS-interstitial redirect chain (readnovel.site -> novelphoenix.com)
+    // that has no SSR text — send full browser Accept headers so we get the
+    // 200 SSR page directly (verified via curl: no-Accept=302, Accept=200).
+    const headers = Object.assign({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9"
+    }, options.headers ?? {});
     try {
         return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
     } catch(e) {

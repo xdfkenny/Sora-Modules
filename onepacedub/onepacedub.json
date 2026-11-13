@@ -1,0 +1,20 @@
+{
+    "sourceName": "One Pace (DUB)",
+    "iconUrl": "https://raw.githubusercontent.com/JayGxnzalez/Modules/main/One-Pace-DUB/One_Pace_Logo.png",
+    "author": {
+        "name": "Jay (rebuilt by xdfkenny)",
+        "icon": "https://avatars.githubusercontent.com/JayGxnzalez?s=400",
+        "url": "https://github.com/JayGxnzalez"
+    },
+    "version": "2.0.0",
+    "language": "English",
+    "streamType": "MP4",
+    "quality": "480p - 720p - 1080p",
+    "baseUrl": "https://onepace.net/",
+    "searchBaseUrl": "https://onepace.net/en/watch?search=%s",
+    "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/onepacedub/onepacedub.js",
+    "type": "anime",
+    "asyncJS": true,
+    "downloadSupport": true,
+    "softsub": false
+}

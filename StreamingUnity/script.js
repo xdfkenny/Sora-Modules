@@ -1,6 +1,5 @@
 // Settings start
 const baseUrl = "streamingcommunityz.nexus"; // Non aggiungere 'https://' all'inizio o "/" alla fine
-const patcher = true; // Attiva/Disattiva questo se le stream non funzionano
 // Settings end
 
 function getFullDomain() {
@@ -189,17 +188,36 @@ async function extractStreamUrl(url) {
  
             if (urlMatch && tokenMatch && expiresMatch && tokenMatch[1] !== "null" && expiresMatch[1] !== "null") {
                 const separator = urlMatch[1].includes("?") ? "&" : "?";
-                let streamUrl = urlMatch[1] + separator + "token=" + encodeURIComponent(tokenMatch[1]) + "&expires=" + encodeURIComponent(expiresMatch[1]);
-                if (patcher) {
-                    streamUrl += "&h=1";
+                const baseStreamUrl = urlMatch[1] + separator + "token=" + encodeURIComponent(tokenMatch[1]) + "&expires=" + encodeURIComponent(expiresMatch[1]);
+                // vixcloud accepts `&h=1` only for some videos and 403s it on others
+                // (and vice versa). Probe both variants and return the playable one;
+                // fall back to h=1 when the probe is inconclusive.
+                const playlistWorks = async (candidate) => {
+                    try {
+                        const probe = await soraFetch(candidate);
+                        if (!probe) return false;
+                        const body = await probe.text();
+                        return typeof body === "string" && body.indexOf("#EXTM3U") === 0;
+                    } catch (e) {
+                        return false;
+                    }
+                };
+                let streamUrl = baseStreamUrl;
+                const plainOk = await playlistWorks(baseStreamUrl);
+                if (!plainOk) {
+                    const h1Ok = await playlistWorks(baseStreamUrl + "&h=1");
+                    if (h1Ok) {
+                        streamUrl = baseStreamUrl + "&h=1";
+                    }
                 }
-                console.log("Final URL found (Master Playlist): " + streamUrl);
+                console.log("Final URL found (Master Playlist, probed): " + streamUrl + (plainOk ? " [plain]" : " [h=1]"));
                 return JSON.stringify({
                     streams: [{
                         title: "VixCloud",
                         streamUrl: streamUrl,
                         headers: { Referer: embedUrl }
-                    }]
+                    }],
+                    subtitle: ""
                 });
             }
         }

@@ -1,6 +1,6 @@
 {
   "sourceName": "KaliScan (Eclipse)",
-  "version": "1.3-e2",
+  "version": "1.4-e2",
   "language": "English",
   "languageType": [
     "Translated"
@@ -8,11 +8,11 @@
   "streamType": "mangas",
   "type": "mangas",
   "quality": "N/A",
-  "baseUrl": "https://kaliscan.io/",
-  "searchBaseUrl": "https://kaliscan.io/",
+  "baseUrl": "https://kaliscan.org/",
+  "searchBaseUrl": "https://kaliscan.org/?s=%s&post_type=wp-manga",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/kaliscan/kaliscan.js",
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/eclipse/kaliscan/kaliscan.js",
-  "iconURL": "https://kaliscan.io/static/sites/icons/apple-touch-icon.png",
+  "iconURL": "https://kaliscan.org/wp-content/uploads/2023/07/kaliscan.jpg",
   "author": {
     "name": "xdfkenny",
     "iconURL": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",

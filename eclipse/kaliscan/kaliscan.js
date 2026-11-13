@@ -133,28 +133,76 @@
     }
 })();
 
+// KaliScan (Eclipse) — rebuilt on kaliscan.org (Madara/wp-manga WordPress
+// site), mirroring kaliscan/kaliscan.js v2.0.0. The original kaliscan.io is
+// DNS-dead (NXDOMAIN, re-verified 2026-11-12); kaliscan.app is an unrelated
+// gambling site. Build marker: [KaliScan-Eclipse] module script loaded v1.4-e2 (kaliscan.org)
+console.log("[KaliScan-Eclipse] module script loaded v1.4-e2 (kaliscan.org)");
+
+var KALISCAN_BASE = "https://kaliscan.org";
+
+// fetchv2 wrapper with browser-like defaults (Eclipse novel env passes
+// headers/method/body; manga env may not have fetchv2 — fall back to fetch).
+function soraFetch(url, headers, method, body) {
+    if (!headers) headers = {};
+    if (!headers["User-Agent"]) headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36";
+    if (!headers["Referer"]) headers["Referer"] = KALISCAN_BASE + "/";
+    var response;
+    if (typeof fetchv2 === "function") {
+        response = fetchv2(url, headers, method || "GET", body);
+    } else {
+        response = fetch(url, { method: method || "GET", headers: headers, body: body });
+    }
+    return Promise.resolve(response).then(function (r) {
+        return {
+            text: function () { return Promise.resolve(r.text()).then(function (t) { return String(t); }); },
+            status: r.status
+        };
+    });
+}
+
 async function searchResults(keyword) {
     const results = [];
     try {
-        const response = await fetchv2("https://kaliscan.io/service/backend/search/?q=" + encodeURIComponent(keyword));
+        const response = await soraFetch(KALISCAN_BASE + "/?s=" + encodeURIComponent(keyword) + "&post_type=wp-manga");
         const html = await response.text();
 
-        const regex = /href="([^"]*manga[^"]*)"[^>]*>[\s\S]*?<img src="([^"]*)"[\s\S]*?<h3><a[^>]*>([\s\S]*?)<\/a><\/h3>/gi;
-        
+        // Madara search results: tab-thumb <a title="..." href="..."><img data-src="..."></a>
+        const thumbRegex = /<a href="([^"]+\/manga\/[^"]+\/)"[^>]*title="([^"]*)"[^>]*>\s*<img[^>]*data-src="([^"]+)"[^>]*>/gi;
+
         let match;
         const seen = new Set();
-        while ((match = regex.exec(html)) !== null) {
-            const href = match[1].startsWith("http") ? match[1].trim() : "https://kaliscan.io" + match[1].trim();
-            if (!seen.has(href)) {
+        while ((match = thumbRegex.exec(html)) !== null) {
+            const href = match[1].trim();
+            if (!href || seen.has(href)) continue;
+            seen.add(href);
+            const title = match[2].trim();
+            const image = match[3].trim();
+            if (!title) continue;
+            // Manga contract: id is what extractChapters/extractImages consume.
+            results.push({
+                id: href,
+                href: href,
+                image: image,
+                imageURL: image,
+                title: title
+            });
+        }
+
+        // Fallback: layouts without tab-thumb images — use post-title h3 anchors
+        if (results.length === 0) {
+            const looseRegex = /post-title">\s*<h3[^>]*><a href="([^"]+)">([\s\S]*?)<\/a>/gi;
+            let lMatch;
+            while ((lMatch = looseRegex.exec(html)) !== null) {
+                const href = lMatch[1].trim();
+                if (!href || seen.has(href)) continue;
                 seen.add(href);
-                // Manga contract: id is what extractChapters/extractImages consume (the
-                // manga URL, from which extractChapters pulls the numeric manga_id).
                 results.push({
                     id: href,
                     href: href,
-                    image: match[2].trim(),
-                    imageURL: match[2].trim(),
-                    title: match[3].replace(/<[^>]+>/g, '').trim()
+                    image: "",
+                    imageURL: "",
+                    title: lMatch[2].replace(/<[^>]+>/g, '').trim()
                 });
             }
         }
@@ -167,15 +215,25 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
+        const response = await soraFetch(url);
         const html = await response.text();
 
         const descRegex = /<meta name="description" content="([^"]+)"/i;
         const descMatch = descRegex.exec(html);
         const description = descMatch ? descMatch[1].trim() : "N/A";
+
+        // Madara "Alternative" field, when present
+        let aliases = "N/A";
+        const altRegex = /mg_alternative[\s\S]*?summary-content">([\s\S]*?)<\/div>/i;
+        const altMatch = altRegex.exec(html);
+        if (altMatch) {
+            const alt = altMatch[1].replace(/<[^>]+>/g, '').trim();
+            if (alt && alt.length > 0 && alt.length < 500) aliases = alt;
+        }
+
         return [{
             description: description,
-            aliases: "N/A",
+            aliases: aliases,
             airdate: "N/A"
         }];
     } catch (err) {
@@ -190,29 +248,25 @@ async function extractDetails(url) {
 async function extractChapters(url) {
     const results = { en: [] };
     try {
-        const idRegex = /\/manga\/(\d+)-/;
-        const idMatch = url.match(idRegex);
-        if (!idMatch) return results;
-        const manga_id = idMatch[1];
-
-        const chapUrl = `https://kaliscan.io/service/backend/chaplist/?manga_id=${manga_id}`;
-        const response = await fetchv2(chapUrl);
+        const cleanUrl = String(url).trim();
+        const chapUrl = cleanUrl.endsWith("/") ? cleanUrl + "ajax/chapters/" : cleanUrl + "/ajax/chapters/";
+        const response = await soraFetch(chapUrl, {}, "POST");
         const html = await response.text();
 
-        const regex = /<a href="([^"]*)"[^>]*>[\s\S]*?Chapter\s*([\d.]+)/gi;
+        const regex = /<a href="([^"]*)"[^>]*>\s*Chapter\s*([\d.]+[^<]*)<\/a>/gi;
         let match;
         const seen = new Set();
 
         while ((match = regex.exec(html)) !== null) {
-            const chapterUrl = match[1].startsWith("http") ? match[1].trim() : "https://kaliscan.io" + match[1].trim();
+            const chapterUrl = match[1].startsWith("http") ? match[1].trim() : KALISCAN_BASE + match[1].trim();
             if (seen.has(chapterUrl)) continue;
             seen.add(chapterUrl);
-            const chapterNum = parseFloat(match[2], 10) || 0;
             const chapterStr = match[2].trim();
+            const chapterNum = parseFloat(chapterStr, 10) || 0;
             // Language map entry: [chapterStr, [{id,title,chapter}]]
             results.en.push([chapterStr, [{
                 id: chapterUrl,
-                title: `Chapter ${chapterStr}`,
+                title: "Chapter " + chapterStr,
                 chapter: chapterNum
             }]]);
         }
@@ -226,14 +280,16 @@ async function extractChapters(url) {
 async function extractImages(url) {
     const results = [];
     try {
-        const response = await fetchv2(url);
+        const response = await soraFetch(url);
         const html = await response.text();
-        const regex = /var chapImages = "([^"]*)"/;
-        const match = regex.exec(html);
-        if (match) {
-            const imagesString = match[1];
-            const images = imagesString.split(',');
-            results.push(...images);
+
+        // Lazy-loaded chapter pages: <img class="wp-manga-chapter-img ..." data-src="...">
+        // data-src values carry stray whitespace/newlines — strip before use.
+        const regex = /<img[^>]*class="wp-manga-chapter-img[^"]*"[^>]*data-src="([^"]*)"[^>]*>|<img[^>]*data-src="([^"]*)"[^>]*class="wp-manga-chapter-img[^"]*"/gi;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const img = (match[1] || match[2]).replace(/[\r\n\t]/g, '').trim();
+            if (img) results.push(img);
         }
 
         return results;

@@ -1,4 +1,4 @@
-// Kuudere → Re:ANIME (kuudere.to rebranded to reanime.to, SvelteKit SSR, Oct 2026)
+// Kuudere → Re:ANIME (kuudere.to rebranded to reanime.cz, SvelteKit SSR, Oct 2026)
 // The old kuudere.to JSON API (kuudere.to/search?keyword=, /api/watch/<id>/<n>) is
 // gone with the rebrand. Re:ANIME serves search/detail/episode data server-side
 // rendered in the initial HTML, and streams through flixcloud.cc embeds.
@@ -12,7 +12,7 @@
 async function searchResults(keyword) {
     try {
         const encodedKeyword = encodeURIComponent(keyword);
-        const response = await soraFetch(`https://reanime.to/search?q=${encodedKeyword}`);
+        const response = await soraFetch(`https://reanime.cz/search?q=${encodedKeyword}`);
         const html = await response.text();
 
         const results = [];
@@ -20,7 +20,7 @@ async function searchResults(keyword) {
         const cardRe = /<a href="(\/anime\/[^"]+)"[^>]*>[\s\S]{0,2500}?<img src="([^"]+)" alt="([^"]*)"/g;
         let m;
         while ((m = cardRe.exec(html)) !== null) {
-            const href = "https://reanime.to" + m[1];
+            const href = "https://reanime.cz" + m[1];
             if (seen[href]) continue;
             seen[href] = true;
             const title = (m[3] || "").trim() || decodeURIComponent(m[1].split("/").pop() || "");
@@ -95,7 +95,7 @@ async function extractEpisodes(url) {
         if (!slugM) throw new Error("cannot parse slug from url");
         const slug = slugM[1];
 
-        const response = await soraFetch(`https://reanime.to/watch/${slug}`);
+        const response = await soraFetch(`https://reanime.cz/watch/${slug}`);
         const html = await response.text();
 
         const aidM = html.match(/anilist_id:(\d+)/);
@@ -112,8 +112,8 @@ async function extractEpisodes(url) {
         const episodes = nums.map(n => ({
             title: 'Episode ' + n,
             href: aid
-                ? `https://reanime.to/api/flix/${aid}/${n}`
-                : `https://reanime.to/watch/${slug}?ep=${n}`,
+                ? `https://reanime.cz/api/flix/${aid}/${n}`
+                : `https://reanime.cz/watch/${slug}?ep=${n}`,
             number: n
         }));
 
@@ -143,7 +143,7 @@ async function extractStreamUrl(url) {
                 const html = await resp.text();
                 const aidM = html.match(/anilist_id:(\d+)/);
                 if (aidM) {
-                    const r2 = await soraFetch(`https://reanime.to/api/flix/${aidM[1]}/${m[1]}`);
+                    const r2 = await soraFetch(`https://reanime.cz/api/flix/${aidM[1]}/${m[1]}`);
                     const data = await r2.json();
                     const servers = (data && data.servers) || [];
                     const pick = servers.find(s => s.serverName === 'HD-1' && s.dataType === 'sub') ||
@@ -159,7 +159,7 @@ async function extractStreamUrl(url) {
             streams: [{
                 title: "Re:ANIME (site player)",
                 streamUrl: dataLink,
-                headers: { "Referer": "https://reanime.to/" }
+                headers: { "Referer": "https://reanime.cz/" }
             }],
             subtitles: ""
         };

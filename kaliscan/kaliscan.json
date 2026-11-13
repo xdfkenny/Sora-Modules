@@ -1,7 +1,7 @@
 {
   "sourceName": "KaliScan",
-  "iconURL": "https://kaliscan.io/static/sites/icons/apple-touch-icon.png",
-  "version": "1.3",
+  "iconURL": "https://kaliscan.org/wp-content/uploads/2023/07/kaliscan.jpg",
+  "version": "2.0.0",
   "language": "English",
   "languageType": [
     "Translated"
@@ -19,8 +19,8 @@
   "supportsAnymex": true,
   "supportsEclipse": true,
   "supportsShirox": true,
-  "baseUrl": "https://kaliscan.io/",
-  "searchBaseUrl": "https://kaliscan.io/",
+  "baseUrl": "https://kaliscan.org/",
+  "searchBaseUrl": "https://kaliscan.org/?s=%s&post_type=wp-manga",
   "streamType": "mangas",
   "quality": "N/A",
   "asyncJS": true,

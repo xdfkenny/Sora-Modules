@@ -1,27 +1,50 @@
+function an1meDecodeEntities(s) {
+    return String(s || "")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#8217;|&rsquo;/g, "'")
+        .replace(/&#8216;|&lsquo;/g, "'")
+        .replace(/&#8220;|&ldquo;/g, '"')
+        .replace(/&#8221;|&rdquo;/g, '"')
+        .replace(/&#8211;|&ndash;/g, "-")
+        .replace(/&#8212;|&mdash;/g, "-")
+        .replace(/&#038;|&#38;/g, "&")
+        .replace(/&#(\d+);/g, function (m, d) {
+            try { return String.fromCharCode(parseInt(d, 10)); } catch (e) { return m; }
+        })
+        .trim();
+}
+
 async function searchResults(keyword) {
     const results = [];
     try {
-        const htmlUrl = "https://an1me.to/?s=" + encodeURIComponent(keyword);
         const headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "Accept": "application/json"
         };
-        const htmlRes = await fetchv2(htmlUrl, headers);
-        const htmlText = await htmlRes.text();
-        const regex = /<a[^>]+href="(https:\/\/an1me\.to\/[^"']+)"[^>]*>([\s\S]*?)<\/a>/gi;
-        let match;
-        const seen = new Set();
-        while ((match = regex.exec(htmlText)) !== null) {
-            const href = match[1].trim();
-            if (!href.includes('/cdn-cgi/') && !href.includes('/wp-') && !href.includes('/search') && !href.endsWith('an1me.to/') && !seen.has(href)) {
-                seen.add(href);
-                const titleMatch = match[2].match(/<h\d[^>]*>([\s\S]*?)<\/h\d>/i);
-                const title = titleMatch ? titleMatch[1].replace(/<[^>]+>/g, '').trim() : "Anime";
-                results.push({
-                    title: title || "Anime",
-                    image: "",
-                    href: href
-                });
-            }
+        const apiUrl = "https://an1me.to/wp-json/wp/v2/anime?search=" + encodeURIComponent(keyword) + "&per_page=30&_embed=1";
+        const res = await fetchv2(apiUrl, headers);
+        const body = await res.text();
+        let data;
+        try { data = JSON.parse(body); } catch (e) { data = []; }
+        if (!Array.isArray(data)) return JSON.stringify([]);
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i] || {};
+            const href = (item.link || "").trim();
+            if (!href) continue;
+            let title = "Anime";
+            try {
+                title = an1meDecodeEntities(item.title && item.title.rendered) || "Anime";
+            } catch (e) {}
+            let image = "";
+            try {
+                const fm = item._embedded && item._embedded["wp:featuredmedia"] && item._embedded["wp:featuredmedia"][0];
+                if (fm && fm.source_url) image = fm.source_url;
+            } catch (e) {}
+            results.push({ title: title, image: image, href: href });
         }
         return JSON.stringify(results);
     } catch (err) {

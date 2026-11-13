@@ -1,0 +1,22 @@
+{
+  "sourceName": "USA TV",
+  "iconUrl": "https://i.imgur.com/pvXZ8DX.png",
+  "author": {
+    "name": "Jay",
+    "icon": "https://avatars.githubusercontent.com/JayGxnzalez?s=400",
+    "url": "https://github.com/JayGxnzalez"
+  },
+  "version": "2.0.0",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://iptv-org.github.io/iptv/",
+  "searchBaseUrl": "https://iptv-org.github.io/iptv/",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/usatv/usatv.js",
+  "asyncJS": true,
+  "type": "live",
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true
+}

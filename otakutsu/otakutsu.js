@@ -124,6 +124,31 @@ async function extractEpisodes(url) {
     }
 }
 
+// Module-level cookie jar: the media API gates every step on cookies
+// (_otakutsu_site from the watch page, __Host-otakutsu_media from /api/media/session).
+const otakutsuCookies = {};
+function otakutsuStoreCookies(response) {
+    try {
+        if (!response || !response.headers) return;
+        let raw = [];
+        if (typeof response.headers.getSetCookie === 'function') raw = response.headers.getSetCookie();
+        else {
+            const single = response.headers.get && response.headers.get('set-cookie');
+            if (single) raw = [single];
+        }
+        for (const c of raw) {
+            const kv = c.split(';')[0];
+            const i = kv.indexOf('=');
+            if (i > 0) otakutsuCookies[kv.substring(0, i)] = kv.substring(i + 1);
+        }
+    } catch (e) { }
+}
+function otakutsuCookieHeader() {
+    const keys = Object.keys(otakutsuCookies);
+    if (keys.length === 0) return "";
+    return keys.map(k => k + "=" + otakutsuCookies[k]).join("; ");
+}
+
 async function extractStreamUrl(url) {
     try {
         const epMatch = url.match(/ep=(\d+)/);
@@ -136,13 +161,16 @@ async function extractStreamUrl(url) {
         const OT_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
         const watchUrl = `https://otakutsu.cc/watch/${animeId}?ep=${epNum}`;
 
-        // 1) Warm up the session cookie jar (the API endpoints 404 without it).
+        // 1) Warm up: fetch the watch page to collect the site cookie.
         const warm = await soraFetch(watchUrl, { headers: { "User-Agent": OT_UA, "Referer": "https://otakutsu.cc/" } });
+        if (warm) otakutsuStoreCookies(warm);
         if (warm && typeof warm.text === 'function') { try { await warm.text(); } catch (e) { } }
 
-        // 2) Bootstrap: get a signed streamToken for this anime/episode.
-        const bootHeaders = {
+        const jarCookie = otakutsuCookieHeader();
+        // The media API 404s unless the request looks like an in-browser same-origin call.
+        const apiHeaders = {
             "Content-Type": "application/json",
+            "Accept": "application/json",
             "Referer": watchUrl,
             "Origin": "https://otakutsu.cc",
             "Sec-Fetch-Site": "same-origin",
@@ -150,12 +178,16 @@ async function extractStreamUrl(url) {
             "Sec-Fetch-Dest": "empty",
             "User-Agent": OT_UA
         };
+        if (jarCookie) apiHeaders["Cookie"] = jarCookie;
+
+        // 2) Bootstrap: get a signed streamToken (JWT) for this anime/episode.
         let token = '';
         const bootResponse = await soraFetch("https://otakutsu.cc/api/media/bootstrap", {
-            method: 'POST', headers: bootHeaders,
+            method: 'POST', headers: apiHeaders,
             body: JSON.stringify({ animeId: animeId, ep: epNum })
         });
         if (bootResponse) {
+            otakutsuStoreCookies(bootResponse);
             const bootText = typeof bootResponse.text === 'function' ? await bootResponse.text() : String(bootResponse);
             try {
                 const boot = JSON.parse(bootText);
@@ -164,17 +196,24 @@ async function extractStreamUrl(url) {
         }
         if (!token) return JSON.stringify({ streams: [], subtitles: "" });
 
-        // 3) Open a playback session with the token.
-        await soraFetch("https://otakutsu.cc/api/media/session", {
-            method: 'POST', headers: bootHeaders,
+        // 3) Open a playback session — sets the __Host-otakutsu_media cookie the
+        //    server action requires ("Playback session required" without it).
+        const sessionHeaders = {};
+        for (const k in apiHeaders) sessionHeaders[k] = apiHeaders[k];
+        const jarCookie2 = otakutsuCookieHeader();
+        if (jarCookie2) sessionHeaders["Cookie"] = jarCookie2;
+        const sessionResponse = await soraFetch("https://otakutsu.cc/api/media/session", {
+            method: 'POST', headers: sessionHeaders,
             body: JSON.stringify({ streamToken: token })
         });
+        if (sessionResponse) otakutsuStoreCookies(sessionResponse);
+        if (sessionResponse && typeof sessionResponse.text === 'function') { try { await sessionResponse.text(); } catch (e) { } }
 
         // 4) Server action loadStreamSourcesAction -> flight payload with sources.
-        const body = JSON.stringify([animeId, epNum, token, "$undefined"]);
+        const body = JSON.stringify([animeId, epNum, token, {}]);
         const headers = {
             "Content-Type": "text/plain;charset=UTF-8",
-            "Next-Action": "7895d31e05b0cdd44515d78146c966ad9a753576e3",
+            "Next-Action": "78c18f62af3a5c99d524289cc5d7cf28165c92559c",
             "Referer": watchUrl,
             "Origin": "https://otakutsu.cc",
             "Sec-Fetch-Site": "same-origin",
@@ -182,6 +221,8 @@ async function extractStreamUrl(url) {
             "Sec-Fetch-Dest": "empty",
             "User-Agent": OT_UA
         };
+        const jarCookie3 = otakutsuCookieHeader();
+        if (jarCookie3) headers["Cookie"] = jarCookie3;
 
         const postResponse = await soraFetch(watchUrl, {
             method: 'POST',
@@ -211,17 +252,23 @@ async function extractStreamUrl(url) {
         if (data && data.sources) {
             for (const source of data.sources) {
                 if (source.url) {
-                    // some servers return a site-relative playlist path
-                    if (source.url.charAt(0) === '/') source.url = 'https://otakutsu.cc' + source.url;
+                    const streamHeaders = {
+                        "Referer": "https://otakutsu.cc/",
+                        "User-Agent": OT_UA
+                    };
+                    // otakutsu-hosted playlists come back site-relative and are gated
+                    // on the __Host-otakutsu_media playback-session cookie
+                    if (source.url.charAt(0) === '/') {
+                        source.url = 'https://otakutsu.cc' + source.url;
+                        const mediaCookie = otakutsuCookieHeader();
+                        if (mediaCookie) streamHeaders["Cookie"] = mediaCookie;
+                    }
                     const subTypeLabel = source.subType === 'sub' ? 'Sub' : 'Dub';
-                    const title = `${source.quality || 'auto'} • ${subTypeLabel} (${source.server || 'kiwi'})`;
+                    const title = source.label || `${source.quality || 'auto'} • ${subTypeLabel} (${source.server || 'kiwi'})`;
                     streamObjects.push({
                         title: title,
                         streamUrl: source.url,
-                        headers: {
-                            "Referer": "https://otakutsu.cc/",
-                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"
-                        }
+                        headers: streamHeaders
                     });
                 }
                 if (source.tracks && !subtitleUrl) {
@@ -236,24 +283,14 @@ async function extractStreamUrl(url) {
         // subtitle track can also come back site-relative
         if (subtitleUrl && subtitleUrl.charAt(0) === '/') subtitleUrl = 'https://otakutsu.cc' + subtitleUrl;
 
-        if (streamObjects.length === 0) {
-            streamObjects.push({
-                title: "Otakutsu Stream",
-                streamUrl: url,
-                headers: { "Referer": "https://otakutsu.cc/" }
-            });
-        }
-
+        // No fake fallback: if we could not resolve real sources, return empty.
         return JSON.stringify({
             streams: streamObjects,
             subtitles: subtitleUrl
         });
     } catch (err) {
         console.log("Error in extractStreamUrl: " + err);
-        return JSON.stringify({
-            streams: [{ title: "Otakutsu Stream", streamUrl: url, headers: { Referer: "https://otakutsu.cc/" } }],
-            subtitles: ""
-        });
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
 }
 

@@ -1,18 +1,18 @@
 {
   "sourceName": "Moflix",
-  "iconUrl": "https://moflix-stream.xyz/favicon/icon-512x512.png",
+  "iconUrl": "https://moflix-stream.top/favicon/icon-512x512.png",
   "author": {
     "name": "xdfkenny & Cufiy",
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.14",
+  "version": "1.1.0",
   "language": "German",
   "streamType": "HLS",
   "quality": "1080p",
   "type": "movie/series",
-  "baseUrl": "https://moflix-stream.xyz/",
-  "searchBaseUrl": "https://moflix-stream.xyz/api/v1/search/%s?loader=searchAutocomplete",
+  "baseUrl": "https://moflix-stream.top/",
+  "searchBaseUrl": "https://moflix-stream.top/api/v1/search/%s?loader=searchAutocomplete",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/moflix/moflix.js",
   "asyncJS": true,
   "downloadSupport": true,

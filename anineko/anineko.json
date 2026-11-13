@@ -6,7 +6,7 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.1",
+  "version": "2.0.0",
   "language": "English",
   "languageType": [
     "Dubbed",
@@ -14,8 +14,8 @@
   ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anineko.to/",
-  "searchBaseUrl": "https://anineko.to/",
+  "baseUrl": "https://anineko.cc/",
+  "searchBaseUrl": "https://anineko.cc/",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anineko/anineko.js",
   "type": "anime",
   "asyncJS": true,

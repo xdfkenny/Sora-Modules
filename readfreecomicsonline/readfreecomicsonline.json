@@ -1,0 +1,19 @@
+{
+  "sourceName": "ReadFreeComicsOnline",
+  "iconURL": "https://www.google.com/s2/favicons?sz=128&domain=readfreecomicsonline.com",
+  "version": "2.0.0",
+  "language": "English",
+  "baseUrl": "https://readfreecomicsonline.com",
+  "searchBaseUrl": "https://readfreecomicsonline.com/?s=%s",
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/Sora-Modules/main/readfreecomicsonline/readfreecomicsonline.js",
+  "author": {
+    "name": "Jay",
+    "iconURL": "https://avatars.githubusercontent.com/JayGxnzalez?s=400"
+  },
+  "type": "mangas",
+  "streamType": "mangas",
+  "quality": "N/A",
+  "novel": false,
+  "asyncJS": true,
+  "supportsShirox": true
+}

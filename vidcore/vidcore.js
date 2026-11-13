@@ -19,17 +19,17 @@ async function searchResults(keyword) {
         let baseUrlTemplate = null;
 
         if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`;
         }
 
         let dataResults = [];
@@ -84,7 +84,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -99,7 +99,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -138,7 +138,7 @@ async function extractEpisodes(url) {
             if (!match) throw new Error("Invalid URL format");
             const showId = match[1];
 
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const showData = await showResponseText.json();
 
                         // Parallel season fetches: big shows (One Piece: ~20 seasons) took
@@ -151,7 +151,7 @@ async function extractEpisodes(url) {
                 .map(async (season) => {
                     const seasonNumber = season.season_number;
                     try {
-                        const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                        const seasonResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
                         const seasonData = await seasonResponseText.json();
                         if (seasonData.episodes && seasonData.episodes.length) {
                             return seasonData.episodes.map(episode => ({
@@ -198,8 +198,8 @@ async function extractStreamUrl(ID) {
         }
 
         const targetPageUrl = mediaType === "movie"
-            ? `https://vidcore.net/movie/${tmdbID}/`
-            : `https://vidcore.net/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
+            ? `https://vidcore.io/movie/${tmdbID}/`
+            : `https://vidcore.io/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
 
         const response = await soraFetch(targetPageUrl);
         if (!response) throw new Error("Failed to fetch vidcore page");
@@ -209,23 +209,34 @@ async function extractStreamUrl(ID) {
         if (!match) throw new Error("Could not find payload text on vidcore page");
         const text = match[1];
 
-        const encVidcoreUrl = `https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(text)}`;
+        // enc-dec.app now requires a two-stage flow (see smy778/EncDecEndpoints
+        // samples/vidcore.py): stage=1 returns {stage1: url, token}; POST to
+        // stage1, feed the response into stage=2 to get {servers, stream, token}.
+        const encVidcoreUrl = `https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(text)}&stage=1`;
         const encRes = await soraFetch(encVidcoreUrl);
         if (!encRes) throw new Error("Failed to call enc-vidcore API");
         const encJson = await encRes.json();
-        const parts = encJson.result;
-
-        const { servers, stream, token } = parts;
+        const stage1 = encJson.result;
+        if (!stage1 || !stage1.stage1) throw new Error("enc-vidcore stage 1 failed");
 
         const headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
-            "Referer": "https://vidcore.net/",
+            "Referer": "https://vidcore.io/",
             "X-Requested-With": "XMLHttpRequest",
-            "X-CSRF-Token": token
+            "X-CSRF-Token": stage1.token
         };
 
-        const serversRes = await fetchv2(servers, headers, "POST", null);
+        const serversRes = await fetchv2(stage1.stage1, headers, "POST", null);
         const serversEncrypted = await serversRes.text();
+
+        const stage2Res = await soraFetch(`https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(serversEncrypted)}&stage=2`);
+        if (!stage2Res) throw new Error("Failed to call enc-vidcore stage 2");
+        const stage2Json = await stage2Res.json();
+        const parts = stage2Json.result;
+        if (!parts || !parts.servers) throw new Error("enc-vidcore stage 2 failed");
+
+        const { servers, stream, token } = parts;
+        headers["X-CSRF-Token"] = token;
 
         const decRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
             text: serversEncrypted
@@ -269,8 +280,8 @@ async function extractStreamUrl(ID) {
                 title: `[VidCore] ${res.name}`,
                 streamUrl: res.url,
                 headers: {
-                    "Referer": "https://vidcore.net/",
-                    "Origin": "https://vidcore.net"
+                    "Referer": "https://vidcore.io/",
+                    "Origin": "https://vidcore.io"
                 }
             });
 

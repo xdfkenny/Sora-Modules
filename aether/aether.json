@@ -6,11 +6,11 @@
     "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
     "url": "https://github.com/xdfkenny"
   },
-  "version": "1.2.3",
+  "version": "1.2.4",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://aether.bar/",
+  "baseUrl": "https://aether.ist/",
   "searchBaseUrl": "https://api.themoviedb.org/3/search/multi",
   "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aether/aether.js",
   "type": "shows/movies/anime",
@@ -19,6 +19,6 @@
   "softsub": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "changelog": "Add fast.aether scrape servers + vdrk subtitle source",
+  "changelog": "v1.2.4: fix stream Referer (self-origin, kaxate CDN 403); baseUrl moved to aether.ist",
   "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/aether/aether.js"
 }

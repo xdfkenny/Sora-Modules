@@ -1,10 +1,204 @@
 const BASE_URL = "https://rezka.ag";
 const BACKUP_URL = "https://hdrezka-home.tv";
 
+/* Techaro Anubis proof-of-work cookies (site behind /.within.website wall).
+   Solved once per session: sha256(randomData + nonce) with N leading zero
+   hex digits, then pass-challenge issues the auth JWT cookie below. */
+const anubisCookies = {};
+
+const baseCookieValue = "hdmbbs=1";
+
+function buildCookieHeader() {
+  const parts = [baseCookieValue];
+  const names = Object.keys(anubisCookies).sort();
+  for (const name of names) {
+    parts.push(name + "=" + anubisCookies[name]);
+  }
+  return parts.join("; ");
+}
+
 const defaultHeaders = {
   "User-Agent": "Mozilla/5.0",
-  "Cookie": "hdmbbs=1"
+  "Cookie": baseCookieValue
 };
+
+/* Pure-JS SHA-256 (hex). Input must be ASCII (Anubis randomData is hex). */
+function sha256Hex(ascii) {
+  try {
+    function rightRotate(v, a) { return (v >>> a) | (v << (32 - a)); }
+    const mathPow = Math.pow, maxWord = mathPow(2, 32);
+    let result = "";
+    const words = [];
+    const asciiBitLength = ascii.length * 8;
+    let hash = [];
+    const k = [];
+    let primeCounter = 0;
+    const isComposite = {};
+    for (let candidate = 2; primeCounter < 64; candidate++) {
+      if (!isComposite[candidate]) {
+        for (let i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+        hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+        k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+      }
+    }
+    let padded = ascii + "\x80";
+    while (padded.length % 64 - 56) padded += "\x00";
+    for (let i = 0; i < padded.length; i++) {
+      const j = padded.charCodeAt(i);
+      if (j >> 8) return "";
+      words[i >> 2] |= j << ((3 - i) % 4) * 8;
+    }
+    words[words.length] = ((asciiBitLength / maxWord) | 0);
+    words[words.length] = (asciiBitLength);
+    for (let j = 0; j < words.length;) {
+      const w = words.slice(j, j += 16);
+      const oldHash = hash.slice(0);
+      for (let i = 0; i < 64; i++) {
+        const w15 = w[i - 15], w2 = w[i - 2];
+        const a = hash[0], e = hash[4];
+        const temp1 = hash[7]
+          + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25))
+          + ((e & hash[5]) ^ ((~e) & hash[6]))
+          + k[i]
+          + (w[i] = (i < 16) ? w[i] : (
+              w[i - 16]
+              + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3))
+              + w[i - 7]
+              + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))
+            ) | 0);
+        const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22))
+          + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+        hash = [(temp1 + temp2) | 0].concat(hash);
+        hash[4] = (hash[4] + temp1) | 0;
+        hash.pop();
+      }
+      for (let i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+    }
+    for (let i = 0; i < 8; i++) {
+      for (let j = 3; j + 1; j--) {
+        const b = (hash[i] >> (j * 8)) & 255;
+        result += ((b < 16) ? "0" : "") + b.toString(16);
+      }
+    }
+    return result;
+  } catch (_) {
+    return "";
+  }
+}
+
+function absorbAnubisCookies(res) {
+  try {
+    const headers = res && res.headers;
+    if (!headers) return;
+
+    let raw = null;
+    if (typeof headers.get === "function") raw = headers.get("set-cookie");
+    else if (headers["set-cookie"]) raw = headers["set-cookie"];
+    else if (headers["Set-Cookie"]) raw = headers["Set-Cookie"];
+    if (!raw) return;
+
+    const lines = String(raw).split(/\r?\n/);
+    const seen = {};
+
+    for (const line of lines) {
+      const parts = String(line).split(/,(?=\s*techaro\.lol)/);
+      for (const part of parts) {
+        const kv = part.split(";")[0];
+        const eq = kv.indexOf("=");
+        if (eq <= 0) continue;
+        const name = kv.slice(0, eq).trim();
+        const value = kv.slice(eq + 1).trim();
+        if (name.indexOf("techaro.lol-anubis") !== 0) continue;
+
+        if (!seen[name]) seen[name] = { hadValue: false, value: "" };
+        if (value) {
+          seen[name].hadValue = true;
+          seen[name].value = value;
+        }
+      }
+    }
+
+    for (const name of Object.keys(seen)) {
+      if (seen[name].hadValue) anubisCookies[name] = seen[name].value;
+      else delete anubisCookies[name];
+    }
+
+    if (Object.keys(anubisCookies).length) {
+      defaultHeaders["Cookie"] = buildCookieHeader();
+    }
+  } catch (_) {}
+}
+
+function isAnubisPage(html) {
+  const src = String(html || "");
+  if (src.indexOf("/.within.website/") === -1) return false;
+  return (
+    src.indexOf("anubis_challenge") !== -1 ||
+    src.indexOf("Проверяем, что вы не бот!") !== -1
+  );
+}
+
+function parseAnubisChallenge(html) {
+  const src = String(html || "");
+  const m = src.match(/<script id="anubis_challenge"[^>]*>([\s\S]*?)<\/script>/i);
+  if (!m) return null;
+  try {
+    const parsed = JSON.parse(m[1]);
+    const ch = parsed && parsed.challenge ? parsed.challenge : parsed;
+    if (ch && ch.id && ch.randomData) return ch;
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function solveAnubisPow(challenge) {
+  try {
+    const randomData = String(challenge.randomData);
+    const difficulty = parseInt(challenge.difficulty, 10) || 2;
+    if (difficulty < 1 || difficulty > 5) return null;
+    const prefix = new Array(difficulty + 1).join("0");
+    const maxNonce = 1000000;
+
+    for (let nonce = 0; nonce < maxNonce; nonce++) {
+      const hash = sha256Hex(randomData + nonce);
+      if (hash && hash.indexOf(prefix) === 0) {
+        return { nonce: nonce, hash: hash };
+      }
+    }
+    return null;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function passAnubisChallenge(pageUrl, html) {
+  try {
+    const challenge = parseAnubisChallenge(html);
+    if (!challenge) return false;
+
+    const proof = solveAnubisPow(challenge);
+    if (!proof) return false;
+
+    const passUrl = pageUrl;
+
+    const target = getOrigin(pageUrl) +
+      "/.within.website/x/cmd/anubis/api/pass-challenge" +
+      "?id=" + encodeURIComponent(challenge.id) +
+      "&response=" + encodeURIComponent(proof.hash) +
+      "&nonce=" + encodeURIComponent(String(proof.nonce)) +
+      "&redir=" + encodeURIComponent(passUrl) +
+      "&elapsedTime=" + encodeURIComponent("5000");
+
+    const res = await fetchv2(target, defaultHeaders);
+    absorbAnubisCookies(res);
+    try { await res.text(); } catch (_) {}
+
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 function decodeHtmlEntities(str) {
   return String(str || "")
@@ -106,6 +300,36 @@ function appendQueryParams(url, params) {
   return query ? base + "?" + query : base;
 }
 
+async function fetchTextOnce(u, headers) {
+  const res = await fetchv2(u, headers || defaultHeaders);
+  absorbAnubisCookies(res);
+  const text = await res.text();
+  return String(text || "");
+}
+
+async function fetchTextAnubisAware(u, headers) {
+  let text = await fetchTextOnce(u, headers);
+
+  if (isAnubisPage(text)) {
+    const passed = await passAnubisChallenge(u, text);
+    if (passed) {
+      const retried = await fetchTextOnce(u, headers);
+      if (retried && !isAnubisPage(retried)) return retried;
+      // one more shot with a freshly issued challenge
+      const passedAgain = isAnubisPage(retried)
+        ? await passAnubisChallenge(u, retried)
+        : false;
+      if (passedAgain) {
+        const third = await fetchTextOnce(u, headers);
+        if (third && !isAnubisPage(third)) return third;
+      }
+      return retried || text;
+    }
+  }
+
+  return text;
+}
+
 async function fetchTextBackup(url, headers) {
   const primary = normalizeUrl(url, BASE_URL);
   const backup = backupUrl(primary);
@@ -113,13 +337,12 @@ async function fetchTextBackup(url, headers) {
 
   for (const u of tries) {
     try {
-      const res = await fetchv2(u, headers || defaultHeaders);
-      const text = await res.text();
+      const text = await fetchTextAnubisAware(u, headers);
 
-      if (text && String(text).length > 0) {
+      if (text && text.length > 0) {
         return {
           url: u,
-          text: String(text)
+          text: text
         };
       }
     } catch (_) {}
@@ -137,12 +360,24 @@ async function fetchJsonBackup(url, headers, method, body) {
   const tries = primary === backup ? [primary] : [primary, backup];
 
   for (const u of tries) {
-    try {
-      const res = await fetchv2(u, headers || defaultHeaders, method || "GET", body);
-      const data = await res.json();
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const res = await fetchv2(u, headers || defaultHeaders, method || "GET", body);
+        absorbAnubisCookies(res);
+        const text = await res.text();
 
-      if (data) return data;
-    } catch (_) {}
+        if (isAnubisPage(text) && attempt === 0) {
+          const passed = await passAnubisChallenge(u, text);
+          if (passed) continue;
+        }
+
+        const data = JSON.parse(text);
+        if (data) return data;
+        break;
+      } catch (_) {
+        break;
+      }
+    }
   }
 
   return null;

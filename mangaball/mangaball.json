@@ -1,0 +1,25 @@
+{
+  "sourceName": "MangaBall",
+  "iconURL": "https://raw.githubusercontent.com/JayGxnzalez/Modules/refs/heads/main/MangaBall/Icon.png",
+  "version": "1.2.0",
+  "language": "English",
+  "languageType": [
+    "Translated"
+  ],
+  "scriptURL": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangaball/mangaball.js",
+  "author": {
+    "name": "Jay",
+    "iconURL": "https://avatars.githubusercontent.com/JayGxnzalez?s=400",
+    "icon": "https://avatars.githubusercontent.com/JayGxnzalez?s=400",
+    "url": "https://github.com/JayGxnzalez"
+  },
+  "type": "mangas",
+  "supportsShirox": true,
+  "supportsLuna": true,
+  "baseUrl": "https://mangaball.com/",
+  "searchBaseUrl": "https://api.mangaball.com/api/v1/title/search-advanced?keyword=%s&sort_by=lastupdate&sort_order=desc&tag_mode=AND&use_user_settings=false&page=1&limit=36",
+  "streamType": "mangas",
+  "quality": "N/A",
+  "asyncJS": true,
+  "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/mangaball/mangaball.js"
+}
