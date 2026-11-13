@@ -171,47 +171,51 @@ const KEYGEN_URLS = [
     'https://raw.githubusercontent.com/sdaqo/anipy-cli/key-gen/scripts/keygen/keygen.json'
 ];
 
-// Key = partB XOR mask(181); mask blocks/consts extracted from the mkissa.to
-// crypto chunk Cs-j4hUW.js (build 181, verified 2026-10-22: boot token
-// reproduces the app's live token byte-for-byte; k9 bootstrap -> 200).
-// Boot token algorithm (two-stage HMAC, build 181):
+// Key = partB XOR mask(189); mask blocks/consts extracted from the mkissa.to
+// crypto chunk DmW2_MRj.js (site moved to a SvelteKit build; decoded the
+// obfuscated string table + rotator IIFE). Verified live 2026-11-12: k9/k7/k2
+// bootstrap -> 200; chapterPages decrypts.
+// Boot token algorithm (two-stage HMAC, build 189):
 //   f    = HMAC(mask, AA_BOOT_PREFIX + build_id)
-//   boot = hex(HMAC(f, buildId:group:host:epoch:lane))   // ":" -joined
+//   boot = hex(HMAC(f, epoch|lane|group|host|buildId))   // "|" -joined
 // Note: content lanes are routed per persisted query — chapterPages runs on
 // k9, episode on k7, music on k2 (the app's lane router). This module
 // only calls chapterPages, so the fallback lane is k9.
 const FALLBACK_KEYGEN = {
-    build_id: '181',
-    epoch: 2963,
+    build_id: '189',
+    epoch: 2967,
     lane: 'k9',
-    key: 'f6cc481680075000c08a014becec0e4612a7d27cb995e58e1fee6e8400f2a058',
+    key: 'c4e1d78dd3ad5068792872565dd2a42edf2297b9a6edbebcea9abf2d72fe6726',
     static_key: 'Xot36i3lK3:v1'
 };
 
-// Self-bootstrap inputs (extracted from the mkissa.to crypto chunk, build 181).
+// Self-bootstrap inputs (extracted from the mkissa.to crypto chunk DmW2_MRj.js,
+// build 189 — decoded via the chunk's string table + push/shift rotator).
 // The client derives its own AES key without any secret server round-trip:
 //   embed[i]   = concat(base64decode(mask blocks))          [32 bytes]
 //   salt[i]    = (buildId.charCodeAt(i % len) || 0)
 //                ^ ((i * AA_SALT_MUL + AA_SALT_ADD) & 255)
 //   linear[i]  = ((i >> 3) * AA_FRAG_MUL + (i % 8) * AA_FRAG_ADD) & 255
 //   mask[i]    = embed[i] ^ salt[i] ^ linear[i]
-// The chunk's Df config also carries envXor:82, but the PRODUCTION runtime
-// applies envXor=0 (verified 2026-10-22: matching the live x-aa-boot required
-// ^0; ^82/^165 rejected). If a future build rejects tokens, sweep
-// envXor 0..255 before assuming the blocks changed.
+// The chunk's Df config also carries envXor:12, but the PRODUCTION runtime
+// applies envXor=0 (verified 2026-11-12: matching the live x-aa-boot required
+// the raw mask; any extra xor is rejected with invalid_boot_token). If a
+// future build rejects tokens, sweep envXor 0..255 before assuming the blocks
+// changed.
 //   hmacKey    = HMAC-SHA256(mask, AA_BOOT_PREFIX + buildId)
-//   bootTok    = hex(HMAC-SHA256(hmacKey, `${buildId}:${group}:${host}:${epoch}:${lane}`))
+//   bootTok    = hex(HMAC-SHA256(hmacKey, `${epoch}:${lane}:${group}:${host}:${buildId}`))
+//                — build 189 uses "|" as the separator (chunk's Df.join)
 //   GET {AA_BOOTSTRAP_URL}?buildId=<id>&k=<lane>  (x-build-id / x-aa-boot headers)
 //   key        = first32(base64decode(partB)) XOR mask
 // Epochs are 7-day (floor(now/604800000)); during the first day of an epoch the
 // previous one is still accepted. group is "mkissa" for the public hosts, and
 // the boot message uses the FULL host (with TLD), not the stripped first segment.
-const AA_MASK_BLOCKS = ['Yh7GkKY7p1E=', 'GhmFaOUHEGk=', 'prExpp5kt+4=', 'FSm6Hdvb+S4='];
-const AA_SALT_MUL = 60;
-const AA_SALT_ADD = 175;
-const AA_FRAG_MUL = 44;
-const AA_FRAG_ADD = 1;
-const AA_BOOT_PREFIX = 'UZQjku7:';
+const AA_MASK_BLOCKS = ['pF98Ab2CCc0=', 'gEhpQrtSn+M=', 'oPeHj9dBNTU=', '7XcuzKoXhgs='];
+const AA_SALT_MUL = 175;
+const AA_SALT_ADD = 202;
+const AA_FRAG_MUL = 129;
+const AA_FRAG_ADD = 61;
+const AA_BOOT_PREFIX = 'iGmNgPGdi:';
 const AA_WEEK_MS = 604800000;
 const AA_DAY_MS = 86400000;
 const AA_BOOTSTRAP_URL = 'https://api.mkissa.net/client-crypto/v1/bootstrap';
@@ -226,7 +230,7 @@ const DEFAULT_CHAPTER_HEAD = 'https://aln.youtube-anime.com/';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-console.log('[AllMangaNovels] module script loaded v1.6.0-e2 (build 181 keygen, k9 chapterPages lane + self-bootstrap + fetchv2 impersonate:chrome, kanzen-env safe)');
+console.log('[AllMangaNovels] module script loaded v1.7.0-e2 (build 189 keygen, k9 chapterPages lane + self-bootstrap + fetchv2 impersonate:chrome, kanzen-env safe)');
 
 /* ---- fetch bridge --------------------------------------------------------- */
 
@@ -792,18 +796,25 @@ async function aaBootstrapFor(lane, epoch) {
     try {
         const mask = aaBuildMask(String(FALLBACK_KEYGEN.build_id));
         const hmacKey = aaHmacSha256(mask, aaAscii(AA_BOOT_PREFIX + FALLBACK_KEYGEN.build_id));
-        // mkissa build 181: message is buildId:group:host:epoch:lane joined by ":"
-        // (verified live 2026-10-22: "181:mkissa:mkissa.to:2963:k9" -> 200).
-        // Build 179 used buildId|group|lane|epoch|host; 175 used
-        // buildId|group|host|epoch|lane; 166/141 used group:lane:epoch:host:buildId
-        // — tried in order on rejection.
+        // mkissa build 189: message is epoch|lane|group|host|buildId joined by
+        // "|" (chunk Df.parts order, verified live 2026-11-12:
+        // "2967|k9|mkissa|mkissa.to|189" -> 200).
+        // Older compositions (build 181 ":" layout, 179, 175, 166/141) are
+        // kept as fallbacks — tried in order on rejection.
+        const msg189 = [String(epoch), lane, AA_BOOT_GROUP, AA_BOOT_HOST, FALLBACK_KEYGEN.build_id].join('|');
         const msg181 = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, AA_BOOT_HOST, String(epoch), lane].join(':');
         const msgNew = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, lane, String(epoch), AA_BOOT_HOST].join('|');
         const msg175 = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, AA_BOOT_HOST, String(epoch), lane].join('|');
         const msgOld = AA_BOOT_GROUP + ':' + lane + ':' + epoch + ':' + AA_BOOT_HOST + ':' + FALLBACK_KEYGEN.build_id;
         const url = AA_BOOTSTRAP_URL + '?buildId=' + encodeURIComponent(FALLBACK_KEYGEN.build_id) +
             '&k=' + encodeURIComponent(lane);
-        let j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg181))));
+        let j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg189))));
+        if (!j) {
+            j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg181))));
+        }
+        if (!j) {
+            j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgNew))));
+        }
         if (!j) {
             j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg175))));
         }

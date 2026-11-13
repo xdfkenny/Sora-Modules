@@ -338,11 +338,10 @@ p {
   color: var(--fg);
 }
 
+/* Solid accent, not gradient text (background-clip:text is unreadable at
+   small sizes and an accessibility smell); brand ice blue carries it. */
 .hero-title span {
-  background: linear-gradient(120deg, var(--accent-dark), var(--crystal));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent-ink);
 }
 
 .hero-sub {
@@ -732,6 +731,15 @@ main {
 
 .search-input::placeholder {
   color: var(--fg-muted);
+}
+
+/* The custom #libSearchClear button is the one true clear affordance;
+   hide the native WebKit cancel so two "×" don't stack. */
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
 }
 
 .search-input:focus {
@@ -1334,6 +1342,20 @@ a.btn-card-action.btn-card-sora:hover,
   object-fit: cover;
 }
 
+/* Letter fallback sits behind the icon img; shows through when a dead
+   icon host gets its img removed by the onerror chain. */
+.card-icon-fallback {
+  grid-area: 1 / 1;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--accent-ink);
+  user-select: none;
+}
+
+html[data-theme="dark"] .card-icon-fallback { color: #8ED0F0; }
+
+.card-icon img { grid-area: 1 / 1; }
+
 .card-title-row {
   display: flex;
   align-items: center;
@@ -1347,6 +1369,7 @@ a.btn-card-action.btn-card-sora:hover,
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--fg);
+  margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2073,7 +2096,7 @@ html[data-theme="dark"] .hero-snow .snowflake { background: #3A5575; opacity: 0.
 html[data-theme="dark"] .hero-hex { background: linear-gradient(135deg, #1E344B, #2A4A65); opacity: 0.35; }
 html[data-theme="dark"] .eyebrow { color: #8A9AB3; }
 html[data-theme="dark"] .hero-title { color: #E6EDF3; }
-html[data-theme="dark"] .hero-title span { background: linear-gradient(120deg, #8ED0F0, #5A9AC5); -webkit-background-clip: text; background-clip: text; }
+html[data-theme="dark"] .hero-title span { color: #8ED0F0; }
 html[data-theme="dark"] .hero-sub { color: #E6EDF3; }
 html[data-theme="dark"] .hero-desc { color: #8A9AB3; }
 html[data-theme="dark"] .card { background: #141E32; }

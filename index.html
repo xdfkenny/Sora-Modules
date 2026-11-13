@@ -119,7 +119,7 @@
   <link rel="preconnect" href="https://raw.githubusercontent.com" />
   <link rel="preconnect" href="https://img.passportindex.org" />
   <script defer src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20261020b" />
+  <link rel="stylesheet" href="styles.css?v=20261112" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -282,7 +282,7 @@
               <button type="button" class="filter-pill" data-category="torrent" aria-pressed="false"><iconify-icon icon="mdi:magnet" aria-hidden="true"></iconify-icon> <span data-i18n="cat.torrent">Torrents</span></button>
             </div>
 
-            <div class="filter-group filter-group-apps chips" id="appFilters" aria-label="App">
+            <div class="filter-group filter-group-apps chips" id="appFilters" role="group" aria-label="App">
               <span class="filter-label">App:</span>
               <button type="button" class="filter-pill filter-pill-app" data-app="sora"><iconify-icon icon="mdi:cloud-outline" aria-hidden="true"></iconify-icon> Sora</button>
               <button type="button" class="filter-pill filter-pill-app" data-app="luna"><iconify-icon icon="mdi:moon-waning-crescent" aria-hidden="true"></iconify-icon> Luna</button>
@@ -291,7 +291,7 @@
           </div>
 
           <div class="filter-pills-row filter-pills-row-sort">
-            <div class="filter-group chips" id="sortFilters" aria-label="Sort">
+            <div class="filter-group chips" id="sortFilters" role="group" aria-label="Sort">
               <span class="filter-label" data-i18n="sort.label">Sort:</span>
               <button type="button" class="filter-pill filter-pill-sort" data-sort="recent" aria-pressed="false">
                 <iconify-icon icon="mdi:clock-outline" aria-hidden="true"></iconify-icon>
@@ -327,6 +327,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="material-symbols-outlined icon-sm">check_circle</span><span id="toastText"></span></div>
 
-  <script src="script.js?v=20261020b" defer></script>
+  <script src="script.js?v=20261112" defer></script>
 </body>
 </html>

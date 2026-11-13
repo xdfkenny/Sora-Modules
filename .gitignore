@@ -7,3 +7,12 @@ novel-examples
 git.luna-app.eu
 # cufiy bridge test harness (scratch — keep cufiy-bridge.json data file tracked)
 cufiy-test/
+
+# scratch harnesses & probe dumps (never publish)
+.tmp-audit/
+.tmp-fix/
+.tmp-keygen/
+.impeccable/
+wf-*.yml
+wf-net-api.txt
+boot-both.mjs

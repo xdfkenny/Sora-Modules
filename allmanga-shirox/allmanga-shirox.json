@@ -7,7 +7,7 @@
     "url": "https://github.com/xdfkenny"
   },
   "description": "Módulo de AllAnime (allmanga.to) — build Shirox con fetchv2 impersonate:chrome en todas las llamadas a la API (api.mkissa.net / api.allanime.day / clock / bootstrap), fingerprint de navegador completo contra el edge de Cloudflare. v1.14.0: keygen build 181 epoch 2963 lane k7 (boot 181:mkissa:mkissa.to:<epoch>:k7, IV epoch:buildId:qh:ts:lane, mask Yh7GkKY7p1E=…) + retry con IV legacy en NEED_CAPTCHA. v1.13.0: keygen build 179 + impersonation + toResponseLike. Para Sora/Luna clásicos, usa el módulo 'AllAnime' clásico.",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "language": "English (SUB/DUB)",
   "streamType": "HLS/MP4",
   "quality": "1080p",

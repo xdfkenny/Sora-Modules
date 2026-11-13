@@ -40,17 +40,21 @@ function esc(s) {
 /* Module icon with a fallback chain. An entry may carry `iconFallbackUrl`
  * (string or array): on load error the img walks down those URLs in order
  * instead of disappearing. The chain is embedded in the <img> so the onerror
- * handler needs no per-card JS wiring. */
-function cardIconImg(e) {
+ * handler needs no per-card JS wiring. A first-letter span sits behind the
+ * img in the same grid cell, so dead icons leave a letter, not a blank box. */
+function cardIconImg(e, name) {
+  var letter = String(name || e.name || '?').trim().charAt(0).toUpperCase();
   var chain = [];
   if (e.iconUrl) chain.push(String(e.iconUrl));
   var fb = e.iconFallbackUrl;
   if (fb) (Array.isArray(fb) ? fb : [fb]).forEach(function (u) { if (u) chain.push(String(u)); });
-  if (!chain.length) return '<span class="card-icon-fallback" aria-hidden="true"></span>';
+  if (!chain.length) return '<span class="card-icon-fallback" aria-hidden="true">' + esc(letter) + '</span>';
   if (chain.length === 1) {
-    return '<img src="' + esc(chain[0]) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
+    return '<span class="card-icon-fallback" aria-hidden="true">' + esc(letter) + '</span>' +
+      '<img src="' + esc(chain[0]) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">';
   }
-  return '<img src="' + esc(chain[0]) + '" data-icon-chain="' + esc(JSON.stringify(chain.slice(1))) + '" data-icon-idx="-1" alt="" loading="lazy" decoding="async" onerror="if(__iconFallback(this))this.remove()">';
+  return '<span class="card-icon-fallback" aria-hidden="true">' + esc(letter) + '</span>' +
+    '<img src="' + esc(chain[0]) + '" data-icon-chain="' + esc(JSON.stringify(chain.slice(1))) + '" data-icon-idx="-1" alt="" loading="lazy" decoding="async" onerror="if(__iconFallback(this))this.remove()">';
 }
 
 /* Walks a card icon's fallback chain. Returns true when the icon is dead
@@ -621,9 +625,9 @@ function renderShells() {
       : '';
     return '<article class="card' + dis + '" data-id="' + esc(e.id) + '" style="animation-delay:' + Math.min(i, 10) * 30 + 'ms">' +
       '<div class="card-head"><div class="card-icon">' +
-      cardIconImg(e) +
+      cardIconImg(e, e.name) +
       '</div><div class="cufiy-head-info"><div class="card-title-row">' +
-      '<div class="card-title">' + esc(e.name) + '</div><span class="ver" data-role="ver">…</span>' +
+      '<h3 class="card-title">' + esc(e.name) + '</h3><span class="ver" data-role="ver">…</span>' +
       '</div><div class="card-branch">' + esc(e.id) + '</div></div>' +
       (e.discontinued ? '<span class="discontinued-badge"><span class="material-symbols-outlined icon-sm">block</span> Discontinued</span>' : '') +
       (!e.discontinued && e.badge ? '<span class="fresh-badge"><span class="material-symbols-outlined icon-sm">new_releases</span> ' + esc(String(e.badge)) + '</span>' : '') +
@@ -982,8 +986,9 @@ function cufiyCardHtml(m, i) {
   }).join('');
   var quality = (m.quality && m.quality !== 'N/A') ? '<span class="chip">' + esc(m.quality) + '</span>' : '';
   var iconImg = m.iconUrl
-    ? '<img src="' + esc(m.iconUrl) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">'
-    : '<span class="card-icon-fallback" aria-hidden="true"></span>';
+    ? '<span class="card-icon-fallback" aria-hidden="true">' + esc((m.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
+      '<img src="' + esc(m.iconUrl) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">'
+    : '<span class="card-icon-fallback" aria-hidden="true">' + esc((m.name || '?').trim().charAt(0).toUpperCase()) + '</span>';
   var authorImg = m.authorIcon ? '<img src="' + esc(m.authorIcon) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '';
   var authorName = m.author
     ? (m.authorUrl
@@ -993,7 +998,7 @@ function cufiyCardHtml(m, i) {
   return '<article class="card card-cufiy" data-cufiy="' + esc(m.name) + '" style="animation-delay:' + Math.min(i, 10) * 30 + 'ms">' +
     '<div class="card-head"><div class="card-icon">' + iconImg + '</div>' +
     '<div class="cufiy-head-info"><div class="card-title-row">' +
-    '<div class="card-title">' + esc(m.name) + '</div>' +
+    '<h3 class="card-title">' + esc(m.name) + '</h3>' +
     (m.version ? '<span class="ver">v' + esc(m.version) + '</span>' : '') +
     '</div><div class="card-branch">original library</div></div>' +
     '<span class="cufiy-card-badge" title="Verified module from the original cufiy library"><span class="material-symbols-outlined icon-sm">public</span> ' + esc(t('cufiy.badge')) + '</span>' +

@@ -11,53 +11,57 @@ const KEYGEN_URLS = [
     'https://raw.githubusercontent.com/sdaqo/anipy-cli/key-gen/scripts/keygen/keygen.json'
 ];
 
-const EPISODE_QUERY = 'query($showId: String!$translationType: VaildTranslationTypeEnumType!$episodeString: String!) {episode(showId: $showId translationType: $translationType episodeString: $episodeString) {episodeString uploadDate sourceUrls thumbnail notes show{_id name englishName nativeName slugTime thumbnail tbObj {u sm md ts} lastEpisodeInfo lastEpisodeDate type season score airedStart availableEpisodes episodeDuration episodeCount lastUpdateEnd characterCount description broadcastInterval banner characters availableEpisodesDetail nameOnlyString characters isAdult relatedShows relatedMangas altNames disqusIds}pageStatus{_id notes pageId showId views likesCount commentCount dislikesCount boostsCount reviewCount userScoreCount userScoreTotalValue userScoreAverValue viewers{firstViewers{viewCount lastWatchedDate user{_id username displayName createdAt picture reputation roleLevel followerCount followingCount hideMe brief}}recViewers{viewCount lastWatchedDate user{_id username displayName createdAt picture reputation roleLevel followerCount followingCount hideMe brief}}}}episodeInfo{notes thumbnails tbObj {u sm md ts} vidInforssub uploadDates vidInforsdub vidInforsraw description}versionFix}}';
+// Episode persisted query - reconstructed byte-exact from the live mkissa.to
+// GraphQL chunk (build 189, 2026-11-12) by resolving the app template literals
+// (Bj function; field groups Hd/$i/Ws/Yt/Jr). Plain variant (no qat - the app
+// adds qat only behind a runtime flag).
+const EPISODE_QUERY = "\nquery(\n$showId: String!\n$translationType: VaildTranslationTypeEnumType!\n$episodeString: String!\n) {\nepisode(\nshowId: $showId\ntranslationType: $translationType\nepisodeString: $episodeString\n) {\nepisodeString\nuploadDate\nsourceUrls\nthumbnail\nnotes\nshow{\n\n\n_id\nname\nenglishName\nnativeName\nslugTime\n\nthumbnail\n\ntbObj {\n  u\n  sm\n  md\n  ts\n}\n\nlastEpisodeInfo\nlastEpisodeDate\ntype\nseason\nscore\nairedStart\navailableEpisodes\nepisodeDuration\nepisodeCount\n# lastUpdateStart\nlastUpdateEnd\ncharacterCount\nplaylistCount\ntierListCount\nworldMapCount\ncaseFileCount\nisAdult\nadultAssetsHidden\n\nsiteRanks {\n  entries {\n    key\n    label\n    position\n    delta\n    sortOrder\n    score\n    windowDays\n  }\n  weekly { score windowDays }\n  monthly { score windowDays }\n  overall { score windowDays }\n  bookmarked { score windowDays }\n  bookmarkedOverall { score windowDays }\n  boostedMonthly { score windowDays }\n  boosted { score windowDays }\n}\n\n\ndescription\nbroadcastInterval\nbanner\ncharacters\navailableEpisodesDetail\nnameOnlyString\ncharacters\nisAdult\nrelatedShows\nrelatedMangas\naltNames\ndisqusIds\n}\npageStatus{\n_id\nnotes\npageId\nshowId\n\n# ranks:[Object]\nviews\nlikesCount\ncommentCount\ndislikesCount\nboostsCount\nreviewCount\nuserScoreCount\nuserScoreTotalValue\nuserScoreAverValue\nviewers{\nfirstViewers{\nviewCount\nlastWatchedDate\nuser{\n\n  \n  \n  _id\n  username\n  displayName\n  createdAt\n  picture\n  reputation\n  roleLevel\n\n  \n  brief\n  followerCount\n  followingCount\n  pDec\n  equippedBadgeKey\n  equippedBadge {\n    \n  key\n  name\n  rank\n  iconPath\n  date\n  \n  badgeUi {\n    markKind\n    tone\n    shine\n    shineRate\n  }\n\n\n  }\n  personaTags\n  \n  ugcContributorStats {\n    mediaEditReviewSubmitCount\n    mediaEditApprovedCount\n    mediaEditRejectedCount\n    mediaEditAppliedCount\n    mediaEditContributionPoints\n    mediaEditModContributionPoints\n  }\n\n\n  hideMe\n\n}\n}\nrecViewers{\nviewCount\nlastWatchedDate\nuser{\n\n  \n  \n  _id\n  username\n  displayName\n  createdAt\n  picture\n  reputation\n  roleLevel\n\n  \n  brief\n  followerCount\n  followingCount\n  pDec\n  equippedBadgeKey\n  equippedBadge {\n    \n  key\n  name\n  rank\n  iconPath\n  date\n  \n  badgeUi {\n    markKind\n    tone\n    shine\n    shineRate\n  }\n\n\n  }\n  personaTags\n  \n  ugcContributorStats {\n    mediaEditReviewSubmitCount\n    mediaEditApprovedCount\n    mediaEditRejectedCount\n    mediaEditAppliedCount\n    mediaEditContributionPoints\n    mediaEditModContributionPoints\n  }\n\n\n  hideMe\n\n}\n}\n}\n\n}\nepisodeInfo{\nnotes\nthumbnails\n\ntbObj {\n  u\n  sm\n  md\n  ts\n}\n\nvidInforssub\nuploadDates\nvidInforsdub\nvidInforsraw\ndescription\n}\nversionFix\n}\n}\n";
 
 const SOURCE_PRIORITY = ['Default', 'Yt-mp4', 'S-Mp4', 'Ak', 'Uv-mp4', 'Luf-Mp4', 'Mp4'];
 
-// Known-good keygen snapshot (build 181, epoch 2963, lane k7) — captured live
-// on 2026-10-22 via mkissa.to bootstrap (k7 partB oCXORKB+3RfvwsEINLJM/QIBuO7FsgA6COR/sYk5b48=).
-// Key = partB XOR mask(181); mask blocks/consts extracted from the mkissa.to
-// crypto chunk Cs-j4hUW.js (build 181, verified 2026-10-22: boot token
-// reproduces the app's live token byte-for-byte; k7 bootstrap -> 200).
-// Boot token algorithm (two-stage HMAC, build 181):
+// Known-good keygen snapshot (build 189, epoch 2967, lane k7) — captured live
+// on 2026-11-12 via mkissa bootstrap (k7 bootstrap -> 200; partB identical
+// across epoch runs, so the key is per-build+lane, not per-epoch).
+// Key = partB XOR mask(189); mask blocks/consts extracted from the live
+// mkissa.to crypto chunk DmW2_MRj.js (build 189, Df config decoded).
+// Boot token algorithm (two-stage HMAC, build 189):
 //   f    = HMAC(mask, AA_BOOT_PREFIX + build_id)
-//   boot = hex(HMAC(f, buildId:group:host:epoch:lane))   // ":" -joined
+//   boot = hex(HMAC(f, epoch|lane|group|host|buildId))   // "|" -joined, Df.parts order
 // Note: content lanes are routed per persisted query — chapterPages runs on
 // k9, episode on k7, music on k2 (the app's lane router). This module
 // only calls episode, so the fallback lane is k7.
 const FALLBACK_KEYGEN = {
-    build_id: '181',
-    epoch: 2963,
+    build_id: '189',
+    epoch: 2967,
     lane: 'k7',
-    key: '5ce91c85a5aa5a2a670c553daf07a8a5ab730508692106a9e7fbb519dd219ae1',
+    key: 'cb9f81ad39cb7945df87592365d884213cef06898474a11f5f78821e13d51121',
     static_key: 'Xot36i3lK3:v1'
 };
 
-/* Self-bootstrap inputs (extracted from the mkissa.to crypto chunk, build 181).
+/* Self-bootstrap inputs (extracted from the mkissa.to crypto chunk DmW2_MRj.js, build 189).
    The client derives its own AES key without any secret server round-trip:
      embed[i]   = concat(base64decode(mask blocks))          [32 bytes]
      salt[i]    = (buildId.charCodeAt(i % len) || 0)
                   ^ ((i * AA_SALT_MUL + AA_SALT_ADD) & 255)
      linear[i]  = ((i >> 3) * AA_FRAG_MUL + (i % 8) * AA_FRAG_ADD) & 255
      mask[i]    = embed[i] ^ salt[i] ^ linear[i]
-   The chunk's Df config also carries envXor:82, but the PRODUCTION runtime
-   applies envXor=0 (verified 2026-10-22: matching the live x-aa-boot required
-   ^0; ^82/^165 rejected). If a future build rejects tokens, sweep
-   envXor 0..255 before assuming the blocks changed.
+   The chunk's Df config carries envXor:12 gated behind an env check (eT);
+   PRODUCTION applies envXor=0 (verified 2026-11-12: boot token with raw mask
+   -> 200; with mask^12 -> 403 invalid_boot_token). If a future build rejects
+   tokens, sweep envXor 0..255 before assuming the blocks changed.
      hmacKey    = HMAC-SHA256(mask, AA_BOOT_PREFIX + buildId)
-     bootTok    = hex(HMAC-SHA256(hmacKey, `${buildId}:${group}:${host}:${epoch}:${lane}`))
+     bootTok    = hex(HMAC-SHA256(hmacKey, `${epoch}|${lane}|${group}|${host}|${buildId}`))
      GET {AA_BOOTSTRAP_URL}?buildId=<id>&k=<lane>  (x-build-id / x-aa-boot headers)
      key        = first32(base64decode(partB)) XOR mask
    Epochs are 7-day (floor(now/604800000)); during the first day of an epoch the
    previous one is still accepted. group is "mkissa" for the public hosts, and
    the boot message uses the FULL host (with TLD), not the stripped first segment. */
-const AA_MASK_BLOCKS = ['Yh7GkKY7p1E=', 'GhmFaOUHEGk=', 'prExpp5kt+4=', 'FSm6Hdvb+S4='];
-const AA_SALT_MUL = 60;
-const AA_SALT_ADD = 175;
-const AA_FRAG_MUL = 44;
-const AA_FRAG_ADD = 1;
-const AA_BOOT_PREFIX = 'UZQjku7:';
+const AA_MASK_BLOCKS = ['pF98Ab2CCc0=', 'gEhpQrtSn+M=', 'oPeHj9dBNTU=', '7XcuzKoXhgs='];
+const AA_SALT_MUL = 175;
+const AA_SALT_ADD = 202;
+const AA_FRAG_MUL = 129;
+const AA_FRAG_ADD = 61;
+const AA_BOOT_PREFIX = 'iGmNgPGdi:';
 const AA_WEEK_MS = 604800000;
 const AA_DAY_MS = 86400000;
 const AA_BOOTSTRAP_URL = 'https://api.mkissa.net/client-crypto/v1/bootstrap';
@@ -71,7 +75,7 @@ const CDN_BASES = [
 
 let aaKeyCache = { keys: null, ts: 0 };
 
-if (typeof console !== 'undefined') console.log('allmanga module v1.14.0 (build 181 keygen, k7 episode lane, fetchv2 impersonate:chrome + toResponseLike + 403 plain-fetch retry)');
+if (typeof console !== 'undefined') console.log('allmanga module v1.15.0 (build 189 keygen, epoch|lane|group|host|buildId boot, new episode query, k7 lane)');
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -337,28 +341,25 @@ async function aaBootstrapFor(lane, epoch) {
     try {
         const mask = aaBuildMask(String(FALLBACK_KEYGEN.build_id));
         const hmacKey = aaHmacSha256(mask, aaAscii(AA_BOOT_PREFIX + FALLBACK_KEYGEN.build_id));
-        // mkissa build 181: message is buildId:group:host:epoch:lane joined by ":"
-        // (verified live 2026-10-22: "181:mkissa:mkissa.to:2963:k7" reproduces the
-        // app's x-aa-boot byte-for-byte). Build 179 used buildId|group|lane|epoch|host,
-        // 175 buildId|group|host|epoch|lane; 166/141 used group:lane:epoch:host:buildId
-        // — tried in order when the current format gets rejected.
+        // mkissa build 189: message is epoch|lane|group|host|buildId joined by "|"
+        // (verified live 2026-11-12: "2967|k7|mkissa|mkissa.to|189" -> bootstrap 200).
+        // Older formats kept as fallbacks for future rotations.
+        const msg189 = [String(epoch), lane, AA_BOOT_GROUP, AA_BOOT_HOST, FALLBACK_KEYGEN.build_id].join('|');
         const msg181 = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, AA_BOOT_HOST, String(epoch), lane].join(':');
         const msgNew = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, lane, String(epoch), AA_BOOT_HOST].join('|');
-        const msg175 = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, AA_BOOT_HOST, String(epoch), lane].join('|');
         const msgOld = AA_BOOT_GROUP + ':' + lane + ':' + epoch + ':' + AA_BOOT_HOST + ':' + FALLBACK_KEYGEN.build_id;
         const url = AA_BOOTSTRAP_URL + '?buildId=' + encodeURIComponent(FALLBACK_KEYGEN.build_id) +
             '&k=' + encodeURIComponent(lane);
-        let j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg181))));
+        let j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg189))));
+        if (!j) {
+            j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg181))));
+        }
         if (!j) {
             j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgNew))));
         }
         if (!j) {
-            j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msg175))));
-        }
-        if (!j) {
             j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgOld))));
-        }
-        if (!j) return null;
+        }        if (!j) return null;
         const raw = aaUnb64(j.partB);
         if (!raw || raw.length < 32) { console.log('bootstrap short partB'); return null; }
         const key = new Uint8Array(32);

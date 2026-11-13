@@ -111,7 +111,7 @@
       "branch": "main",
       "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/yfsp/yfsp.json",
       "sampleQuery": "one piece",
-      "updated": "2026-11-11",
+      "updated": "2026-11-10",
       "needs_review": true,
       "note": "2026-11-10 audit ported yfsp to iyf.tv; superseded this cycle by the kubb.tv migration (v1.1.1, PRs #10/#11 from enzol5210): full pipeline verified on kubb.tv — search/details/episodes healthy (1182 eps One Piece), stream step returns signed global.dudupro.com HLS chunklists. Play-API header-wrap fix (soraFetch opts.headers) and episode param taxis→t included; v1.0.7 code-5 backoff bound retained. Earlier: stream API rate-limits intermittently (code 5 访问过量, observed 2026-10-15 ~1h+, re-confirmed 2026-10-20); module recovers automatically when the upstream throttle clears."
     },

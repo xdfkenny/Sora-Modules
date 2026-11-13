@@ -21,17 +21,17 @@ async function searchResults(keyword) {
         let baseUrlTemplate = null;
 
         if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`;
         } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`;
         }
 
         let dataResults = [];
@@ -89,7 +89,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -104,7 +104,7 @@ async function extractDetails(url) {
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const responseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const data = await responseText.json();
 
             const transformedResults = [{
@@ -150,7 +150,7 @@ async function extractEpisodes(url) {
 
             const showId = match[1];
 
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
             const showData = await showResponseText.json();
 
                         // Parallel season fetches: big shows (One Piece: ~20 seasons) took
@@ -163,7 +163,7 @@ async function extractEpisodes(url) {
                 .map(async (season) => {
                     const seasonNumber = season.season_number;
                     try {
-                        const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                        const seasonResponseText = await soraFetch(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`);
                         const seasonData = await seasonResponseText.json();
                         if (seasonData.episodes && seasonData.episodes.length) {
                             return seasonData.episodes.map(episode => ({
@@ -220,7 +220,7 @@ async function extractStreamUrl(ID) {
             return JSON.stringify({ streams: [] });
         }
 
-        const tmdbUrl = `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/${mediaType}/${tmdbID}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids&language=en`)}&simple=true`;
+        const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbID}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids&language=en`;
         const response = await soraFetch(tmdbUrl);
         if (!response) throw new Error("Failed to fetch TMDB details");
         const tmdbData = await response.json();
@@ -231,10 +231,10 @@ async function extractStreamUrl(ID) {
         const imdbId = tmdbData.external_ids?.imdb_id || "";
         const tmdbId = tmdbData.id;
 
-        const seedRes = await soraFetch(`https://api.speedracelight.com/seed?mediaId=${tmdbId}`, {
+        const seedRes = await soraFetch(`https://api.wecollege.net/seed?mediaId=${tmdbId}`, {
             headers: {
-                "Referer": "https://player.videasy.to/",
-                "Origin": "https://player.videasy.to",
+                "Referer": "https://vidy.st/",
+                "Origin": "https://vidy.st",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
             }
         });
@@ -244,14 +244,15 @@ async function extractStreamUrl(ID) {
         const enc = "2";
 
         let servers = [
-            { name: "Yoru", endpoint: "cdn", flag: "🇺🇸" },
-            { name: "Breach", endpoint: "m4uhd", flag: "🇺🇸" },
-            { name: "Neon", endpoint: "vsrc", flag: "🇺🇸" },
-            { name: "Vyse", endpoint: "hdmovie", flag: "🇺🇸", filterQuality: "English" },
-            { name: "Killjoy", endpoint: "meine", flag: "🇩🇪", query: "language=german" },
-            { name: "Fade", endpoint: "hdmovie", flag: "🇮🇳", filterQuality: "Hindi" },
-            { name: "Omen", endpoint: "lamovie", flag: "🇪🇸" },
-            { name: "Raze", endpoint: "superflix", flag: "🇵🇹" }
+            { name: "Miami", endpoint: "miami", flag: "🇺🇸" },
+            { name: "Boise", endpoint: "boise", flag: "🇺🇸" },
+            { name: "Vegas", endpoint: "vegas", flag: "🇺🇸" },
+            { name: "Seattle", endpoint: "seattle", flag: "🇺🇸" },
+            { name: "Austin", endpoint: "austin", flag: "🇺🇸", filterQuality: "English" },
+            { name: "Munich", endpoint: "munich", flag: "🇩🇪", query: "language=german" },
+            { name: "Delhi", endpoint: "delhi", flag: "🇮🇳", filterQuality: "Hindi" },
+            { name: "Cancun", endpoint: "cancun", flag: "🇪🇸" },
+            { name: "Paris", endpoint: "paris", flag: "🇫🇷" }
         ];
 
         try {
@@ -269,16 +270,16 @@ async function extractStreamUrl(ID) {
                             const name = parts[0];
                             const language = parts[1];
                             const url = parts[2];
-                            const urlMatch = url.match(/https:\/\/api\.speedracelight\.com\/([^\/]+)\/sources-with-title(?:\?(.*))?/);
+                            const urlMatch = url.match(/https:\/\/api.wecollege.net\/([^\/]+)\/sources(?:\?(.*))?/);
                             if (urlMatch) {
                                 const endpoint = urlMatch[1];
                                 const query = urlMatch[2] || null;
                                 
-                                let flag = "🇺🇸";
-                                if (language.toLowerCase() === "german" || name.toLowerCase() === "killjoy") flag = "🇩🇪";
-                                else if (language.toLowerCase() === "hindi" || name.toLowerCase() === "fade") flag = "🇮🇳";
-                                else if (language.toLowerCase() === "spanish" || name.toLowerCase() === "omen") flag = "🇪🇸";
-                                else if (language.toLowerCase() === "portuguese" || name.toLowerCase() === "raze") flag = "🇵🇹";
+                                let flag = "ðºð¸";
+                                if (language.toLowerCase() === "german" || name.toLowerCase() === "killjoy") flag = "ð©ðª";
+                                else if (language.toLowerCase() === "hindi" || name.toLowerCase() === "fade") flag = "ð®ð³";
+                                else if (language.toLowerCase() === "spanish" || name.toLowerCase() === "omen") flag = "ðªð¸";
+                                else if (language.toLowerCase() === "portuguese" || name.toLowerCase() === "raze") flag = "ðµð¹";
 
                                 const filterMatch = line.match(/FILTERS quality == "([^"]+)"/);
                                 const filterQuality = filterMatch ? filterMatch[1] : null;
@@ -307,15 +308,15 @@ async function extractStreamUrl(ID) {
 
         const serverPromises = servers.map(async (server) => {
             try {
-                let fullUrl = `https://api.speedracelight.com/${server.endpoint}/sources-with-title?title=${title}&mediaType=${mediaType}&year=${year}&episodeId=${episodeNumber}&seasonId=${seasonNumber}&tmdbId=${tmdbId}&imdbId=${imdbId}&enc=${enc}&seed=${seed}`;
+                let fullUrl = `https://api.wecollege.net/${server.endpoint}/sources?title=${title}&mediaType=${mediaType}&year=${year}&episodeId=${episodeNumber}&seasonId=${seasonNumber}&tmdbId=${tmdbId}&imdbId=${imdbId}&enc=${enc}&seed=${seed}`;
                 if (server.query) {
                     fullUrl += `&${server.query}`;
                 }
 
                 const fetchOpts = {
                     headers: {
-                        "Referer": "https://player.videasy.to/",
-                        "Origin": "https://player.videasy.to",
+                        "Referer": "https://vidy.st/",
+                        "Origin": "https://vidy.st",
                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
                     }
                 };
@@ -372,8 +373,8 @@ async function extractStreamUrl(ID) {
                         title: `[${serverName}] ${flag} ${src.quality}`,
                         streamUrl: src.url,
                         headers: {
-                            "Origin": "https://player.videasy.to",
-                            "Referer": "https://player.videasy.to/",
+                            "Origin": "https://vidy.st",
+                            "Referer": "https://vidy.st/",
                             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
                         }
                     });
@@ -397,7 +398,7 @@ async function extractStreamUrl(ID) {
         let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
 
         if (subtitleUrl) {
-            subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.to%2F`;
+            subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fvidy.st%2F`;
         }
 
         return JSON.stringify({
